@@ -1,0 +1,48 @@
+# --- Godot ---
+.godot/
+/android/
+*.translation
+*.import.tmp
+export_credentials.cfg
+
+# --- Compilaciones / exportaciones ---
+/builds/*
+!/builds/.gdignore
+!/builds/README.md
+*.apk
+*.aab
+*.apks
+*.idsig
+*.ipa
+*.pck
+*.xcarchive/
+*.dSYM/
+
+# --- Claves de firma y credenciales (NUNCA subir) ---
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.mobileprovision
+*.cer
+*.p8
+keystore.properties
+local.properties
+.env
+.env.*
+secrets/
+
+# --- Temporales / sistema / editores ---
+*.tmp
+*.bak
+*.orig
+*.log
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp

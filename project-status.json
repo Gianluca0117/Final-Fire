@@ -1,0 +1,632 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Final Fire",
+    "summary": "Juego 2D de supervivencia para 2–6 participantes (jugadores o bots): saltos, empujones, plataformas inestables, suelo que se convierte en lava y una única herramienta compartida por fase. Primero multijugador; campaña después.",
+    "engine": "Godot 4.7.2-stable (GDScript, renderizador Compatibility)",
+    "targets": [
+      "Android",
+      "iOS (pendiente, requiere Mac)"
+    ],
+    "updatedAt": "2026-10-14T18:40:00-05:00"
+  },
+  "phases": [
+    {
+      "id": "F0",
+      "name": "Entorno y proyecto mínimo",
+      "status": "in_progress",
+      "description": "Herramientas instaladas, proyecto Godot, escena de comprobación, APK de depuración.",
+      "note": "Falta la prueba en un teléfono Android físico."
+    },
+    {
+      "id": "F1",
+      "name": "Arquitectura y mecánicas base (sin conexión)",
+      "status": "in_progress",
+      "description": "Estructura de módulos, InputFrame y controladores, personaje con empujón y protección, arena con inclinación, desgaste y lava, vista separada y controles táctiles definitivos.",
+      "note": "Arquitectura documentada; implementación sin empezar."
+    },
+    {
+      "id": "F2",
+      "name": "Partida y herramienta compartida (sin conexión)",
+      "status": "pending",
+      "description": "Participantes, fases, una herramienta por fase, eliminaciones, ganador, HUD y resultados."
+    },
+    {
+      "id": "F3",
+      "name": "Multijugador LAN (anfitrión-servidor)",
+      "status": "pending",
+      "description": "ENet, lobby, IP manual y descubrimiento, snapshots con interpolación y desconexiones v1."
+    },
+    {
+      "id": "F4",
+      "name": "Bots",
+      "status": "pending",
+      "description": "Bots ejecutados en la autoridad de la partida con las mismas acciones que un humano."
+    },
+    {
+      "id": "F5",
+      "name": "Arte, animación y sonido",
+      "status": "pending",
+      "description": "Recursos definitivos según docs/DIRECCION_VISUAL.md."
+    },
+    {
+      "id": "F6",
+      "name": "Internet: servidor dedicado y salas",
+      "status": "pending",
+      "description": "Servidor headless y servicio de salas. No se construye antes de validar las mecánicas y la LAN.",
+      "note": "Requiere decidir el alojamiento (D6)."
+    },
+    {
+      "id": "F7",
+      "name": "Publicación Android",
+      "status": "pending",
+      "description": "Clave de publicación propia, NDK, AAB y pruebas en varios dispositivos."
+    },
+    {
+      "id": "F8",
+      "name": "Exportación iOS",
+      "status": "blocked",
+      "description": "Exportar desde Godot y compilar con Xcode.",
+      "note": "Bloqueada: requiere un Mac con Xcode (ver D4)."
+    },
+    {
+      "id": "F9",
+      "name": "Campaña",
+      "status": "pending",
+      "description": "Modo de un jugador reutilizando las reglas, la arena, las herramientas y los bots."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "phase": "F0",
+      "title": "Revisar el equipo y las herramientas existentes",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Inventario con PowerShell (CIM): Windows 10 Pro x64, i5-6500, 7,9 GB de RAM, Intel HD 530, 77,5 GB libres. Se detectaron Git 2.56, Android Studio, Android SDK, Oracle JDK 27 y Node 24."
+    },
+    {
+      "id": "T-002",
+      "phase": "F0",
+      "title": "Instalar Godot 4.7.2 estable (estándar) y las plantillas de exportación Android",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "SHA-512 coincide con SHA512-SUMS.txt de la versión oficial; `--version` devuelve 4.7.2.stable.official.ed1daf0bf."
+    },
+    {
+      "id": "T-003",
+      "phase": "F0",
+      "title": "Instalar JDK 17 y completar el Android SDK (cmdline-tools y build-tools 35.0.1)",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "SHA-256 de Temurin 17.0.20.1+1 y de commandlinetools-win-15859902 verificados; `sdkmanager --list_installed` muestra build-tools 35.0.1."
+    },
+    {
+      "id": "T-004",
+      "phase": "F0",
+      "title": "Crear el proyecto (Compatibility, horizontal, interfaz adaptable)",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Importación headless sin errores; captura real a 1280×720 y 1370×720 con el renderizador gl_compatibility."
+    },
+    {
+      "id": "T-005",
+      "phase": "F0",
+      "title": "Escena mínima: personaje, movimiento, salto, plataforma, controles táctiles y teclado",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "tools/smoke_test.gd: 12/12 comprobaciones aprobadas en modo headless (en PC, con entrada simulada)."
+    },
+    {
+      "id": "T-006",
+      "phase": "F0",
+      "title": "Repositorio Git local con .gitignore",
+      "status": "done",
+      "verification": "Repositorio inicializado (rama main). Sin commit inicial: no hay identidad de Git configurada (ver D1)."
+    },
+    {
+      "id": "T-007",
+      "phase": "F0",
+      "title": "Preset Android y APK de depuración firmado",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "`--export-debug Android` sin errores; `apksigner verify` correcto (esquemas v2 y v3); `aapt` muestra com.finalfire.game, minSdk 24, targetSdk 36, arm64-v8a y armeabi-v7a, orientación horizontal."
+    },
+    {
+      "id": "T-008",
+      "phase": "F0",
+      "title": "Instalar y ejecutar el APK en un teléfono Android físico",
+      "status": "blocked",
+      "verification": "No se ha probado. `adb devices` no mostró ningún dispositivo conectado."
+    },
+    {
+      "id": "T-009",
+      "phase": "F0",
+      "title": "Documentación (README, entorno, iOS) y panel de progreso local",
+      "status": "verified",
+      "verification": "Panel revisado en el navegador integrado a 327, 375 y 1280 px de ancho sin desbordes horizontales; vistas previas cargadas; rutas fuera de las carpetas permitidas devuelven 404; un cambio en project-status.json apareció sin recargar la página. README, docs/ENTORNO.md, docs/IOS.md y docs/ESTADO.md escritos; tools/status-doc.mjs valida la coherencia de los ids citados.",
+      "verifiedAt": "2026-10-14"
+    },
+    {
+      "id": "T-010",
+      "phase": "F1",
+      "title": "Documentar la arquitectura (ARCHITECTURE.md)",
+      "status": "done",
+      "verification": "Documento escrito y contrastado con la documentación oficial de Godot 4.7 (red de alto nivel y servidores dedicados). Pendiente de tu revisión."
+    },
+    {
+      "id": "T-011",
+      "phase": "F1",
+      "title": "Migrar el prototipo a la estructura de módulos (core, game, controllers, presentation, ui, data)",
+      "status": "pending"
+    },
+    {
+      "id": "T-012",
+      "phase": "F1",
+      "title": "InputFrame y HumanController (mismo contrato para bots y red)",
+      "status": "pending"
+    },
+    {
+      "id": "T-013",
+      "phase": "F1",
+      "title": "Fighter: movimiento, salto, empujón/agarre y protección con CharacterStats",
+      "status": "pending"
+    },
+    {
+      "id": "T-014",
+      "phase": "F1",
+      "title": "Arena: plataformas con inclinación y desgaste",
+      "status": "pending"
+    },
+    {
+      "id": "T-015",
+      "phase": "F1",
+      "title": "Lava y avisos de peligro",
+      "status": "pending"
+    },
+    {
+      "id": "T-016",
+      "phase": "F1",
+      "title": "Vista separada de la simulación (animaciones y efectos por señales)",
+      "status": "pending"
+    },
+    {
+      "id": "T-017",
+      "phase": "F1",
+      "title": "Controles táctiles definitivos: joystick + salto, empujar, herramienta y ranura",
+      "status": "pending",
+      "note": "Según la referencia visual."
+    },
+    {
+      "id": "T-018",
+      "phase": "F1",
+      "title": "Pruebas headless de las reglas (tests/)",
+      "status": "pending"
+    },
+    {
+      "id": "T-019",
+      "phase": "F2",
+      "title": "MatchController: participantes, fases, eliminaciones y ganador",
+      "status": "pending"
+    },
+    {
+      "id": "T-020",
+      "phase": "F2",
+      "title": "Herramienta compartida: una por fase (candidatas: escudo, tablón, gancho)",
+      "status": "pending"
+    },
+    {
+      "id": "T-021",
+      "phase": "F2",
+      "title": "HUD: VIVOS n/6, cronómetro, pausa y resultados",
+      "status": "pending",
+      "note": "Según la referencia visual."
+    },
+    {
+      "id": "T-022",
+      "phase": "F3",
+      "title": "Conexión ENet anfitrión/cliente con IP manual y permiso INTERNET",
+      "status": "pending"
+    },
+    {
+      "id": "T-023",
+      "phase": "F3",
+      "title": "Lobby y descubrimiento en LAN",
+      "status": "pending"
+    },
+    {
+      "id": "T-024",
+      "phase": "F3",
+      "title": "Snapshots e interpolación",
+      "status": "pending"
+    },
+    {
+      "id": "T-025",
+      "phase": "F3",
+      "title": "Desconexiones v1 (cliente y anfitrión)",
+      "status": "pending"
+    },
+    {
+      "id": "T-026",
+      "phase": "F3",
+      "title": "Prueba con varios teléfonos en la misma Wi-Fi",
+      "status": "pending"
+    },
+    {
+      "id": "T-027",
+      "phase": "F4",
+      "title": "Bots básicos en la autoridad",
+      "status": "pending"
+    },
+    {
+      "id": "T-028",
+      "phase": "F5",
+      "title": "Estilo artístico: 6 personajes encapuchados y cueva de lava",
+      "status": "pending",
+      "note": "Según la referencia visual."
+    },
+    {
+      "id": "T-029",
+      "phase": "F5",
+      "title": "Sonidos y música",
+      "status": "pending"
+    },
+    {
+      "id": "T-030",
+      "phase": "F6",
+      "title": "Servidor dedicado headless y servicio de salas",
+      "status": "pending",
+      "note": "Depende de D6."
+    },
+    {
+      "id": "T-031",
+      "phase": "F7",
+      "title": "Clave de publicación, NDK y AAB firmado",
+      "status": "pending"
+    },
+    {
+      "id": "T-032",
+      "phase": "F8",
+      "title": "Exportar el proyecto Xcode y compilar en un Mac",
+      "status": "blocked",
+      "note": "Requiere un Mac (ver docs/IOS.md)."
+    },
+    {
+      "id": "T-033",
+      "phase": "F9",
+      "title": "Diseño de la campaña reutilizando las reglas",
+      "status": "pending"
+    }
+  ],
+  "tests": [
+    {
+      "id": "TEST-01",
+      "name": "Prueba automática de la escena (smoke test)",
+      "platform": "Windows (headless)",
+      "command": "Godot_v4.7.2-stable_win64_console.exe --headless --path . -s res://tools/smoke_test.gd",
+      "lastRun": "2026-10-14T18:38:00-05:00",
+      "result": "passed",
+      "details": "12/12: acciones de teclado, gravedad y suelo, movimiento, salto, aterrizaje, botón táctil, multitáctil y reaparición. Última ejecución dentro de tools/export-android.ps1."
+    },
+    {
+      "id": "TEST-02",
+      "name": "Renderizado Compatibility en este PC",
+      "platform": "Windows",
+      "command": "Godot_v4.7.2-stable_win64_console.exe --path . -s res://tools/capture_preview.gd",
+      "lastRun": "2026-10-14T18:24:18-05:00",
+      "result": "passed",
+      "details": "gl_compatibility mediante ANGLE (Direct3D 11) en la Intel HD 530. Capturas a 16:9 y ~1,9:1 con los controles en las esquinas."
+    },
+    {
+      "id": "TEST-03",
+      "name": "Exportación del APK de depuración",
+      "platform": "Android",
+      "command": "tools/export-android.ps1 (Godot --headless --export-debug Android)",
+      "lastRun": "2026-10-14T18:38:31-05:00",
+      "result": "passed",
+      "details": "Código de salida 0. APK de 57.632.194 bytes. Repetida con el script tools/export-android.ps1."
+    },
+    {
+      "id": "TEST-04",
+      "name": "Firma y manifiesto del APK",
+      "platform": "Android",
+      "command": "apksigner verify --print-certs; aapt dump badging",
+      "lastRun": "2026-10-14T18:38:31-05:00",
+      "result": "passed",
+      "details": "Firmado con la clave de depuración de Godot (v2 y v3). Paquete com.finalfire.game 0.1.0 (1), minSdk 24, targetSdk 36, screenOrientation=userLandscape (manifiesto revisado con aapt en B-0001; firma reverificada en B-0002)."
+    },
+    {
+      "id": "TEST-05",
+      "name": "Instalación y ejecución en un teléfono Android",
+      "platform": "Android (dispositivo físico)",
+      "command": "tools/install-apk.ps1",
+      "lastRun": "2026-10-14T18:38:55-05:00",
+      "result": "requires_user",
+      "details": "No había ningún teléfono conectado y autorizado. Conecta uno con la depuración USB activada."
+    },
+    {
+      "id": "TEST-06",
+      "name": "Exportación y compilación para iOS",
+      "platform": "iOS",
+      "command": "Godot (exportación iOS) + Xcode en un Mac",
+      "lastRun": null,
+      "result": "not_run",
+      "details": "No es posible en Windows. Ver docs/IOS.md."
+    },
+    {
+      "id": "TEST-07",
+      "name": "Panel de progreso: visualización y actualización en vivo",
+      "platform": "Navegador",
+      "command": "node dashboard/server.mjs",
+      "lastRun": "2026-10-14T18:38:00-05:00",
+      "result": "passed",
+      "details": "Navegador integrado a 327, 375 y 1280 px: todas las secciones visibles y sin desbordes. Actualización en vivo comprobada (cambio del JSON reflejado sin recargar). Rutas no permitidas → 404; solo escucha en 127.0.0.1."
+    }
+  ],
+  "builds": [
+    {
+      "id": "B-0001",
+      "platform": "Android",
+      "type": "debug",
+      "version": "0.1.0 (1)",
+      "path": null,
+      "sizeBytes": 57632194,
+      "sha256": "1B88F0D1F04364603A684E87F2BC0F2D05B0183C7A52EC54741D716297777370",
+      "createdAt": "2026-10-14T18:22:55-05:00",
+      "engine": "Godot 4.7.2-stable",
+      "signing": "Clave de depuración de Godot (%APPDATA%\\Godot\\keystores\\debug.keystore)",
+      "tests": [
+        "TEST-03",
+        "TEST-04",
+        "TEST-05"
+      ],
+      "deviceTested": false,
+      "notes": "Sustituida por B-0002 (mismo contenido; nueva firma). El archivo se sobrescribió."
+    },
+    {
+      "id": "B-0002",
+      "platform": "Android",
+      "type": "debug",
+      "version": "0.1.0 (1)",
+      "path": "builds/android/FinalFire-debug.apk",
+      "sizeBytes": 57632194,
+      "sha256": "85DC2D4829C4A5BA76CD895F20A4C24510A79D244CB38441AF411A3640BE3B92",
+      "createdAt": "2026-10-14T18:38:31-05:00",
+      "engine": "Godot 4.7.2-stable",
+      "signing": "Clave de depuración de Godot (%APPDATA%Godotkeystoresdebug.keystore)",
+      "tests": [
+        "TEST-01",
+        "TEST-03",
+        "TEST-04",
+        "TEST-05"
+      ],
+      "deviceTested": false,
+      "notes": "Generada con tools/export-android.ps1 tras excluir dashboard/ y project-status.json de la exportación. Pendiente: instalarla en un teléfono (TEST-05)."
+    }
+  ],
+  "inventory": {
+    "characters": [
+      {
+        "id": "CHR-01",
+        "name": "Personaje provisional",
+        "status": "placeholder",
+        "path": "scenes/player.tscn",
+        "preview": "docs/previews/player_placeholder.png",
+        "notes": "Rectángulo naranja de 48×64 px con CharacterBody2D. Solo sirve para comprobar el entorno."
+      }
+    ],
+    "animations": [],
+    "scenarios": [
+      {
+        "id": "SCN-01",
+        "name": "Nivel de comprobación",
+        "status": "placeholder",
+        "path": "scenes/test_level.tscn",
+        "preview": "docs/previews/test_level.png",
+        "notes": "Suelo, una plataforma, cámara fija y controles táctiles. Captura real a 1280×720."
+      },
+      {
+        "id": "SCN-01-W",
+        "name": "Nivel de comprobación (pantalla ancha)",
+        "status": "placeholder",
+        "path": "scenes/test_level.tscn",
+        "preview": "docs/previews/test_level_20x9.png",
+        "notes": "La misma escena a 1370×720 (~1,9:1): el mundo queda centrado y los botones se mantienen en las esquinas."
+      }
+    ],
+    "sounds": [],
+    "references": [
+      {
+        "id": "REF-01",
+        "name": "Objetivo visual y de interfaz",
+        "status": "draft",
+        "path": "docs/referencias/estilo-objetivo.png",
+        "preview": "docs/referencias/estilo-objetivo.png",
+        "notes": "Imagen de referencia compartida el 14-10-2026: 6 personajes encapuchados de colores, cueva de lava, plataformas con cadenas, puente de madera y plataformas que se desmoronan. Interfaz: VIVOS 6/6, cronómetro, pausa, joystick y botones de salto, agarrar/empujar, escudo y ranura de objeto. Es una referencia, no un recurso del juego. Descripción en docs/DIRECCION_VISUAL.md."
+      }
+    ]
+  },
+  "issues": [
+    {
+      "id": "ISS-01",
+      "title": "APK no probado en un dispositivo",
+      "severity": "high",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Hasta probarlo en un teléfono no se confirma el rendimiento, el área táctil ni la orientación en Android."
+    },
+    {
+      "id": "ISS-02",
+      "title": "El driver OpenGL de la Intel HD 530 no se usa directamente",
+      "severity": "low",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Godot cambia automáticamente a ANGLE (Direct3D 11) en este PC. Funciona; solo afecta al editor y a las pruebas en Windows."
+    },
+    {
+      "id": "ISS-03",
+      "title": "Sin commit inicial en Git",
+      "severity": "low",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "No hay user.name ni user.email configurados. No se inventó una identidad (ver D1)."
+    },
+    {
+      "id": "ISS-04",
+      "title": "NDK y CMake no instalados",
+      "severity": "info",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "No hacen falta para el APK con plantilla precompilada. Serán necesarios para compilaciones Gradle/AAB o plugins (fase F7); ocupan ~2–3 GB."
+    },
+    {
+      "id": "ISS-05",
+      "title": "Godot firma con apksigner de build-tools 36.0.0",
+      "severity": "info",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Godot usa la versión más alta instalada. La documentación recomienda 35.0.1, que también está instalada. La firma resultante se verificó correctamente."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "question": "¿Con qué nombre y correo quieres firmar los commits de Git?",
+      "context": "No hay identidad de Git configurada en este equipo. Puede configurarse solo para este repositorio o de forma global.",
+      "options": [
+        "Solo para este repositorio (git config user.name/user.email)",
+        "Global para todos tus proyectos"
+      ],
+      "recommendation": "Solo para este repositorio, para no alterar tus otros proyectos.",
+      "status": "pending"
+    },
+    {
+      "id": "D2",
+      "question": "¿Qué identificador de paquete definitivo usará el juego?",
+      "context": "Ahora se usa com.finalfire.game como provisional. Antes de publicar debe ser un dominio inverso tuyo; no se puede cambiar después de publicar en Google Play.",
+      "options": [
+        "Mantener com.finalfire.game",
+        "Usar un dominio propio (com.tudominio.finalfire)"
+      ],
+      "recommendation": "Usar un dominio propio o un nombre único que controles.",
+      "status": "pending"
+    },
+    {
+      "id": "D3",
+      "question": "¿Qué tipo de multijugador se desarrollará primero?",
+      "context": "Determina la arquitectura de la fase F2.",
+      "options": [
+        "Local en el mismo dispositivo",
+        "Red local (LAN / Wi-Fi)",
+        "Online con servidor"
+      ],
+      "recommendation": "Red local primero: permite probar 2–6 jugadores sin contratar servidores y prepara la sincronización para un modo online posterior.",
+      "status": "answered",
+      "answer": "Cliente-servidor con autoridad del servidor. Primero LAN con un anfitrión que también es servidor; después internet con servidor dedicado headless. Sin migración de anfitrión en la v1 (instrucciones de arquitectura del 14-10-2026; ver ARCHITECTURE.md §5)."
+    },
+    {
+      "id": "D4",
+      "question": "¿Tendrás acceso a un Mac para la versión de iOS?",
+      "context": "La compilación de iOS requiere Xcode en macOS. Publicar en el App Store requiere una cuenta de Apple Developer (de pago). No se ha contratado nada.",
+      "options": [
+        "Mac propio",
+        "Mac prestado",
+        "Aplazar iOS"
+      ],
+      "recommendation": "Aplazar iOS hasta que el multijugador funcione en Android.",
+      "status": "pending"
+    },
+    {
+      "id": "D5",
+      "question": "¿Subo el proyecto al repositorio de GitHub Gianluca0117/Final-Fire?",
+      "context": "El remoto origin ya está configurado, pero no se ha hecho commit ni push. El repositorio es PÚBLICO: todo lo que se suba será visible. El .gitignore excluye compilaciones, claves y credenciales. Antes hace falta la identidad de Git (D1).",
+      "options": [
+        "Sí, subir la rama main ahora",
+        "Hacer primero el repositorio privado",
+        "Todavía no"
+      ],
+      "recommendation": "Decidir primero si debe ser público; después, commit inicial y push.",
+      "status": "pending"
+    },
+    {
+      "id": "D6",
+      "question": "¿Dónde se alojarán los servidores para jugar por internet? (no urgente, fase F6)",
+      "context": "Por NAT/CGNAT, los móviles no pueden alojar partidas por internet de forma fiable. Hará falta un servidor con IP pública, que suele tener coste. No se ha contratado nada.",
+      "options": [
+        "Tu PC con reenvío de puerto (solo pruebas)",
+        "Servidor/VPS de pago",
+        "Servicio de terceros con relé"
+      ],
+      "recommendation": "Decidir al terminar la fase F3, cuando la LAN esté validada.",
+      "status": "pending"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-10-14",
+      "title": "Entorno de desarrollo y proyecto mínimo",
+      "description": "Instalación de Godot 4.7.2, JDK 17 y las herramientas de Android que faltaban; creación del proyecto FinalFire con una escena de comprobación; generación del APK de depuración, la documentación y el panel de progreso.",
+      "changes": [
+        "Godot 4.7.2-stable + plantillas Android en el perfil de usuario (sin permisos de administrador)",
+        "Temurin JDK 17.0.20.1+1, Android cmdline-tools y build-tools 35.0.1",
+        "Proyecto FinalFire: Compatibility, horizontal, interfaz adaptable y área segura",
+        "Escena de comprobación con teclado y controles táctiles multitáctiles",
+        "Preset Android y APK de depuración firmado",
+        "README, docs/ENTORNO.md, docs/IOS.md, docs/ESTADO.md y panel local",
+        "Referencia visual registrada (docs/DIRECCION_VISUAL.md) y tareas derivadas añadidas al roadmap"
+      ],
+      "checks": [
+        {
+          "name": "Checksums de todas las descargas",
+          "result": "passed"
+        },
+        {
+          "name": "Smoke test 12/12",
+          "result": "passed"
+        },
+        {
+          "name": "Renderizado Compatibility (ANGLE)",
+          "result": "passed"
+        },
+        {
+          "name": "Exportación y firma del APK",
+          "result": "passed"
+        },
+        {
+          "name": "Prueba en un teléfono Android",
+          "result": "requires_user"
+        },
+        {
+          "name": "Panel: escritorio, móvil y actualización en vivo",
+          "result": "passed"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "title": "Arquitectura definida",
+      "description": "ARCHITECTURE.md: módulos, capas y dependencias, multijugador cliente-servidor con autoridad, evaluación de ENet, LAN frente a internet, desconexiones v1, Resources y plan por etapas. Roadmap reorganizado en F0–F9 según ese plan.",
+      "changes": [
+        "ARCHITECTURE.md (nuevo)",
+        "Fases F1–F9 y tareas T-010 a T-033 reorganizadas por módulo",
+        "D3 respondida por las instrucciones de arquitectura; nuevas decisiones D5 (GitHub) y D6 (alojamiento)",
+        "Remoto origin → github.com/Gianluca0117/Final-Fire (sin push)",
+        "APK regenerado con tools/export-android.ps1 (B-0002); horas del registro corregidas con las marcas de tiempo reales de los archivos"
+      ],
+      "checks": [
+        {
+          "name": "Requisitos de red contrastados con la documentación oficial de Godot 4.7",
+          "result": "passed"
+        },
+        {
+          "name": "Validación del JSON y regeneración de docs/ESTADO.md",
+          "result": "passed"
+        },
+        {
+          "name": "Revisión de la arquitectura por tu parte",
+          "result": "requires_user"
+        }
+      ]
+    }
+  ]
+}

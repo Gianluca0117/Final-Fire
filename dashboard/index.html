@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Final Fire · Progreso</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <img src="favicon.svg" alt="" width="28" height="28">
+        <div>
+          <h1 id="project-name">Final Fire</h1>
+          <p id="project-engine" class="muted small"></p>
+        </div>
+      </div>
+      <div class="sync" id="sync" role="status" aria-live="polite">
+        <span class="dot"></span><span id="sync-text">Cargando…</span>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Secciones">
+      <a href="#resumen">Resumen</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#tareas">Tareas</a>
+      <a href="#compilacion">Compilación</a>
+      <a href="#pruebas">Pruebas</a>
+      <a href="#inventario">Inventario</a>
+      <a href="#problemas">Problemas</a>
+      <a href="#decisiones">Decisiones</a>
+      <a href="#historial">Historial</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="banner" class="banner" hidden></div>
+
+    <section id="resumen" aria-labelledby="h-resumen">
+      <h2 id="h-resumen" class="sr-only">Resumen</h2>
+      <p id="project-summary" class="lead"></p>
+      <div class="kpis" id="kpis"></div>
+      <details class="explain">
+        <summary>¿Cómo se calcula el avance?</summary>
+        <p>
+          <strong>Avance = tareas verificadas ÷ tareas registradas en el roadmap.</strong>
+          Solo cuentan las tareas con estado <em>verificada</em>, es decir, con una comprobación
+          documentada en <code>project-status.json</code>. Las tareas <em>terminadas sin verificar</em>
+          no suman. El porcentaje mide el avance del desarrollo, no la estabilidad: las pruebas
+          y los problemas se muestran por separado. Al planificar nuevas tareas, el total crece
+          y el porcentaje puede bajar.
+        </p>
+        <p>El panel solo muestra lo que dice el archivo: no marca tareas por la existencia de archivos ni de commits.</p>
+      </details>
+      <ul id="warnings" class="warnings" hidden></ul>
+    </section>
+
+    <section id="roadmap" aria-labelledby="h-roadmap">
+      <h2 id="h-roadmap">Fases del roadmap</h2>
+      <ol class="phases" id="phases"></ol>
+    </section>
+
+    <section id="tareas" aria-labelledby="h-tareas">
+      <h2 id="h-tareas">Tareas</h2>
+      <div class="two-col">
+        <div>
+          <h3>Próximas</h3>
+          <ul class="tasks" id="tasks-next"></ul>
+        </div>
+        <div>
+          <h3>Terminadas</h3>
+          <ul class="tasks" id="tasks-done"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="compilacion" aria-labelledby="h-compilacion">
+      <h2 id="h-compilacion">Última compilación</h2>
+      <div id="build"></div>
+    </section>
+
+    <section id="pruebas" aria-labelledby="h-pruebas">
+      <h2 id="h-pruebas">Pruebas</h2>
+      <ul class="tests" id="tests"></ul>
+    </section>
+
+    <section id="inventario" aria-labelledby="h-inventario">
+      <h2 id="h-inventario">Inventario de recursos</h2>
+      <div class="segmented" role="tablist" id="inv-tabs"></div>
+      <div class="inventory" id="inventory" role="tabpanel"></div>
+    </section>
+
+    <section id="problemas" aria-labelledby="h-problemas">
+      <h2 id="h-problemas">Errores y problemas conocidos</h2>
+      <ul class="issues" id="issues"></ul>
+    </section>
+
+    <section id="decisiones" aria-labelledby="h-decisiones">
+      <h2 id="h-decisiones">Decisiones que necesitan tu respuesta</h2>
+      <ul class="decisions" id="decisions"></ul>
+    </section>
+
+    <section id="historial" aria-labelledby="h-historial">
+      <h2 id="h-historial">Historial de actualizaciones</h2>
+      <ol class="history" id="history"></ol>
+    </section>
+  </main>
+
+  <footer class="muted small">
+    Fuente de datos: <code>project-status.json</code> · Panel local, solo lectura · Se actualiza cada 5 s mientras está abierto.
+  </footer>
+
+  <dialog id="lightbox"><img alt=""><form method="dialog"><button>Cerrar</button></form></dialog>
+  <script src="app.js"></script>
+</body>
+</html>
