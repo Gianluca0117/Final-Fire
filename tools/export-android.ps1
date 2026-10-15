@@ -3,9 +3,9 @@
 . "$PSScriptRoot\env.ps1"
 Set-Location $FF_ROOT
 
-Write-Host "== Smoke test" -ForegroundColor Cyan
-& $GODOT_CLI --headless --path . -s res://tools/smoke_test.gd
-if ($LASTEXITCODE -ne 0) { Write-Host "La prueba automática falló; no se exporta." -ForegroundColor Red; exit 1 }
+Write-Host "== Pruebas automáticas" -ForegroundColor Cyan
+& $GODOT_CLI --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd
+if ($LASTEXITCODE -ne 0) { Write-Host "Alguna prueba automática falló; no se exporta." -ForegroundColor Red; exit 1 }
 
 Write-Host "== Exportando APK de depuración" -ForegroundColor Cyan
 New-Item -ItemType Directory -Force (Split-Path $FF_APK) | Out-Null
