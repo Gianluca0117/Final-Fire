@@ -111,7 +111,7 @@ Datos del 2026-10-14T22:56:00-05:00.
 | TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
 | TEST-12 | Automatizada (PC) | Validez del identificador com.elizsoft.finalfire | Aprobada | 2026-10-14 |
 | TEST-13 | Revisión manual | Revisión de exposición antes de publicar | Aprobada | 2026-10-14T22:15:16-05:00 |
-| TEST-14 | Revisión manual | Publicación en GitHub verificada | Aprobada | 2026-10-14T20:01:25-05:00 |
+| TEST-14 | Revisión manual | Publicación en GitHub verificada | Aprobada | 2026-10-14T23:00:00-05:00 |
 | TEST-15 | Automatizada (PC) | Herramientas (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
 | TEST-16 | Automatizada (PC) | Presentación (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
 | TEST-17 | Revisión manual | Rendimiento del estilo v2 en este PC | Aprobada | 2026-10-14T22:50:45-05:00 |

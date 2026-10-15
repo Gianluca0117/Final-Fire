@@ -619,9 +619,9 @@
       "name": "Publicación en GitHub verificada",
       "platform": "GitHub",
       "command": "git push -u origin main; git ls-remote origin main; gh api repos/Gianluca0117/Final-Fire/commits",
-      "lastRun": "2026-10-14T20:01:25-05:00",
+      "lastRun": "2026-10-14T23:00:00-05:00",
       "result": "passed",
-      "details": "La rama main remota coincide con la local (d87ad2d). La API de GitHub lista los 4 commits y 132 archivos; ningún APK, clave ni carpeta .godot/. Repositorio público."
+      "details": "La rama main remota coincide con la local (cb466c5, revisión gráfica v2) según git ls-remote, tras repetir la revisión de exposición (docs/REVISION_PUBLICACION.md)."
     },
     {
       "id": "TEST-15",
