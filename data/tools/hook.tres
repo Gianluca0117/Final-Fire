@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ToolDefinition" format=3]
+
+[ext_resource type="Script" path="res://game/tools/tool_definition.gd" id="1_tool"]
+
+[resource]
+script = ExtResource("1_tool")
+id = &"hook"
+display_name = "Gancho"
+kind = 1
+uses = 1
+hook_range = 380.0
+hook_min_range = 48.0
+hook_cone_deg = 24.0
+hook_speed = 1150.0
+hook_max_time = 0.7
+hook_end_boost = -520.0

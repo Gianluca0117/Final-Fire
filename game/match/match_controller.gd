@@ -1,7 +1,7 @@
 class_name MatchController
 extends Node
 ## Partida (autoridad): avanza la simulación tick a tick en un orden fijo
-## (arena → personajes → peligros → ganador). La interfaz, el audio y la red
+## (arena → personajes y uso de herramientas → herramienta compartida → peligros → ganador). La interfaz, el audio y la red
 ## solo escuchan sus señales; nunca cambian el estado directamente.
 
 enum Phase { SETUP, COUNTDOWN, RUNNING, FINISHED }
@@ -15,6 +15,7 @@ signal match_finished(winner: Participant)
 @export var rules: MatchRules
 
 var arena: Arena
+var tools := ToolSystem.new()
 var participants: Array[Participant] = []
 var phase: Phase = Phase.SETUP
 var tick := 0
@@ -35,7 +36,8 @@ func setup(p_arena: Arena, p_participants: Array[Participant], fighter_parent: N
 	participants = p_participants
 	if participants.size() < rules.min_participants or participants.size() > rules.max_participants:
 		push_error("Participantes fuera de rango: %d (permitido %d–%d)" % [participants.size(), rules.min_participants, rules.max_participants])
-	arena.setup(rules.phase, p_seed)
+	arena.setup(rules.hazards, p_seed)
+	tools.setup(rules, arena, p_seed)
 	var spawns := arena.get_spawn_points()
 	_fighters.clear()
 	_by_fighter.clear()
@@ -57,6 +59,10 @@ func setup(p_arena: Arena, p_participants: Array[Participant], fighter_parent: N
 		_fighters.append(f)
 		_by_fighter[f] = p
 	phase = Phase.SETUP
+
+
+func _exit_tree() -> void:
+	tools.release()
 
 
 func start() -> void:
@@ -117,7 +123,11 @@ func _step_running(delta: float) -> void:
 	for p in participants:
 		if p.alive:
 			var frame := p.controller.sample(tick, p.fighter, self) if p.controller else InputFrame.idle(tick)
-			p.fighter.step(frame.sanitized(), delta, _fighters)
+			frame = frame.sanitized()
+			p.fighter.step(frame, delta, _fighters)
+			if frame.tool_pressed:
+				tools.try_use(p, frame.aim)
+	tools.step(delta, participants)
 	var fallen: Array[Participant] = []
 	for p in participants:
 		if p.alive:
@@ -144,6 +154,7 @@ func _eliminate(p: Participant, cause: StringName) -> void:
 	if by:
 		by.eliminations += 1
 	f.eliminate(cause, f.last_pusher if by else null)
+	tools.on_participant_eliminated(p)
 	participant_eliminated.emit(p, cause, by)
 
 

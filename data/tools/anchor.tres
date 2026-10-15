@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ToolDefinition" format=3]
+
+[ext_resource type="Script" path="res://game/tools/tool_definition.gd" id="1_tool"]
+
+[resource]
+script = ExtResource("1_tool")
+id = &"anchor"
+display_name = "Ancla"
+kind = 0
+uses = 1
+anchor_duration = 6.0
+anchor_warning = 1.5
+anchor_range = 260.0

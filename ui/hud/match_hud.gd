@@ -1,7 +1,8 @@
 class_name MatchHud
 extends CanvasLayer
-## Interfaz de partida: VIVOS n/N, cronómetro, pausa, cuenta atrás, avisos de peligro
-## grandes, controles táctiles y resultados. Solo lee la partida y emite peticiones.
+## Interfaz de partida: VIVOS n/N, fase y cronómetro, pausa, cuenta atrás, avisos grandes,
+## herramienta de cada jugador local, controles táctiles y resultados.
+## Solo lee la partida y emite peticiones.
 
 signal rematch_requested
 signal menu_requested
@@ -10,6 +11,7 @@ var match_ctl: MatchController
 var touch: TouchControls
 
 var _alive: AliveIndicator
+var _slots: ToolSlots
 var _timer: Label
 var _center: Label
 var _banner: Label
@@ -35,6 +37,23 @@ func bind(p_match: MatchController, show_touch: bool) -> void:
 	match_ctl.match_finished.connect(_on_finished)
 	match_ctl.participant_eliminated.connect(_on_eliminated)
 	match_ctl.arena.hazard_warned.connect(_on_hazard)
+	var t := match_ctl.tools   # las funciones de abajo no capturan «t» para no crear ciclos
+	t.tool_announced.connect(func(def: ToolDefinition, _p: Vector2, s: float) -> void:
+		_show_banner("FASE %d · APARECE: %s (%.0f s)" % [match_ctl.tools.phase_index + 1, ToolIcons.short_name(def), s], s + 0.5))
+	t.tool_picked.connect(func(def: ToolDefinition, by: Participant) -> void:
+		_show_banner("%s tiene %s" % [by.display_name, _with_article(def)], 1.8))
+	t.tool_used.connect(func(def: ToolDefinition, by: Participant, _t: ToolTarget) -> void:
+		_show_banner("%s usó %s" % [by.display_name, _with_article(def)], 1.8))
+	t.tool_use_failed.connect(func(_def: ToolDefinition, by: Participant, reason: StringName) -> void:
+		if by.kind == Participant.Kind.HUMAN_LOCAL:
+			_show_banner("Sin destino válido (%s): no se gasta" % ToolsView.REASONS.get(reason, "no válido"), 1.5))
+	t.tool_dropped.connect(func(def: ToolDefinition, by: Participant) -> void:
+		_show_banner("%s perdió %s" % [by.display_name, _with_article(def)], 1.8))
+	t.tool_expiring.connect(func(def: ToolDefinition, s: float) -> void:
+		_show_banner("%s caduca en %d s" % [ToolIcons.short_name(def), ceili(s)], 2.0))
+	t.tool_expired.connect(func(def: ToolDefinition, _r: StringName) -> void:
+		_show_banner("%s ha caducado" % ToolIcons.short_name(def), 1.5))
+	_slots.match_ctl = match_ctl
 
 
 func set_touch_visible(v: bool) -> void:
@@ -46,6 +65,9 @@ func _process(delta: float) -> void:
 		return
 	var t := int(match_ctl.elapsed)
 	_timer.text = "%02d:%02d" % [floori(t / 60.0), t % 60]
+	if match_ctl.tools.phase:
+		_timer.text = "FASE %d · %s" % [match_ctl.tools.phase_index + 1, _timer.text]
+	_update_touch_tool()
 	if match_ctl.arena.sudden_death:
 		_timer.text += "  MUERTE SÚBITA"
 		_timer.add_theme_color_override("font_color", Color("ff6a1a"))
@@ -86,6 +108,8 @@ func _on_hazard(kind: StringName, _area: Rect2, seconds: float) -> void:
 			_show_banner("¡LA LAVA VA A SUBIR! (%d s)" % ceili(seconds), seconds + 0.5)
 		&"sudden_death":
 			_show_banner("¡MUERTE SÚBITA! LA LAVA NO PARA", 3.0)
+		&"anchor_ending":
+			_show_banner("¡EL ANCLA SE SUELTA! (%.1f s)" % seconds, seconds + 0.3)
 
 
 func _on_eliminated(p: Participant, cause: StringName, by: Participant) -> void:
@@ -112,6 +136,25 @@ func _on_finished(winner: Participant) -> void:
 	touch.visible = false
 
 
+func _with_article(def: ToolDefinition) -> String:
+	# «el ancla» y «el gancho»: ambos llevan «el».
+	return "el " + def.display_name.to_lower()
+
+
+## El botón táctil muestra la herramienta de J1 (la del primer humano local).
+func _update_touch_tool() -> void:
+	if touch == null or not touch.visible:
+		return
+	var p1: Participant = null
+	for p in match_ctl.participants:
+		if p.kind == Participant.Kind.HUMAN_LOCAL:
+			p1 = p
+			break
+	var def := match_ctl.tools.held_by(p1) if p1 else null
+	touch.tool.tool_kind = def.kind if def else -1
+	touch.tool.expiring = def != null and match_ctl.tools.expiring
+
+
 func _show_banner(text: String, seconds: float) -> void:
 	_banner.text = text
 	_banner_time = seconds
@@ -135,12 +178,15 @@ func _build(show_touch: bool) -> void:
 
 	_alive = AliveIndicator.new()
 	root.add_child(_alive)
+	_slots = ToolSlots.new()
+	_slots.position = Vector2(0, 52)
+	root.add_child(_slots)
 
 	_timer = _label("00:00", 30)
 	_timer.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer.offset_left = -200
-	_timer.offset_right = 200
+	_timer.offset_left = -260
+	_timer.offset_right = 260
 	_timer.offset_bottom = 44
 	root.add_child(_timer)
 

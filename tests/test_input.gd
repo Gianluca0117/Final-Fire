@@ -52,6 +52,28 @@ func run() -> void:
 	_touch(0, stick_c, false)
 	_touch(1, jump_c, false)
 	check(not Input.is_action_pressed(&"p1_left") and not Input.is_action_pressed(&"p1_jump"), "al soltar se liberan las acciones")
+	# Botón de herramienta: mantener = apuntar; arrastrar = dirección; soltar = usar.
+	var solo_tool := HumanController.new(PackedStringArray(["p1_", "p2_"]))
+	var tool_c := touch.tool.get_global_rect().get_center()
+	_touch(4, tool_c, true)
+	await tree.physics_frame
+	var held := solo_tool.sample(0, null, null)
+	check(held.tool_held and not held.tool_pressed, "mantener el botón de herramienta = apuntar (sin usarla)")
+	_drag(4, tool_c + Vector2(60, -60))
+	await tree.physics_frame
+	var aiming := solo_tool.sample(1, null, null)
+	check(aiming.aim.x > 0.6 and aiming.aim.y < -0.6, "arrastrar elige la dirección (%.2f, %.2f)" % [aiming.aim.x, aiming.aim.y])
+	_touch(4, tool_c + Vector2(60, -60), false)
+	await tree.physics_frame
+	var fired := solo_tool.sample(2, null, null)
+	check(fired.tool_pressed and fired.aim.x > 0.6 and fired.aim.y < -0.6, "al soltar se usa en la dirección apuntada")
+	await tree.physics_frame
+	check(not solo_tool.sample(3, null, null).tool_pressed, "soltar la usa una sola vez")
+	var p2 := HumanController.new(PackedStringArray(["p2_"]))
+	Input.action_press(&"p2_tool")
+	await tree.physics_frame
+	check(p2.sample(0, null, null).tool_held and InputMap.has_action(&"p2_tool"), "J2 tiene su propia tecla de herramienta")
+	Input.action_release(&"p2_tool")
 	layer.queue_free()
 	await frames(1)
 

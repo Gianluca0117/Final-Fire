@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="PhaseDefinition" format=3]
+[gd_resource type="Resource" script_class="HazardSchedule" format=3]
 
-[ext_resource type="Script" path="res://game/arena/phase_definition.gd" id="1_phase"]
+[ext_resource type="Script" path="res://game/arena/hazard_schedule.gd" id="1_hazards"]
 
 [resource]
-script = ExtResource("1_phase")
+script = ExtResource("1_hazards")
 display_name = "Cueva de lava"
 floor_waves_enabled = true
 first_wave_at = 6.0

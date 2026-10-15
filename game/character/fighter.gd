@@ -4,7 +4,7 @@ extends CharacterBody2D
 ## No lee Input ni dibuja nada. La partida llama a step() una vez por tick con el
 ## InputFrame de su controlador; la presentación escucha las señales.
 
-enum State { IDLE, RUN, JUMP, FALL, PUSH, STUNNED, SHIELDED, ELIMINATED }
+enum State { IDLE, RUN, JUMP, FALL, PUSH, STUNNED, SHIELDED, HOOKING, ELIMINATED }
 
 signal state_changed(old_state: State, new_state: State)
 signal jumped
@@ -14,6 +14,8 @@ signal was_pushed(by: Fighter, strength: float)
 signal shield_started
 signal shield_ended
 signal eliminated(cause: StringName, by: Fighter)
+signal hook_started(point: Vector2)
+signal hook_ended
 
 @export var stats: CharacterStats
 
@@ -27,6 +29,10 @@ var floor_body: Object = null
 var last_pusher: Fighter = null
 var last_pushed_at := -1000.0
 var sim_time := 0.0
+## Dirección apuntada y si mantiene el botón de herramienta (último InputFrame).
+var aim := Vector2.ZERO
+var aiming := false
+var hook_point := Vector2.ZERO
 
 var _coyote := 0.0
 var _jump_buffer := 0.0
@@ -37,6 +43,10 @@ var _stun := 0.0
 var _shield := 0.0
 var _shield_cooldown := 0.0
 var _was_on_floor := false
+var _hook_left := 0.0
+var _hook_speed := 0.0
+var _hook_boost := 0.0
+var _hook_prev_dist := INF
 
 
 func _ready() -> void:
@@ -81,6 +91,7 @@ func spawn(at: Vector2) -> void:
 	_stun = 0.0
 	_shield = 0.0
 	_shield_cooldown = 0.0
+	_hook_left = 0.0
 	last_pusher = null
 	floor_body = null
 	collision_layer = PhysicsLayers.FIGHTERS
@@ -94,6 +105,11 @@ func step(frame: InputFrame, delta: float, others: Array) -> void:
 		return
 	sim_time += delta
 	_tick_timers(delta)
+	aim = frame.aim
+	aiming = frame.tool_held
+	if _hook_left > 0.0:
+		_step_hook(delta)
+		return
 
 	var on_floor := is_on_floor()
 	if on_floor:
@@ -180,6 +196,7 @@ func find_push_targets(others: Array) -> Array[Fighter]:
 func receive_push(by: Fighter, dir: int, force: float) -> void:
 	if not is_alive():
 		return
+	_cancel_hook()
 	var factor := stats.knockback_resistance
 	if _shield > 0.0:
 		factor *= stats.shield_knockback_factor
@@ -193,6 +210,7 @@ func receive_push(by: Fighter, dir: int, force: float) -> void:
 func eliminate(cause: StringName, by: Fighter = null) -> void:
 	if not is_alive():
 		return
+	_cancel_hook()
 	velocity = Vector2.ZERO
 	_shield = 0.0
 	_set_state(State.ELIMINATED)
@@ -239,7 +257,52 @@ func _update_floor_body() -> void:
 		floor_body = below.get_collider()
 
 
+func is_hooking() -> bool:
+	return _hook_left > 0.0
+
+
+## Tirón del Gancho hacia `point`. Lo inicia la autoridad (ToolSystem) tras validar el destino;
+## durante el tirón no se aplican gravedad ni controles.
+func start_hook(point: Vector2, speed: float, max_time: float, end_boost: float) -> void:
+	if not is_alive():
+		return
+	hook_point = point
+	_hook_left = max_time
+	_hook_speed = speed
+	_hook_boost = end_boost
+	_hook_prev_dist = INF
+	_stun = 0.0
+	hook_started.emit(point)
+	_set_state(State.HOOKING)
+
+
+func _step_hook(delta: float) -> void:
+	_hook_left -= delta
+	var to := hook_point - global_position
+	var dist := to.length()
+	# Termina al llegar, al agotar el tiempo o si un obstáculo impide avanzar.
+	if dist <= 26.0 or _hook_left <= 0.0 or dist >= _hook_prev_dist - 0.5:
+		_hook_left = 0.0
+		velocity = (to / maxf(dist, 0.001)) * _hook_speed * 0.25 + Vector2(0, _hook_boost)
+		hook_ended.emit()
+	else:
+		velocity = to / dist * minf(_hook_speed, dist / delta)
+		_hook_prev_dist = dist
+	move_and_slide()
+	_update_floor_body()
+	_was_on_floor = is_on_floor()
+	_set_state(_compute_state(_was_on_floor))
+
+
+func _cancel_hook() -> void:
+	if _hook_left > 0.0:
+		_hook_left = 0.0
+		hook_ended.emit()
+
+
 func _compute_state(on_floor: bool) -> State:
+	if _hook_left > 0.0:
+		return State.HOOKING
 	if _shield > 0.0:
 		return State.SHIELDED
 	if _stun > 0.0:

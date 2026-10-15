@@ -1,9 +1,9 @@
-class_name PhaseDefinition
+class_name HazardSchedule
 extends Resource
-## Calendario de peligros de una fase (data/phases/*.tres). En F1 hay una sola fase;
-## en F2 la partida encadenará varias y añadirá la herramienta compartida.
+## Calendario de peligros de la arena para toda la partida (data/hazards/*.tres): suelo que
+## se vuelve lava, subida de la lava inferior y muerte súbita. Las fases (herramientas) van aparte.
 
-@export var display_name := "Fase 1"
+@export var display_name := "Cueva de lava"
 
 @export_group("Suelo que se convierte en lava")
 @export var floor_waves_enabled := true

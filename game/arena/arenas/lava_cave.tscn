@@ -87,3 +87,20 @@ position = Vector2(640, 560)
 
 [node name="S6" type="Marker2D" parent="Spawns"]
 position = Vector2(640, 240)
+
+[node name="ToolSpawns" type="Node2D" parent="."]
+
+[node name="CenterPlatform" type="Marker2D" parent="ToolSpawns"]
+position = Vector2(640, 245)
+
+[node name="LeftLedge" type="Marker2D" parent="ToolSpawns"]
+position = Vector2(80, 285)
+
+[node name="RightLedge" type="Marker2D" parent="ToolSpawns"]
+position = Vector2(1200, 285)
+
+[node name="FloorLeft" type="Marker2D" parent="ToolSpawns"]
+position = Vector2(448, 565)
+
+[node name="FloorRight" type="Marker2D" parent="ToolSpawns"]
+position = Vector2(832, 565)

@@ -4,13 +4,15 @@ extends Node2D
 ## aparición, aplica el calendario de peligros de la fase y responde si un personaje
 ## está en peligro. Todo peligro se anuncia antes con hazard_warned.
 
-## kind: &"floor_lava", &"pool_rise", &"sudden_death", &"platform_collapse"
+## kind: &"floor_lava", &"pool_rise", &"sudden_death", &"platform_collapse", &"anchor_ending"
 signal hazard_warned(kind: StringName, area: Rect2, seconds: float)
 
 ## Fuera de este rectángulo un personaje queda eliminado.
 @export var bounds := Rect2(-240, -480, 1760, 1300)
+## Zona visible del escenario: el Gancho no se puede enganchar fuera de ella.
+@export var play_area := Rect2(0, 0, 1280, 720)
 
-var phase: PhaseDefinition
+var hazards: HazardSchedule
 var time := 0.0
 var sudden_death := false
 var lava_pool: LavaPool
@@ -26,8 +28,8 @@ var _rise_warned := -1
 
 
 ## Prepara la arena para una partida. Misma semilla → mismos peligros.
-func setup(p_phase: PhaseDefinition, rng_seed: int) -> void:
-	phase = p_phase if p_phase != null else PhaseDefinition.new()
+func setup(p_hazards: HazardSchedule, rng_seed: int) -> void:
+	hazards = p_hazards if p_hazards != null else HazardSchedule.new()
 	_rng.seed = rng_seed
 	segments.clear()
 	platforms.clear()
@@ -39,9 +41,10 @@ func setup(p_phase: PhaseDefinition, rng_seed: int) -> void:
 	_wave = 0
 	_next_rise = 0
 	_rise_warned = -1
-	_next_wave = phase.first_wave_at if phase.floor_waves_enabled else INF
+	_next_wave = hazards.first_wave_at if hazards.floor_waves_enabled else INF
 	for p in platforms:
 		p.stage_changed.connect(_on_platform_stage.bind(p))
+		p.anchor_ending.connect(func(s: float) -> void: hazard_warned.emit(&"anchor_ending", p.rect(), s))
 
 
 func get_spawn_points() -> Array[Vector2]:
@@ -54,10 +57,21 @@ func get_spawn_points() -> Array[Vector2]:
 	return points
 
 
+## Puntos donde puede aparecer la herramienta compartida (nodo "ToolSpawns").
+func get_tool_spawn_points() -> Array[Vector2]:
+	var points: Array[Vector2] = []
+	var node := get_node_or_null("ToolSpawns")
+	if node:
+		for m in node.get_children():
+			if m is Node2D:
+				points.append((m as Node2D).global_position)
+	return points
+
+
 func step(delta: float, fighters: Array) -> void:
 	time += delta
 	for p in platforms:
-		p.step(delta, fighters, phase.wear_multiplier)
+		p.step(delta, fighters, hazards.wear_multiplier)
 	for s in segments:
 		s.step(delta)
 	if lava_pool:
@@ -122,13 +136,13 @@ func _collect(node: Node) -> void:
 
 
 func _start_floor_wave() -> void:
-	_next_wave = time + phase.wave_interval
+	_next_wave = time + hazards.wave_interval
 	# Si la lava inferior ya cubre el suelo, no hay más oleadas de suelo.
 	if lava_pool and segments.size() > 0 and lava_pool.level_y <= segments[0].rect().position.y:
 		_next_wave = INF
 		return
-	var extra := floori(float(_wave) / maxi(phase.segments_increase_every, 1))
-	var count := mini(phase.segments_first_wave + extra, phase.max_segments_per_wave)
+	var extra := floori(float(_wave) / maxi(hazards.segments_increase_every, 1))
+	var count := mini(hazards.segments_first_wave + extra, hazards.max_segments_per_wave)
 	_wave += 1
 	var available := segments.filter(func(s: LavaFloorSegment) -> bool: return s.is_available())
 	# Siempre queda al menos un segmento seguro.
@@ -137,26 +151,26 @@ func _start_floor_wave() -> void:
 		var idx := _rng.randi_range(0, available.size() - 1)
 		var seg: LavaFloorSegment = available[idx]
 		available.remove_at(idx)
-		seg.warn(phase.wave_warning, phase.wave_lava_time)
-		hazard_warned.emit(&"floor_lava", seg.rect(), phase.wave_warning)
+		seg.warn(hazards.wave_warning, hazards.wave_lava_time)
+		hazard_warned.emit(&"floor_lava", seg.rect(), hazards.wave_warning)
 
 
 func _step_pool() -> void:
-	if not sudden_death and time >= phase.sudden_death_at:
+	if not sudden_death and time >= hazards.sudden_death_at:
 		sudden_death = true
-		lava_pool.rise_forever(phase.sudden_death_speed)
+		lava_pool.rise_forever(hazards.sudden_death_speed)
 		hazard_warned.emit(&"sudden_death", Rect2(bounds.position.x, lava_pool.level_y, bounds.size.x, 10.0), 0.0)
 		return
-	if _next_rise >= phase.pool_rise_times.size() or _next_rise >= phase.pool_rise_levels.size():
+	if _next_rise >= hazards.pool_rise_times.size() or _next_rise >= hazards.pool_rise_levels.size():
 		return
-	var at := phase.pool_rise_times[_next_rise]
-	var target := phase.pool_rise_levels[_next_rise]
-	if _rise_warned < _next_rise and time >= at - phase.pool_rise_warning:
+	var at := hazards.pool_rise_times[_next_rise]
+	var target := hazards.pool_rise_levels[_next_rise]
+	if _rise_warned < _next_rise and time >= at - hazards.pool_rise_warning:
 		_rise_warned = _next_rise
 		var area := Rect2(bounds.position.x, target, bounds.size.x, lava_pool.level_y - target)
-		hazard_warned.emit(&"pool_rise", area, phase.pool_rise_warning)
+		hazard_warned.emit(&"pool_rise", area, hazards.pool_rise_warning)
 	if time >= at:
-		lava_pool.rise_to(target, phase.pool_rise_duration)
+		lava_pool.rise_to(target, hazards.pool_rise_duration)
 		_next_rise += 1
 
 

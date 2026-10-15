@@ -1,7 +1,7 @@
 class_name PlatformView
 extends Node2D
-## Plataforma inestable: grietas según la integridad, temblor como aviso antes de caer
-## y silueta translúcida mientras reaparece.
+## Plataforma inestable: grietas según la integridad, temblor como aviso antes de caer,
+## silueta translúcida mientras reaparece y Ancla (con tiempo restante y aviso al soltarse).
 
 var _p: UnstablePlatform
 var _time := 0.0
@@ -14,7 +14,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	position = Vector2.ZERO
-	if _p.stage == UnstablePlatform.Stage.COLLAPSING:
+	if _p.is_anchored():
+		position = Vector2.ZERO
+	elif _p.stage == UnstablePlatform.Stage.COLLAPSING:
 		position = Vector2(sin(_time * 60.0) * 3.0, cos(_time * 47.0) * 1.5)
 	elif _p.stage == UnstablePlatform.Stage.CRITICAL:
 		position = Vector2(sin(_time * 35.0) * 1.0, 0)
@@ -52,6 +54,21 @@ func _draw() -> void:
 	if st == UnstablePlatform.Stage.COLLAPSING:
 		var a := 0.35 + 0.35 * sin(_time * 18.0)
 		draw_rect(r.grow(3.0), Color(ViewPalette.WARN, a), false, 3.0)
+	# Ancla: borde de color, icono y anillo con el tiempo restante; parpadea al ir a soltarse.
+	if _p.is_anchored():
+		var col := ToolIcons.color_of(ToolDefinition.Kind.ANCHOR)
+		var ending := _p.anchor_left <= _p.anchor_warning
+		if ending:
+			col = Color(1.0, 0.55, 0.2).lerp(col, 0.5 + 0.5 * sin(_time * 16.0))
+		draw_rect(r.grow(3.0), col, false, 3.0)
+		var c := Vector2(0, r.position.y - 26.0)
+		draw_circle(c, 17.0, Color(0, 0, 0, 0.5))
+		draw_arc(c, 17.0, -PI / 2, -PI / 2 + TAU * clampf(_p.anchor_left / maxf(_p.anchor_duration, 0.01), 0.0, 1.0), 28, col, 3.0, true)
+		ToolIcons.draw(self, ToolDefinition.Kind.ANCHOR, c, 22.0, col, 2.0)
+		for cx in [r.position.x + 30.0, r.end.x - 30.0]:
+			draw_line(Vector2(cx, r.end.y), Vector2(cx, r.end.y + 26.0), col, 2.0)
+		if ending:
+			draw_string(ThemeDB.fallback_font, Vector2(r.position.x, r.position.y - 48.0), "¡SE SUELTA! %.1f" % _p.anchor_left, HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 15, col)
 	# Integridad (barra fina bajo la plataforma)
 	if _p.params.wear_enabled and st <= UnstablePlatform.Stage.CRITICAL:
 		draw_rect(Rect2(Vector2(r.position.x, r.end.y + 3), Vector2(r.size.x * _p.integrity, 3)), Color(1, 1, 1, 0.35))

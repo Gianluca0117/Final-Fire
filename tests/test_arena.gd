@@ -59,7 +59,7 @@ func _wear_and_respawn() -> void:
 
 
 func _floor_waves() -> void:
-	var phase := PhaseDefinition.new()
+	var phase := HazardSchedule.new()
 	phase.first_wave_at = 0.5
 	phase.wave_interval = 100.0
 	phase.wave_warning = 0.5
@@ -100,7 +100,7 @@ func _floor_waves() -> void:
 
 
 func _pool_rise() -> void:
-	var phase := PhaseDefinition.new()
+	var phase := HazardSchedule.new()
 	phase.floor_waves_enabled = false
 	phase.pool_rise_times = PackedFloat32Array([0.6])
 	phase.pool_rise_levels = PackedFloat32Array([500.0])
@@ -129,7 +129,7 @@ func _pool_rise() -> void:
 func _same_seed_same_hazards() -> void:
 	var runs := []
 	for r in 2:
-		var phase := PhaseDefinition.new()
+		var phase := HazardSchedule.new()
 		phase.first_wave_at = 0.1
 		phase.wave_interval = 0.3
 		phase.wave_warning = 0.1

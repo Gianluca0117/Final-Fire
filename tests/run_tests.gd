@@ -10,6 +10,7 @@ const SUITES := {
 	"Personaje": "res://tests/test_fighter.gd",
 	"Arena": "res://tests/test_arena.gd",
 	"Partida": "res://tests/test_match.gd",
+	"Herramientas": "res://tests/test_tools.gd",
 	"Completas": "res://tests/test_full_match.gd",
 }
 

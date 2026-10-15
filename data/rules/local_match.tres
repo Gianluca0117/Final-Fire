@@ -1,8 +1,10 @@
 [gd_resource type="Resource" script_class="MatchRules" format=3]
 
 [ext_resource type="Script" path="res://game/match/match_rules.gd" id="1_rules"]
-[ext_resource type="Resource" path="res://data/phases/lava_cave_f1.tres" id="2_phase"]
+[ext_resource type="Resource" path="res://data/hazards/lava_cave.tres" id="2_hazards"]
 [ext_resource type="Resource" path="res://data/characters/default_stats.tres" id="3_stats"]
+[ext_resource type="Script" path="res://game/match/phase_definition.gd" id="4_phase_script"]
+[ext_resource type="Resource" path="res://data/phases/standard_phase.tres" id="5_phase"]
 
 [resource]
 script = ExtResource("1_rules")
@@ -10,6 +12,11 @@ min_participants = 2
 max_participants = 6
 countdown = 3.0
 push_credit_window = 3.0
-phase = ExtResource("2_phase")
+hazards = ExtResource("2_hazards")
+phases = Array[ExtResource("4_phase_script")]([ExtResource("5_phase")])
 character_stats = ExtResource("3_stats")
 colors = PackedColorArray(0.9098, 0.2627, 0.2275, 1, 0.2275, 0.4824, 0.9098, 1, 0.2627, 0.698, 0.2902, 1, 0.949, 0.7608, 0.1882, 1, 0.6392, 0.3686, 0.8784, 1, 0.1804, 0.7686, 0.7686, 1)
+tool_pickup_radius = 40.0
+on_carrier_eliminated = 0
+tool_respawn_min_time = 5.0
+tool_respawn_warning = 1.5

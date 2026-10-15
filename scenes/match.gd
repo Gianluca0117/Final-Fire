@@ -37,6 +37,8 @@ func configure(p_humans: int, p_dummies: int, p_seed := 0) -> void:
 		list.append(Participant.new(0, "M%d" % (humans + i + 1), Participant.Kind.DUMMY, DummyController.new(rng_seed + 7919 * (i + 1))))
 	match_ctl.setup(arena, list, fighters_root, rng_seed)
 	ArenaViews.attach(arena, match_ctl.get_fighters(), self)
+	if not PhysicsLayers.is_headless():
+		add_child(ToolsView.new(match_ctl))
 
 	hud = MatchHud.new()
 	add_child(hud)

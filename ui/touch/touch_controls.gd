@@ -1,13 +1,14 @@
 class_name TouchControls
 extends Control
 ## Disposición de controles táctiles según la referencia visual: joystick abajo a la
-## izquierda; salto (el más grande), empujar y protección abajo a la derecha.
-## La ranura de herramienta llegará con las herramientas (F2).
+## izquierda; salto (el más grande), empujar, protección y la ranura de herramienta
+## (pulsar/arrastrar/soltar para apuntar y usar) abajo a la derecha.
 
 var joystick: TouchJoystick
 var jump: TouchActionButton
 var push: TouchActionButton
 var shield: TouchActionButton
+var tool: TouchToolButton
 
 
 func _init(prefix := "p1_") -> void:
@@ -26,6 +27,10 @@ func _init(prefix := "p1_") -> void:
 	_place(push, Control.PRESET_BOTTOM_RIGHT, Vector2(124, 124), Vector2(-190, -10))
 	shield = _button(prefix + "shield", TouchActionButton.Icon.SHIELD, "")
 	_place(shield, Control.PRESET_BOTTOM_RIGHT, Vector2(112, 112), Vector2(-20, -190))
+	tool = TouchToolButton.new()
+	tool.action = StringName(prefix + "tool")
+	tool.aim_prefix = prefix + "aim_"
+	_place(tool, Control.PRESET_BOTTOM_RIGHT, Vector2(118, 118), Vector2(-170, -180))
 
 
 func _button(action: String, icon: TouchActionButton.Icon, text: String) -> TouchActionButton:

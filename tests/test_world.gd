@@ -2,17 +2,17 @@ class_name TestWorld
 ## Construye mundos de prueba en código: arena, reglas y partida con controladores guionizados.
 
 ## Reglas sin cuenta atrás y sin peligros programados (salvo que se pasen otros).
-static func quiet_rules(phase: PhaseDefinition = null) -> MatchRules:
+static func quiet_rules(hazards: HazardSchedule = null) -> MatchRules:
 	var r := MatchRules.new()
 	r.countdown = 0.0
 	r.character_stats = load("res://data/characters/default_stats.tres")
-	if phase == null:
-		phase = PhaseDefinition.new()
-		phase.floor_waves_enabled = false
-		phase.pool_rise_times = PackedFloat32Array()
-		phase.pool_rise_levels = PackedFloat32Array()
-		phase.sudden_death_at = 1e9
-	r.phase = phase
+	if hazards == null:
+		hazards = HazardSchedule.new()
+		hazards.floor_waves_enabled = false
+		hazards.pool_rise_times = PackedFloat32Array()
+		hazards.pool_rise_levels = PackedFloat32Array()
+		hazards.sudden_death_at = 1e9
+	r.hazards = hazards
 	return r
 
 
@@ -83,3 +83,38 @@ static func ctl_of(m: MatchController, i: int) -> ScriptedController:
 
 static func holder_of(m: MatchController) -> Node:
 	return m.get_parent()
+
+
+## Reglas con una sola fase (que se repite) y las herramientas indicadas; sin lava programada.
+static func tool_rules(pool: Array[ToolDefinition], duration := 3.0, announce_delay := 0.2, warning := 0.3, expire_warning := 0.5) -> MatchRules:
+	var r := quiet_rules()
+	var ph := PhaseDefinition.new()
+	ph.duration = duration
+	ph.tool_pool = pool
+	ph.announce_delay = announce_delay
+	ph.announce_warning = warning
+	ph.expire_warning = expire_warning
+	r.phases = [ph]
+	return r
+
+
+static func anchor_def(duration := 1.5, warning := 0.5) -> ToolDefinition:
+	var d: ToolDefinition = load("res://data/tools/anchor.tres").duplicate()
+	d.anchor_duration = duration
+	d.anchor_warning = warning
+	return d
+
+
+static func hook_def() -> ToolDefinition:
+	return load("res://data/tools/hook.tres").duplicate()
+
+
+static func add_tool_spawn(a: Arena, at: Vector2) -> void:
+	var node := a.get_node_or_null("ToolSpawns")
+	if node == null:
+		node = Node2D.new()
+		node.name = "ToolSpawns"
+		a.add_child(node)
+	var m := Marker2D.new()
+	m.position = at
+	node.add_child(m)

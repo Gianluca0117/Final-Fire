@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PhaseDefinition" format=3]
+
+[ext_resource type="Script" path="res://game/match/phase_definition.gd" id="1_phase"]
+[ext_resource type="Script" path="res://game/tools/tool_definition.gd" id="2_tool_script"]
+[ext_resource type="Resource" path="res://data/tools/anchor.tres" id="3_anchor"]
+[ext_resource type="Resource" path="res://data/tools/hook.tres" id="4_hook"]
+
+[resource]
+script = ExtResource("1_phase")
+display_name = "Fase"
+duration = 20.0
+tool_pool = Array[ExtResource("2_tool_script")]([ExtResource("3_anchor"), ExtResource("4_hook")])
+announce_delay = 1.0
+announce_warning = 2.5
+expire_warning = 3.0

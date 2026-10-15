@@ -3,6 +3,8 @@ extends FighterController
 ## Maniquí de pruebas: se mueve, salta, empuja y se protege con reglas muy simples
 ## para poder jugar una partida local mientras no existen los bots (fase F4).
 ## No planifica rutas ni evalúa riesgos; solo huye de la lava que tiene bajo los pies.
+## Herramientas: a veces va a por la herramienta; usa el Ancla si su plataforma peligra y
+## el Gancho para escapar de la lava (si el destino no es válido, la conserva).
 ## Usa exactamente las mismas acciones que un humano.
 
 var aggression := 0.55
@@ -13,6 +15,7 @@ var _retarget := 0.0
 var _jump_cooldown := 0.0
 var _hold_jump := 0.0
 var _reaction := 0.0
+var _tool_think := 0.0
 
 
 func _init(rng_seed := 0, p_aggression := 0.55) -> void:
@@ -35,7 +38,10 @@ func sample(p_tick: int, fighter: Fighter, match_ctl: MatchController) -> InputF
 	var rival := _nearest_rival(fighter, match_ctl)
 	if _retarget <= 0.0:
 		_retarget = _rng.randf_range(0.8, 2.2)
-		if rival and _rng.randf() < aggression:
+		var tools := match_ctl.tools
+		if tools.state == ToolSystem.State.AVAILABLE and _rng.randf() < 0.6:
+			_target_x = tools.position.x
+		elif rival and _rng.randf() < aggression:
 			_target_x = rival.global_position.x
 		else:
 			_target_x = _rng.randf_range(220.0, 1060.0)
@@ -60,7 +66,14 @@ func sample(p_tick: int, fighter: Fighter, match_ctl: MatchController) -> InputF
 		f.jump_pressed = true
 		_hold_jump = _rng.randf_range(0.1, 0.35)
 		_jump_cooldown = 0.7
+	# Saltar hacia una herramienta que está más arriba.
+	var tl := match_ctl.tools
+	if tl.state == ToolSystem.State.AVAILABLE and absf(tl.position.x - me.x) < 120.0 and tl.position.y < me.y - 60.0 and fighter.is_on_floor() and _jump_cooldown <= 0.0 and _rng.randf() < 0.08:
+		f.jump_pressed = true
+		_hold_jump = 0.35
+		_jump_cooldown = 0.7
 	f.jump_held = f.jump_pressed or _hold_jump > 0.0
+	_use_tool(f, fighter, match_ctl, escape, dt)
 
 	# Empujar o protegerse cuando un rival está cerca (con un pequeño tiempo de reacción).
 	if rival and _reaction <= 0.0:
@@ -75,6 +88,27 @@ func sample(p_tick: int, fighter: Fighter, match_ctl: MatchController) -> InputF
 				# Girarse hacia el rival solo si no está huyendo de la lava.
 				f.move_x = signf(d.x)
 	return f
+
+
+func _use_tool(f: InputFrame, fighter: Fighter, match_ctl: MatchController, escape: int, dt: float) -> void:
+	_tool_think -= dt
+	var me: Participant = null
+	for p in match_ctl.participants:
+		if p.fighter == fighter:
+			me = p
+	var def := match_ctl.tools.held_by(me) if me else null
+	if def == null or _tool_think > 0.0:
+		return
+	_tool_think = _rng.randf_range(0.25, 0.6)
+	match def.kind:
+		ToolDefinition.Kind.ANCHOR:
+			var plat := fighter.floor_body as UnstablePlatform
+			if plat and plat.can_anchor() and (plat.stage >= UnstablePlatform.Stage.CRITICAL or absf(plat.rotation_degrees) > 8.0):
+				f.tool_pressed = true
+		ToolDefinition.Kind.HOOK:
+			if escape != 0 or _rng.randf() < 0.05:
+				f.tool_pressed = true
+				f.aim = Vector2(_rng.randf_range(-0.6, 0.6), -1.0).normalized()
 
 
 func _nearest_rival(fighter: Fighter, match_ctl: MatchController) -> Fighter:

@@ -30,7 +30,7 @@ func _ready() -> void:
 
 	var title := _label("FINAL FIRE", 72, Color("ff8c26"))
 	box.add_child(title)
-	box.add_child(_label("Prototipo F1 · partida local", 22, Color(1, 1, 1, 0.7)))
+	box.add_child(_label("Prototipo F2 · partida local con herramientas", 22, Color(1, 1, 1, 0.7)))
 
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -47,9 +47,9 @@ func _ready() -> void:
 	box.add_child(solo)
 	if not OS.has_feature("mobile"):
 		box.add_child(_button("2 jugadores (mismo teclado)", func() -> void: start_requested.emit(2, maxi(_dummies - 1, 0)), Vector2(420, 64)))
-		box.add_child(_label("J1: A/D mover · W o Espacio saltar · F empujar · G protección\nJ2: ←/→ mover · ↑ saltar · tecla . empujar · tecla - protección\nEsc/P pausa · Tab muestra los controles táctiles", 16, Color(1, 1, 1, 0.6)))
+		box.add_child(_label("J1: A/D mover · W/Espacio saltar · F empujar · G protección · E herramienta\nJ2: ←/→ mover · ↑ saltar · tecla . empujar · tecla - protección · tecla , herramienta\nHerramienta: mantén para apuntar (ves el destino) y suelta para usarla\nEsc/P pausa · Tab muestra los controles táctiles", 16, Color(1, 1, 1, 0.6)))
 	else:
-		box.add_child(_label("Joystick: moverse · Flecha: saltar · Mano: empujar · Escudo: protección", 18, Color(1, 1, 1, 0.6)))
+		box.add_child(_label("Joystick: moverse · Flecha: saltar · Mano: empujar · Escudo: protección\nHerramienta: mantén y arrastra para apuntar, suelta para usarla", 18, Color(1, 1, 1, 0.6)))
 	_set_dummies(_dummies)
 	solo.grab_focus.call_deferred()
 

@@ -20,3 +20,7 @@ extends Resource
 ## Segundos hasta reaparecer tras caer (0 = no reaparece).
 @export var respawn_delay := 7.0
 @export var respawn_warning := 1.5
+
+@export_group("Ancla")
+## Velocidad (grados/s) con la que se nivela al quedar anclada.
+@export var anchor_level_speed_deg := 60.0
