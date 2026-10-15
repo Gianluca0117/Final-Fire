@@ -16,6 +16,7 @@ const check = process.argv.includes("--check");
 const PHASE = { pending: "Pendiente", in_progress: "En curso", blocked: "Bloqueada", completed: "Completada" };
 const TASK = { pending: "Pendiente", in_progress: "En curso", blocked: "Bloqueada", done: "Terminada sin verificar", verified: "Verificada" };
 const TEST = { passed: "Aprobada", failed: "Fallida", not_run: "Sin ejecutar", requires_user: "Requiere tu intervención" };
+const KIND = { automated: "Automatizada (PC)", device: "En dispositivo", manual: "Revisión manual" };
 const SEV = { critical: "Crítico", high: "Alto", medium: "Medio", low: "Bajo", info: "Info" };
 
 const s = JSON.parse(fs.readFileSync(STATUS, "utf8")); // si el JSON es inválido, falla aquí con el error
@@ -43,7 +44,12 @@ for (const t of s.tasks) {
   if (!phaseIds.has(t.phase)) errors.push(`Tarea ${t.id}: fase "${t.phase}" inexistente.`);
   if (t.status === "verified" && (!t.verification || !t.verifiedAt)) errors.push(`Tarea ${t.id} verificada sin "verification" o "verifiedAt".`);
 }
-for (const t of s.tests) if (!(t.result in TEST)) errors.push(`Prueba ${t.id}: resultado "${t.result}" no válido.`);
+for (const t of s.tests) {
+  if (!(t.result in TEST)) errors.push(`Prueba ${t.id}: resultado "${t.result}" no válido.`);
+  if (!((t.kind ?? "automated") in KIND)) errors.push(`Prueba ${t.id}: tipo "${t.kind}" no válido.`);
+}
+for (const b of s.builds) if (b.deviceTested && !(b.tests ?? []).some((id) => s.tests.find((t) => t.id === id && t.kind === "device" && t.result === "passed")))
+  errors.push(`Compilación ${b.id} marcada como probada en dispositivo sin una prueba de dispositivo aprobada.`);
 for (const b of s.builds) for (const id of b.tests ?? []) if (ids.get(id) !== "tests") errors.push(`Compilación ${b.id}: la prueba ${id} no existe.`);
 for (const [cat, list] of Object.entries(s.inventory ?? {}))
   for (const a of list) if (a.preview && !fs.existsSync(path.join(ROOT, a.preview))) warnings.push(`Inventario ${a.id}: falta la vista previa ${a.preview}.`);
@@ -74,7 +80,12 @@ md.push(`Datos del ${s.project.updatedAt}.`, "");
 md.push("## Resumen", "");
 md.push(`- **Avance del desarrollo: ${pct}%** = ${tc.verified} tareas verificadas ÷ ${total} tareas registradas. Las terminadas sin verificar (${tc.done}) no cuentan.`);
 md.push(`- Tareas: ${tc.verified} verificadas · ${tc.done} sin verificar · ${tc.in_progress} en curso · ${tc.blocked} bloqueadas · ${tc.pending} pendientes.`);
-md.push(`- **Pruebas** (estabilidad, aparte del avance): ${xc.passed} aprobadas · ${xc.failed} fallidas · ${xc.requires_user} requieren tu intervención · ${xc.not_run} sin ejecutar.`);
+for (const k of Object.keys(KIND)) {
+  const list = s.tests.filter((t) => (t.kind ?? "automated") === k);
+  if (!list.length) continue;
+  const c = (r) => list.filter((t) => t.result === r).length;
+  md.push(`- **Pruebas · ${KIND[k]}**: ${c("passed")}/${list.length} aprobadas · ${c("failed")} fallidas · ${c("requires_user")} requieren tu intervención · ${c("not_run")} sin ejecutar.`);
+}
 md.push(`- Problemas abiertos: ${open.length} · Decisiones pendientes: ${pend.length}.`, "");
 md.push("## Fases", "", "| Fase | Estado | Tareas verificadas | Nota |", "|---|---|---|---|");
 for (const p of s.phases) {
@@ -89,8 +100,8 @@ if (build) {
   md.push(`- \`${build.path}\` (${build.sizeBytes} bytes) · SHA-256 \`${build.sha256}\``);
   md.push(`- Probada en dispositivo: **${build.deviceTested ? "sí" : "no"}**. ${esc(build.notes)}`);
 } else md.push("Sin compilaciones.");
-md.push("", "## Pruebas", "", "| Id | Prueba | Resultado | Última ejecución |", "|---|---|---|---|");
-for (const t of s.tests) md.push(`| ${t.id} | ${esc(t.name)} | ${TEST[t.result]} | ${t.lastRun ?? "—"} |`);
+md.push("", "## Pruebas", "", "| Id | Tipo | Prueba | Resultado | Última ejecución |", "|---|---|---|---|---|");
+for (const t of s.tests) md.push(`| ${t.id} | ${KIND[t.kind ?? "automated"]} | ${esc(t.name)} | ${TEST[t.result]} | ${t.lastRun ?? "—"} |`);
 md.push("", "## Problemas abiertos", "");
 for (const i of open) md.push(`- **${i.id}** (${SEV[i.severity] ?? i.severity}) ${esc(i.title)}`);
 md.push("", "## Decisiones pendientes", "");

@@ -8,8 +8,8 @@ un proyecto de Xcode, y Xcode solo funciona en macOS. No se ha contratado ningú
 - Renderizador **Compatibility**, compatible con iOS.
 - Orientación horizontal (`display/window/handheld/orientation = sensor_landscape`).
 - Interfaz adaptable (`canvas_items` + `expand`) y margen de **área segura** (muesca / isla
-  dinámica / barra de inicio) en `scripts/hud.gd`, activo en `OS.has_feature("mobile")`.
-- Controles táctiles multitáctiles propios (`scripts/touch_button.gd`), sin código específico de Android.
+  dinámica / barra de inicio) en `ui/safe_area_margin.gd`, activo en `OS.has_feature("mobile")`.
+- Controles táctiles multitáctiles propios (`ui/touch/`), sin código específico de Android.
 - Nada en el proyecto depende de APIs exclusivas de Android.
 
 ## Lo que necesitas
@@ -29,7 +29,8 @@ un proyecto de Xcode, y Xcode solo funciona en macOS. No se ha contratado ningú
    Anota tu **Team ID**.
 4. En Godot: **Proyecto → Exportar → Añadir… → iOS**.
    - `Application → App Store Team ID`: tu Team ID.
-   - `Application → Bundle Identifier`: el mismo identificador que se decida para Android (D2).
+   - `Application → Bundle Identifier`: **`com.elizsoft.finalfire`** (el mismo que en Android). Debe registrarse
+     como App ID en tu cuenta de Apple Developer; Apple comprueba ahí que esté libre.
    - Iconos: Godot genera los tamaños a partir del icono del proyecto; revisa el aviso si falta alguno.
 5. **Exportar proyecto** → se genera un `.xcodeproj`.
 6. Abre el `.xcodeproj` en Xcode, conecta el iPhone, elige el dispositivo y pulsa **Run**.

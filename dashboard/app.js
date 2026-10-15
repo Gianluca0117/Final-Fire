@@ -14,7 +14,8 @@ const LABELS = {
   issue: { open: "Abierto", resolved: "Resuelto" },
   decision: { pending: "Pendiente", answered: "Respondida" },
   asset: { placeholder: "Provisional", draft: "Borrador", final: "Final" },
-  inventory: { characters: "Personajes", animations: "Animaciones", scenarios: "Escenarios", sounds: "Sonidos", references: "Referencias" },
+  kind: { automated: "Automatizadas en el PC", device: "En dispositivo físico", manual: "Revisiones manuales" },
+  inventory: { characters: "Personajes", animations: "Animaciones", scenarios: "Escenarios", ui: "Interfaz", sounds: "Sonidos", references: "Referencias" },
 };
 const PHASE_STATES = Object.keys(LABELS.phase);
 const TASK_STATES = Object.keys(LABELS.task);
@@ -108,11 +109,8 @@ function renderKpis(s) {
       h("div", { class: "detail" },
         h("span", {}, `${tc.done} sin verificar`), h("span", {}, `${tc.in_progress} en curso`),
         h("span", {}, `${tc.blocked} bloqueadas`), h("span", {}, `${tc.pending} pendientes`))),
-    h("div", { class: "kpi" },
-      h("div", { class: "label" }, "Pruebas aprobadas"),
-      h("div", { class: "value" }, `${xc.passed}`, " ", h("small", {}, `de ${tests.length}`)),
-      h("div", { class: "detail" },
-        h("span", {}, `${xc.failed} fallidas`), h("span", {}, `${xc.requires_user} requieren tu intervención`), h("span", {}, `${xc.not_run} sin ejecutar`))),
+    testKpi("Pruebas automatizadas (PC)", tests.filter((t) => (t.kind ?? "automated") === "automated")),
+    testKpi("Pruebas en dispositivo", tests.filter((t) => t.kind === "device")),
     h("div", { class: "kpi" },
       h("div", { class: "label" }, "Problemas abiertos"),
       h("div", { class: "value" }, `${issues.length}`),
@@ -127,6 +125,15 @@ function renderKpis(s) {
   const ul = $("warnings");
   ul.hidden = warnings.length === 0;
   ul.replaceChildren(...warnings.map((w) => h("li", {}, w)));
+}
+
+function testKpi(label, list) {
+  const c = count(list, "result", TEST_STATES);
+  return h("div", { class: "kpi" },
+    h("div", { class: "label" }, label),
+    h("div", { class: "value" }, `${c.passed}`, " ", h("small", {}, `aprobadas de ${list.length}`)),
+    h("div", { class: "detail" },
+      h("span", {}, `${c.failed} fallidas`), h("span", {}, `${c.requires_user} requieren tu intervención`), h("span", {}, `${c.not_run} sin ejecutar`)));
 }
 
 function renderPhases(s) {
@@ -188,18 +195,21 @@ function renderBuild(s, disk) {
       h("h3", {}, "Pruebas de esta compilación"),
       h("ul", { class: "tests" }, ...(b.tests ?? []).map((id) => {
         const t = tests.get(id);
-        return h("li", { class: "test" }, h("div", { class: "row" }, h("span", { class: "name" }, t?.name ?? id), t ? chip("test", t.result) : chip("test", "not_run")));
+        const kind = t ? (LABELS.kind[t.kind ?? "automated"] ?? "") : "";
+        return h("li", { class: "test" }, h("div", { class: "row" }, h("span", { class: "name" }, t?.name ?? id), t ? chip("test", t.result) : chip("test", "not_run")), kind && h("div", { class: "meta" }, kind));
       })),
       h("p", { class: `callout ${b.deviceTested ? "ok" : "warn"}` },
         b.deviceTested ? "Probada en un dispositivo físico." : "No probada en un dispositivo físico.", b.notes ? ` ${b.notes}` : ""))));
 }
 
 function renderTests(s) {
-  const items = (s.tests ?? []).map((t) => h("li", { class: "test" },
+  const groups = Object.keys(LABELS.kind).map((k) => [k, (s.tests ?? []).filter((t) => (t.kind ?? "automated") === k)]).filter(([, l]) => l.length);
+  const testItem = (t) => h("li", { class: "test" },
     h("div", { class: "row" }, h("span", { class: "name" }, t.name), chip("test", t.result)),
     h("div", { class: "meta" }, `${t.id} · ${t.platform ?? ""} · ${t.lastRun ? "última ejecución " + fmtDate(t.lastRun) : "nunca ejecutada"}`),
     t.details && h("div", { class: "details" }, t.details),
-    t.command && h("div", { class: "details" }, h("code", {}, t.command))));
+    t.command && h("div", { class: "details" }, h("code", {}, t.command)));
+  const items = groups.flatMap(([k, list]) => [h("li", { class: "group" }, h("h3", {}, LABELS.kind[k])), ...list.map(testItem)]);
   $("tests").replaceChildren(...(items.length ? items : [empty("No hay pruebas registradas.")]));
 }
 

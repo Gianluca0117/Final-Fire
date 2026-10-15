@@ -212,3 +212,6 @@ dialog button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 1p
 .task .row, .test .row, .issue .row, .asset .row, .decision .row { flex-wrap: wrap; }
 .top-inner { flex-wrap: wrap; }
 .sync { white-space: normal; }
+
+.tests .group { list-style: none; margin-top: 6px; }
+.tests .group h3 { margin: 6px 0 0; }

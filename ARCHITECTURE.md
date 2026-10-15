@@ -1,10 +1,9 @@
 # Arquitectura de Final Fire
 
-Versión 1 · 2026-10-14 · Estado: **propuesta documentada, pendiente de implementar por etapas**.
+Versión 2 · 2026-10-14 · Estado: **F1 implementada** (simulación, controladores, vistas e interfaz sin conexión). F2 en adelante, pendiente.
 
-Este documento define cómo se organiza el juego antes de ampliar el prototipo. La escena actual
-(`scenes/test_level.tscn` + `scripts/`) solo sirve para verificar el entorno y **no sigue todavía
-esta arquitectura**: se migrará en la fase F1 (ver [Plan por etapas](#11-plan-por-etapas)).
+Este documento define cómo se organiza el juego. Desde F1 el código sigue esta estructura; lo que
+aún no existe (herramientas, red, audio, bots) está marcado como pendiente (ver [Plan por etapas](#11-plan-por-etapas)).
 
 ---
 
@@ -74,23 +73,24 @@ Reglas de dependencia (se revisan en cada entrega):
 ```
 FinalFire/
 ├─ project.godot · export_presets.cfg · project-status.json · ARCHITECTURE.md · README.md
-├─ core/                     utilidades sin estado: InputFrame, constantes, helpers
+├─ core/                     InputFrame (contrato de acciones), capas de colisión
 ├─ game/                     SIMULACIÓN — sin sprites, sonidos ni UI
 │  ├─ character/             fighter.gd (CharacterBody2D), estados, empujón, protección
 │  ├─ arena/                 plataformas (inclinación, desgaste), lava, avisos de peligro
 │  ├─ match/                 match_controller.gd (estados), participantes, fases, eliminaciones
 │  └─ tools/                 tool_pickup.gd, tool_state.gd, efectos de cada herramienta
-├─ controllers/              human_controller.gd · bot_controller.gd · remote_controller.gd
+├─ controllers/              human_controller.gd · dummy_controller.gd (F1) · bot_controller.gd (F4) · remote_controller.gd (F3)
 ├─ net/                      net_session.gd (autoload) · lobby · protocolo · snapshots · interpolación
-├─ presentation/             fighter_view.tscn, arena_view, vfx/, audio_director.gd
-├─ ui/                       menus/ · hud/ · touch/ (joystick y botones) · results/
+├─ presentation/             fighter_view, platform/segment/lava/block views, arena_views.gd (las acopla) · audio_director.gd (F5)
+├─ ui/                       menu/ · hud/ (incluye resultados y pausa) · touch/ (joystick y botones) · safe_area_margin.gd
 ├─ data/                     instancias .tres
 │  ├─ characters/            stats_default.tres …
 │  ├─ tools/                 shield.tres · plank.tres · hook.tres …
 │  ├─ phases/  arenas/  rules/
 ├─ assets/                   SOLO archivos fuente de presentación
 │  ├─ sprites/  animations/  audio/sfx/  audio/music/  fonts/  vfx/
-├─ scenes/                   escenas de entrada: main.tscn, match.tscn, test_level.tscn
+├─ scenes/                   escenas de entrada: main.tscn (menú ↔ partida), match.tscn (raíz de composición)
+├─ game/arena/arenas/        escenas de arena (lava_cave.tscn): solo cuerpos y colisiones, sin gráficos
 ├─ tests/                    pruebas headless (SceneTree), sin UI
 ├─ tools/                    scripts de desarrollo (PowerShell, Node, capturas) — no se exportan
 ├─ dashboard/                panel de progreso (.gdignore) — no se exporta
@@ -132,13 +132,14 @@ estado y las señales (animación, partículas, sonido). En el servidor dedicado
 Todos producen el mismo `InputFrame` y se lo entregan al `Fighter` cada tick:
 
 ```
-InputFrame { tick, move_x ∈ [-1, 1], jump_pressed, jump_held, push_pressed, tool_pressed }
+InputFrame { tick, move_x ∈ [-1, 1], jump_pressed, jump_held, push_pressed, shield_pressed }   (+ tool_pressed en F2)
 ```
 
 | Controlador | Dónde corre | Fuente |
 |---|---|---|
 | `HumanController` | dispositivo del jugador | acciones del `InputMap` (teclado, mando y controles táctiles generan las **mismas** acciones) |
-| `BotController` | **en la autoridad** | decide con la información de la partida; no puede hacer nada que un humano no pueda |
+| `DummyController` (F1) | en la autoridad | **maniquí de pruebas** con reglas mínimas (perseguir, empujar, protegerse, no pisar lava anunciada). Existe solo para poder jugar y probar la partida local antes de F4 |
+| `BotController` (F4) | **en la autoridad** | decide con la información de la partida; no puede hacer nada que un humano no pueda |
 | `RemoteController` | en la autoridad | último `InputFrame` recibido por red de ese jugador (validado) |
 
 La autoridad valida cada `InputFrame` (rangos, frecuencia, que el jugador siga vivo); nunca acepta
@@ -347,7 +348,7 @@ El estado de la partida **no** es global: vive en la escena de la partida y se d
 
 ## 9. Pruebas
 
-- `tests/` con scripts `SceneTree` ejecutables en `--headless` (como `tools/smoke_test.gd`):
+- `tests/` con scripts `SceneTree` ejecutables en `--headless --fixed-fps 60` (`tests/run_tests.gd`, 83 comprobaciones en F1):
   reglas del personaje, arena, partida y herramientas **sin UI**.
 - Partidas solo de bots en headless como prueba de estabilidad (F4).
 - Pruebas de red: dos o más instancias en el PC (anfitrión + clientes) y luego varios teléfonos en la misma Wi-Fi.
@@ -368,7 +369,7 @@ juego no la conoce.
 | Fase | Contenido | Red |
 |---|---|---|
 | F0 | Entorno y escena de comprobación | — |
-| **F1** | Migrar a esta estructura: `InputFrame`, controladores, `Fighter` con empujón y protección, Resources, arena (inclinación, desgaste, lava, avisos), vista separada, controles táctiles definitivos | sin conexión |
+| **F1** ✔ | Estructura por módulos, `InputFrame`, controladores (humano + maniquí), `Fighter` con empujón y protección, Resources, arena (inclinación, desgaste, lava, avisos), vistas separadas, controles táctiles, **partida local mínima con eliminación y ganador** | sin conexión |
 | **F2** | Partida: participantes, fases, una herramienta por fase, eliminaciones, ganador, HUD y resultados. Prueba con 2 jugadores locales en el PC | sin conexión |
 | **F3** | Multijugador LAN: ENet, anfitrión-servidor, lobby, IP manual + descubrimiento, snapshots + interpolación, desconexiones v1 | LAN |
 | F4 | Bots en la autoridad | LAN |
@@ -396,3 +397,9 @@ No se construye infraestructura de internet antes de validar las mecánicas (F1�
 | A8 | Internet con servidor dedicado + servicio de salas | NAT/CGNAT impide alojar desde móviles | Propuesta; hosting pendiente (D6) |
 | A9 | Datos en Resources `.tres` | Ajuste sin tocar código | Aceptada |
 | A10 | Panel de progreso fuera del juego | Herramienta de desarrollo | Aplicada |
+| A11 | La partida avanza todo en un único `_physics_process` con orden fijo (arena → personajes → peligros → ganador); los personajes no tienen `_physics_process` propio | Determinismo, autoridad y futura reconciliación | Aplicada (F1) |
+| A12 | Los peligros se comprueban por geometría y estado (`floor_body`, nivel de lava, límites), no con señales de `Area2D` | Resultado inmediato y reproducible en el mismo tick, también en headless | Aplicada (F1) |
+| A13 | `floor_body`: si el apoyo es por *snap* (plataforma girando) se consulta con un movimiento de prueba hacia abajo | Sin esto la plataforma «perdía» a su ocupante (error detectado por las pruebas) | Aplicada (F1) |
+| A14 | Las vistas se acoplan desde la escena de partida (`ArenaViews.attach`); las escenas de `game/` no referencian `presentation/` | Dependencias en un solo sentido; servidor sin gráficos | Aplicada (F1) |
+| A15 | Peligros del suelo con RNG con semilla de la partida | Misma semilla → mismos peligros (necesario para red y pruebas) | Aplicada (F1) |
+| A16 | Identificador `com.elizsoft.finalfire` para Android e iOS | Decisión del propietario (D2); válido en ambas plataformas y libre en Google Play | Aplicada (F1) |

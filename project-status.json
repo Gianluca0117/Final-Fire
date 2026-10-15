@@ -8,7 +8,9 @@
       "Android",
       "iOS (pendiente, requiere Mac)"
     ],
-    "updatedAt": "2026-10-14T18:40:00-05:00"
+    "updatedAt": "2026-10-14T19:19:18-05:00",
+    "packageId": "com.elizsoft.finalfire",
+    "version": "0.2.0 (2)"
   },
   "phases": [
     {
@@ -16,14 +18,14 @@
       "name": "Entorno y proyecto mínimo",
       "status": "in_progress",
       "description": "Herramientas instaladas, proyecto Godot, escena de comprobación, APK de depuración.",
-      "note": "Falta la prueba en un teléfono Android físico."
+      "note": "Falta la prueba en un teléfono Android físico (TEST-05)."
     },
     {
       "id": "F1",
       "name": "Arquitectura y mecánicas base (sin conexión)",
       "status": "in_progress",
       "description": "Estructura de módulos, InputFrame y controladores, personaje con empujón y protección, arena con inclinación, desgaste y lava, vista separada y controles táctiles definitivos.",
-      "note": "Arquitectura documentada; implementación sin empezar."
+      "note": "Implementada y verificada con pruebas automáticas en el PC. Falta la prueba en un teléfono (TEST-05) y tu valoración del control y del ritmo."
     },
     {
       "id": "F2",
@@ -121,8 +123,9 @@
       "id": "T-006",
       "phase": "F0",
       "title": "Repositorio Git local con .gitignore",
-      "status": "done",
-      "verification": "Repositorio inicializado (rama main). Sin commit inicial: no hay identidad de Git configurada (ver D1)."
+      "status": "verified",
+      "verification": "Identidad configurada solo en este repositorio (git config --local): Gianluca Ugalde. La configuración global sigue vacía. Commits locales creados; nada subido.",
+      "verifiedAt": "2026-10-14"
     },
     {
       "id": "T-007",
@@ -151,63 +154,79 @@
       "id": "T-010",
       "phase": "F1",
       "title": "Documentar la arquitectura (ARCHITECTURE.md)",
-      "status": "done",
-      "verification": "Documento escrito y contrastado con la documentación oficial de Godot 4.7 (red de alto nivel y servidores dedicados). Pendiente de tu revisión."
+      "status": "verified",
+      "verification": "Aceptada por el propietario al pedir implementar F1 siguiendo ARCHITECTURE.md (14-10-2026). Actualizada a la versión 2 con las decisiones A11–A16 tomadas al implementar.",
+      "verifiedAt": "2026-10-14"
     },
     {
       "id": "T-011",
       "phase": "F1",
       "title": "Migrar el prototipo a la estructura de módulos (core, game, controllers, presentation, ui, data)",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Código reorganizado en core/, game/, controllers/, presentation/, ui/, data/, scenes/ y tests/. Escena de prueba antigua eliminada. Importación headless sin errores; las 83 pruebas usan los módulos nuevos."
     },
     {
       "id": "T-012",
       "phase": "F1",
       "title": "InputFrame y HumanController (mismo contrato para bots y red)",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Entradas» (automatizada): acciones p1/p2, un jugador con ambos juegos de teclas, J2 aislado de J1, empujón detectado una sola vez por pulsación."
     },
     {
       "id": "T-013",
       "phase": "F1",
       "title": "Fighter: movimiento, salto, empujón/agarre y protección con CharacterStats",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Personaje» (17 comprobaciones automatizadas): caída y apoyo, velocidad máxima y frenado, salto ≈213 px y salto corto, empujón (lanzamiento, aturdimiento, autoría, enfriamiento, alcance), protección (reduce el empujón al 15 %, rebote, duración y enfriamiento)."
     },
     {
       "id": "T-014",
       "phase": "F1",
       "title": "Arena: plataformas con inclinación y desgaste",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Arena» (automatizada): inclinación hacia el lado cargado hasta 12° y resbalón, nivelado sin carga, desgaste → agrietada → crítica → aviso → caída → reaparición. Se detectó y corrigió un fallo de apoyo en plataformas giratorias (ISS-07)."
     },
     {
       "id": "T-015",
       "phase": "F1",
       "title": "Lava y avisos de peligro",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Arena» (automatizada): oleadas de suelo con aviso de 2 s antes de la lava, siempre queda un tramo seguro, elimina a quien está encima, se enfría; la lava inferior avisa antes de subir; misma semilla → mismos peligros."
     },
     {
       "id": "T-016",
       "phase": "F1",
       "title": "Vista separada de la simulación (animaciones y efectos por señales)",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Las vistas se acoplan desde scenes/match.gd (ArenaViews.attach) y no existen en headless: las pruebas corren sin vistas y las capturas reales (docs/previews/) las muestran."
     },
     {
       "id": "T-017",
       "phase": "F1",
-      "title": "Controles táctiles definitivos: joystick + salto, empujar, herramienta y ranura",
-      "status": "pending",
-      "note": "Según la referencia visual."
+      "title": "Controles táctiles: joystick + salto, empujar y protección",
+      "status": "done",
+      "verification": "Suite «Entradas» (automatizada, toques simulados): joystick analógico, salto, empujar, protección y multitáctil. Sin verificar con dedos reales en un teléfono (TEST-05). La ranura de herramienta pasa a F2 (T-020)."
     },
     {
       "id": "T-018",
       "phase": "F1",
       "title": "Pruebas headless de las reglas (tests/)",
-      "status": "pending"
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "tests/run_tests.gd: 83 comprobaciones en 5 suites, ≈1,5 s con --fixed-fps 60. También se ejecutan antes de cada exportación (tools/export-android.ps1)."
     },
     {
       "id": "T-019",
       "phase": "F2",
       "title": "MatchController: participantes, fases, eliminaciones y ganador",
-      "status": "pending"
+      "status": "in_progress",
+      "note": "Participantes, eliminaciones, ganador y empate hechos en F1 (T-034). Falta encadenar varias fases por partida."
     },
     {
       "id": "T-020",
@@ -219,8 +238,9 @@
       "id": "T-021",
       "phase": "F2",
       "title": "HUD: VIVOS n/6, cronómetro, pausa y resultados",
-      "status": "pending",
-      "note": "Según la referencia visual."
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Implementado en F1: VIVOS n/N con colores, cronómetro, muerte súbita, pausa, avisos grandes, resultados con clasificación, revancha y menú. La suite «Completas» comprueba que aparecen los resultados; capturas en docs/previews/."
     },
     {
       "id": "T-022",
@@ -296,53 +316,82 @@
       "phase": "F9",
       "title": "Diseño de la campaña reutilizando las reglas",
       "status": "pending"
+    },
+    {
+      "id": "T-034",
+      "phase": "F1",
+      "title": "Partida local mínima: menú, cuenta atrás, eliminación, ganador, empate y revancha",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suites «Partida» y «Completas» (automatizadas): la cuenta atrás bloquea el movimiento, empujar a la lava elimina y acredita a quien empujó, gana el último en pie, empate si caen a la vez; tres partidas completas con maniquíes (semillas 11, 22 y 33) terminan y muestran resultados."
+    },
+    {
+      "id": "T-035",
+      "phase": "F1",
+      "title": "Maniquí de pruebas (rival provisional hasta los bots de F4)",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Usa las mismas acciones que un humano; persigue, empuja, se protege, huye de la lava bajo sus pies y no pisa suelo anunciado. Las partidas completas automatizadas terminan con él. No es la IA de F4."
+    },
+    {
+      "id": "T-036",
+      "phase": "F7",
+      "title": "Identificador definitivo com.elizsoft.finalfire",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Válido para Android (3 segmentos, minúsculas, sin palabras reservadas) e iOS. Google Play responde 404 para ese id (no lo usa ninguna app publicada). Configurado en el preset; aapt confirma package com.elizsoft.finalfire 0.2.0 (2)."
     }
   ],
   "tests": [
     {
       "id": "TEST-01",
-      "name": "Prueba automática de la escena (smoke test)",
+      "name": "Entradas y controles táctiles (suite automatizada)",
       "platform": "Windows (headless)",
-      "command": "Godot_v4.7.2-stable_win64_console.exe --headless --path . -s res://tools/smoke_test.gd",
-      "lastRun": "2026-10-14T18:38:00-05:00",
+      "command": "Godot --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd -- Entradas",
+      "lastRun": "2026-10-14T19:16:18-05:00",
       "result": "passed",
-      "details": "12/12: acciones de teclado, gravedad y suelo, movimiento, salto, aterrizaje, botón táctil, multitáctil y reaparición. Última ejecución dentro de tools/export-android.ps1."
+      "details": "22/22: acciones p1/p2, controlador humano, joystick analógico, botones y multitáctil con toques simulados.",
+      "kind": "automated"
     },
     {
       "id": "TEST-02",
-      "name": "Renderizado Compatibility en este PC",
+      "name": "Renderizado Compatibility en este PC (capturas revisadas)",
       "platform": "Windows",
-      "command": "Godot_v4.7.2-stable_win64_console.exe --path . -s res://tools/capture_preview.gd",
-      "lastRun": "2026-10-14T18:24:18-05:00",
+      "command": "Godot --path . -s res://tools/capture_preview.gd -- match …",
+      "lastRun": "2026-10-14T19:12:19-05:00",
       "result": "passed",
-      "details": "gl_compatibility mediante ANGLE (Direct3D 11) en la Intel HD 530. Capturas a 16:9 y ~1,9:1 con los controles en las esquinas."
+      "details": "Capturas reales del menú, la partida y los resultados a 1280×720 y ~1,9:1 (gl_compatibility mediante ANGLE en la Intel HD 530). Revisadas a ojo: HUD, avisos, lava, quemadura y controles táctiles se ven correctamente.",
+      "kind": "manual"
     },
     {
       "id": "TEST-03",
       "name": "Exportación del APK de depuración",
       "platform": "Android",
-      "command": "tools/export-android.ps1 (Godot --headless --export-debug Android)",
-      "lastRun": "2026-10-14T18:38:31-05:00",
+      "command": "tools/export-android.ps1",
+      "lastRun": "2026-10-14T19:12:59-05:00",
       "result": "passed",
-      "details": "Código de salida 0. APK de 57.632.194 bytes. Repetida con el script tools/export-android.ps1."
+      "details": "Código de salida 0. APK 0.2.0 de 57.720.626 bytes. El script ejecuta antes las 83 pruebas.",
+      "kind": "automated"
     },
     {
       "id": "TEST-04",
       "name": "Firma y manifiesto del APK",
       "platform": "Android",
       "command": "apksigner verify --print-certs; aapt dump badging",
-      "lastRun": "2026-10-14T18:38:31-05:00",
+      "lastRun": "2026-10-14T19:13:00-05:00",
       "result": "passed",
-      "details": "Firmado con la clave de depuración de Godot (v2 y v3). Paquete com.finalfire.game 0.1.0 (1), minSdk 24, targetSdk 36, screenOrientation=userLandscape (manifiesto revisado con aapt en B-0001; firma reverificada en B-0002)."
+      "details": "apksigner verify correcto. aapt: package com.elizsoft.finalfire, versionCode 2, versionName 0.2.0, minSdk 24, targetSdk 36, arm64-v8a y armeabi-v7a, screenOrientation=userLandscape. Sin tests/, tools/ ni el panel dentro del APK.",
+      "kind": "automated"
     },
     {
       "id": "TEST-05",
       "name": "Instalación y ejecución en un teléfono Android",
       "platform": "Android (dispositivo físico)",
-      "command": "tools/install-apk.ps1",
-      "lastRun": "2026-10-14T18:38:55-05:00",
+      "command": "tools/install-apk.ps1 (pasos y lista de comprobación en docs/PRUEBA_DISPOSITIVO.md)",
+      "lastRun": "2026-10-14T19:13:11-05:00",
       "result": "requires_user",
-      "details": "No había ningún teléfono conectado y autorizado. Conecta uno con la depuración USB activada."
+      "details": "No había ningún teléfono conectado y autorizado (adb devices vacío). Nunca se ha probado en un dispositivo.",
+      "kind": "device"
     },
     {
       "id": "TEST-06",
@@ -351,16 +400,78 @@
       "command": "Godot (exportación iOS) + Xcode en un Mac",
       "lastRun": null,
       "result": "not_run",
-      "details": "No es posible en Windows. Ver docs/IOS.md."
+      "details": "No es posible en Windows. Ver docs/IOS.md.",
+      "kind": "device"
     },
     {
       "id": "TEST-07",
       "name": "Panel de progreso: visualización y actualización en vivo",
       "platform": "Navegador",
       "command": "node dashboard/server.mjs",
-      "lastRun": "2026-10-14T18:38:00-05:00",
+      "lastRun": "2026-10-14T19:19:18-05:00",
       "result": "passed",
-      "details": "Navegador integrado a 327, 375 y 1280 px: todas las secciones visibles y sin desbordes. Actualización en vivo comprobada (cambio del JSON reflejado sin recargar). Rutas no permitidas → 404; solo escucha en 127.0.0.1."
+      "details": "Datos de F1 revisados en el navegador integrado a 375 px y en escritorio: avance 20/36, pruebas automatizadas, en dispositivo y manuales por separado, compilación B-0003 «no probada en dispositivo», inventario con vistas previas, sin desbordes. El cambio de esta prueba apareció sin recargar la página.",
+      "kind": "manual"
+    },
+    {
+      "id": "TEST-08",
+      "kind": "automated",
+      "name": "Personaje (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Personaje",
+      "lastRun": "2026-10-14T19:16:18-05:00",
+      "result": "passed",
+      "details": "17/17: movimiento, salto y salto corto, empujón (fuerza, aturdimiento, autoría, enfriamiento, alcance) y protección (reducción, rebote, duración, enfriamiento)."
+    },
+    {
+      "id": "TEST-09",
+      "kind": "automated",
+      "name": "Arena (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Arena",
+      "lastRun": "2026-10-14T19:16:18-05:00",
+      "result": "passed",
+      "details": "22/22: inclinación y resbalón, desgaste/caída/reaparición con aviso, oleadas de suelo con aviso previo, subida de la lava con aviso, misma semilla → mismos peligros."
+    },
+    {
+      "id": "TEST-10",
+      "kind": "automated",
+      "name": "Partida (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Partida",
+      "lastRun": "2026-10-14T19:16:18-05:00",
+      "result": "passed",
+      "details": "11/11: cuenta atrás, eliminación por empujón a la lava con autoría, ganador y puestos, empate."
+    },
+    {
+      "id": "TEST-11",
+      "kind": "automated",
+      "name": "Partidas completas con maniquíes (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Completas",
+      "lastRun": "2026-10-14T19:16:18-05:00",
+      "result": "passed",
+      "details": "11/11: menú → partida; tres partidas de 4 maniquíes (semillas 11, 22, 33) terminan entre 9 y 24 s simulados con ganador y resultados visibles."
+    },
+    {
+      "id": "TEST-12",
+      "kind": "automated",
+      "name": "Validez del identificador com.elizsoft.finalfire",
+      "platform": "Android / iOS",
+      "command": "comprobación de sintaxis + consulta a play.google.com",
+      "lastRun": "2026-10-14",
+      "result": "passed",
+      "details": "Sintaxis válida en ambas plataformas; Google Play devuelve 404 para ese id (control: com.whatsapp → 200). Apple solo puede comprobarlo al registrar el App ID."
+    },
+    {
+      "id": "TEST-13",
+      "kind": "manual",
+      "name": "Revisión de exposición antes de publicar",
+      "platform": "Git",
+      "command": "git ls-files / git grep (docs/REVISION_PUBLICACION.md)",
+      "lastRun": "2026-10-14T19:14:04-05:00",
+      "result": "passed",
+      "details": "Sin claves, contraseñas, tokens, compilaciones ni rutas absolutas. Visible: tu nombre y correo en los commits, usuario de GitHub, identificador y datos del PC."
     }
   ],
   "builds": [
@@ -388,50 +499,83 @@
       "platform": "Android",
       "type": "debug",
       "version": "0.1.0 (1)",
-      "path": "builds/android/FinalFire-debug.apk",
+      "path": null,
       "sizeBytes": 57632194,
       "sha256": "85DC2D4829C4A5BA76CD895F20A4C24510A79D244CB38441AF411A3640BE3B92",
       "createdAt": "2026-10-14T18:38:31-05:00",
       "engine": "Godot 4.7.2-stable",
       "signing": "Clave de depuración de Godot (%APPDATA%Godotkeystoresdebug.keystore)",
       "tests": [
-        "TEST-01",
         "TEST-03",
         "TEST-04",
         "TEST-05"
       ],
       "deviceTested": false,
-      "notes": "Generada con tools/export-android.ps1 tras excluir dashboard/ y project-status.json de la exportación. Pendiente: instalarla en un teléfono (TEST-05)."
+      "notes": "Sustituida por B-0003 (el archivo se sobrescribió). Paquete com.finalfire.game; nunca instalada en un teléfono."
+    },
+    {
+      "id": "B-0003",
+      "platform": "Android",
+      "type": "debug",
+      "version": "0.2.0 (2)",
+      "packageId": "com.elizsoft.finalfire",
+      "path": "builds/android/FinalFire-debug.apk",
+      "sizeBytes": 57720626,
+      "sha256": "FFB00622736E0437657CC31F1F6B6418163A769BEA54FC86A73A8E6B07C0D443",
+      "createdAt": "2026-10-14T19:12:59-05:00",
+      "engine": "Godot 4.7.2-stable",
+      "signing": "Clave de depuración de Godot (%APPDATA%\\Godot\\keystores\\debug.keystore)",
+      "tests": [
+        "TEST-01",
+        "TEST-08",
+        "TEST-09",
+        "TEST-10",
+        "TEST-11",
+        "TEST-03",
+        "TEST-04",
+        "TEST-05"
+      ],
+      "deviceTested": false,
+      "notes": "Primera partida local (F1). Nuevo identificador: no actualiza a las versiones com.finalfire.game, que nunca se instalaron. Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md)."
     }
   ],
   "inventory": {
     "characters": [
       {
         "id": "CHR-01",
-        "name": "Personaje provisional",
+        "name": "Personaje provisional encapuchado (6 colores)",
         "status": "placeholder",
-        "path": "scenes/player.tscn",
-        "preview": "docs/previews/player_placeholder.png",
-        "notes": "Rectángulo naranja de 48×64 px con CharacterBody2D. Solo sirve para comprobar el entorno."
+        "path": "presentation/fighter_view.gd",
+        "preview": "docs/previews/personajes.png",
+        "notes": "Dibujado con formas: capucha, cara, capa y etiqueta J1/M2…; colores de la referencia (rojo, azul, verde, amarillo, morado, cian). Muestra brazo al empujar, burbuja de protección y destello al recibir un golpe."
       }
     ],
-    "animations": [],
+    "animations": [
+      {
+        "id": "ANI-01",
+        "name": "Animaciones procedurales provisionales",
+        "status": "placeholder",
+        "path": "presentation/fighter_view.gd",
+        "preview": "docs/previews/partida_empujon_lava.png",
+        "notes": "Por código, sin sprites: estirar/aplastar al saltar y aterrizar, balanceo al correr, temblor al quedar aturdido, quemadura con brasas al ser eliminado. Plataformas que tiemblan antes de caer y lava con oleaje."
+      }
+    ],
     "scenarios": [
       {
         "id": "SCN-01",
-        "name": "Nivel de comprobación",
+        "name": "Cueva de lava (F1): aviso de lava en el suelo",
         "status": "placeholder",
-        "path": "scenes/test_level.tscn",
-        "preview": "docs/previews/test_level.png",
-        "notes": "Suelo, una plataforma, cámara fija y controles táctiles. Captura real a 1280×720."
+        "path": "game/arena/arenas/lava_cave.tscn",
+        "preview": "docs/previews/partida_aviso.png",
+        "notes": "5 tramos de suelo que se vuelven lava, 3 plataformas colgantes inestables, 2 repisas fijas y lava inferior que sube. Captura real a 1280×720 con controles táctiles."
       },
       {
-        "id": "SCN-01-W",
-        "name": "Nivel de comprobación (pantalla ancha)",
+        "id": "SCN-02",
+        "name": "Cueva de lava (F1): empujón a la lava",
         "status": "placeholder",
-        "path": "scenes/test_level.tscn",
-        "preview": "docs/previews/test_level_20x9.png",
-        "notes": "La misma escena a 1370×720 (~1,9:1): el mundo queda centrado y los botones se mantienen en las esquinas."
+        "path": "game/arena/arenas/lava_cave.tscn",
+        "preview": "docs/previews/partida_empujon_lava.png",
+        "notes": "Tramo de suelo convertido en lava y eliminación acreditada a quien empujó."
       }
     ],
     "sounds": [],
@@ -444,16 +588,34 @@
         "preview": "docs/referencias/estilo-objetivo.png",
         "notes": "Imagen de referencia compartida el 14-10-2026: 6 personajes encapuchados de colores, cueva de lava, plataformas con cadenas, puente de madera y plataformas que se desmoronan. Interfaz: VIVOS 6/6, cronómetro, pausa, joystick y botones de salto, agarrar/empujar, escudo y ranura de objeto. Es una referencia, no un recurso del juego. Descripción en docs/DIRECCION_VISUAL.md."
       }
+    ],
+    "ui": [
+      {
+        "id": "UI-01",
+        "name": "Menú de inicio",
+        "status": "placeholder",
+        "path": "ui/menu/main_menu.gd",
+        "preview": "docs/previews/menu.png",
+        "notes": "Número de maniquíes (1–5), Jugar y 2 jugadores con el mismo teclado (solo en PC)."
+      },
+      {
+        "id": "UI-02",
+        "name": "Resultados en pantalla ancha",
+        "status": "placeholder",
+        "path": "ui/hud/match_hud.gd",
+        "preview": "docs/previews/resultados_ancha.png",
+        "notes": "Clasificación, revancha y menú. Captura a ~1,9:1: el escenario queda centrado y el HUD anclado a las esquinas."
+      }
     ]
   },
   "issues": [
     {
       "id": "ISS-01",
-      "title": "APK no probado en un dispositivo",
+      "title": "Nunca se ha probado en un teléfono",
       "severity": "high",
       "status": "open",
       "createdAt": "2026-10-14",
-      "details": "Hasta probarlo en un teléfono no se confirma el rendimiento, el área táctil ni la orientación en Android."
+      "details": "Ni la versión 0.1.0 ni la 0.2.0 se han instalado en un dispositivo. Hasta entonces no se confirman el tacto real, el rendimiento, la orientación ni el área segura."
     },
     {
       "id": "ISS-02",
@@ -467,9 +629,9 @@
       "id": "ISS-03",
       "title": "Sin commit inicial en Git",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "createdAt": "2026-10-14",
-      "details": "No hay user.name ni user.email configurados. No se inventó una identidad (ver D1)."
+      "details": "Resuelto: identidad configurada solo en este repositorio y commits locales creados (14-10-2026)."
     },
     {
       "id": "ISS-04",
@@ -486,6 +648,38 @@
       "status": "open",
       "createdAt": "2026-10-14",
       "details": "Godot usa la versión más alta instalada. La documentación recomienda 35.0.1, que también está instalada. La firma resultante se verificó correctamente."
+    },
+    {
+      "id": "ISS-06",
+      "title": "Tu correo quedaría público en los commits",
+      "severity": "medium",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "El repositorio de GitHub es público y cada commit lleva gugalde3775@utm.edu.ec. Ver docs/REVISION_PUBLICACION.md y la decisión D7."
+    },
+    {
+      "id": "ISS-07",
+      "title": "Las plataformas giratorias «perdían» a quien estaba encima",
+      "severity": "medium",
+      "status": "resolved",
+      "createdAt": "2026-10-14",
+      "details": "Detectado por las pruebas: al inclinarse, el apoyo por snap no aparecía como colisión y floor_body quedaba vacío (inclinación a tirones y la lava del suelo podía no detectarse). Corregido con una consulta de movimiento hacia abajo (ARCHITECTURE.md A13)."
+    },
+    {
+      "id": "ISS-08",
+      "title": "Ajuste de jugabilidad sin probar con personas",
+      "severity": "low",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Con 4 maniquíes las partidas duran 9–24 s; quieto en una plataforma inclinada se resbala fuera en ~1 s; los empujones lanzan ~190 px. Valores en data/*.tres, a ajustar tras jugar en el teléfono."
+    },
+    {
+      "id": "ISS-09",
+      "title": "Sin sonido",
+      "severity": "info",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "No hay audio todavía (fase F5). La arquitectura ya prevé que el audio reaccione a las señales de la partida."
     }
   ],
   "decisions": [
@@ -498,7 +692,8 @@
         "Global para todos tus proyectos"
       ],
       "recommendation": "Solo para este repositorio, para no alterar tus otros proyectos.",
-      "status": "pending"
+      "status": "answered",
+      "answer": "Gianluca Ugalde <gugalde3775@utm.edu.ec>, configurado solo en este repositorio (14-10-2026)."
     },
     {
       "id": "D2",
@@ -509,7 +704,8 @@
         "Usar un dominio propio (com.tudominio.finalfire)"
       ],
       "recommendation": "Usar un dominio propio o un nombre único que controles.",
-      "status": "pending"
+      "status": "answered",
+      "answer": "com.elizsoft.finalfire (14-10-2026). Validado y configurado desde la versión 0.2.0."
     },
     {
       "id": "D3",
@@ -526,7 +722,7 @@
     },
     {
       "id": "D4",
-      "question": "¿Tendrás acceso a un Mac para la versión de iOS?",
+      "question": "¿Tendrás acceso a un Mac para la versión de iOS? (no bloquea F1)",
       "context": "La compilación de iOS requiere Xcode en macOS. Publicar en el App Store requiere una cuenta de Apple Developer (de pago). No se ha contratado nada.",
       "options": [
         "Mac propio",
@@ -539,13 +735,14 @@
     {
       "id": "D5",
       "question": "¿Subo el proyecto al repositorio de GitHub Gianluca0117/Final-Fire?",
-      "context": "El remoto origin ya está configurado, pero no se ha hecho commit ni push. El repositorio es PÚBLICO: todo lo que se suba será visible. El .gitignore excluye compilaciones, claves y credenciales. Antes hace falta la identidad de Git (D1).",
+      "context": "Remoto configurado y commits locales listos, sin subir. El repositorio es PÚBLICO. Revisión hecha (docs/REVISION_PUBLICACION.md): no hay claves ni contraseñas; sí quedarían visibles tu nombre y correo en los commits y los datos del PC en la documentación.",
       "options": [
-        "Sí, subir la rama main ahora",
-        "Hacer primero el repositorio privado",
+        "Subir ahora tal cual",
+        "Subir tras cambiar el correo de los commits (D7)",
+        "Hacer privado el repositorio y luego subir",
         "Todavía no"
       ],
-      "recommendation": "Decidir primero si debe ser público; después, commit inicial y push.",
+      "recommendation": "Resolver D7 y decidir público/privado; después, push.",
       "status": "pending"
     },
     {
@@ -558,6 +755,17 @@
         "Servicio de terceros con relé"
       ],
       "recommendation": "Decidir al terminar la fase F3, cuando la LAN esté validada.",
+      "status": "pending"
+    },
+    {
+      "id": "D7",
+      "question": "¿Qué correo debe aparecer en los commits públicos?",
+      "context": "Ahora es gugalde3775@utm.edu.ec. GitHub ofrece una dirección privada (…@users.noreply.github.com). Como no se ha subido nada, aún se puede cambiar el autor de los commits locales sin afectar a nadie.",
+      "options": [
+        "Mantener el correo institucional",
+        "Usar la dirección privada de GitHub"
+      ],
+      "recommendation": "Usar la dirección privada si no quieres que tu correo institucional quede expuesto en un repositorio público.",
       "status": "pending"
     }
   ],
@@ -625,6 +833,52 @@
         {
           "name": "Revisión de la arquitectura por tu parte",
           "result": "requires_user"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "title": "F1: primera partida local",
+      "description": "Prototipo reorganizado por módulos según ARCHITECTURE.md y primera partida local jugable con gráficos provisionales contra maniquíes de prueba. Nuevo identificador com.elizsoft.finalfire y APK 0.2.0. Identidad de Git local y commits; nada subido.",
+      "changes": [
+        "Módulos: core (InputFrame), game (personaje, arena, partida), controllers (humano, maniquí), presentation (vistas), ui (menú, HUD, táctil), data (.tres), scenes, tests",
+        "Personaje: movimiento, salto variable, empujón con autoría y enfriamiento, protección con rebote",
+        "Arena: plataformas que se inclinan y se derrumban con aviso, suelo que avisa y se vuelve lava, lava inferior que sube, muerte súbita",
+        "Partida: cuenta atrás, eliminaciones, ganador o empate, resultados, revancha, pausa (también con el botón atrás de Android)",
+        "Controles táctiles como la referencia: joystick, salto, empujar y protección (multitáctil)",
+        "Corregido: pérdida del apoyo en plataformas giratorias (ISS-07)",
+        "Identificador com.elizsoft.finalfire, versión 0.2.0 (2); APK B-0003",
+        "Git: identidad local (Gianluca Ugalde) y commits; revisión de exposición antes de publicar",
+        "Panel: pruebas separadas en automatizadas, en dispositivo y revisiones manuales"
+      ],
+      "checks": [
+        {
+          "name": "Automatizadas: 83/83 (entradas, personaje, arena, partida, partidas completas)",
+          "result": "passed"
+        },
+        {
+          "name": "Automatizada: exportación, firma y manifiesto del APK 0.2.0",
+          "result": "passed"
+        },
+        {
+          "name": "Automatizada: validez del identificador",
+          "result": "passed"
+        },
+        {
+          "name": "Manual: capturas reales con el renderizador Compatibility",
+          "result": "passed"
+        },
+        {
+          "name": "Manual: revisión de exposición antes de publicar",
+          "result": "passed"
+        },
+        {
+          "name": "En dispositivo: instalar y jugar en un teléfono",
+          "result": "requires_user"
+        },
+        {
+          "name": "Manual: panel con los datos de F1",
+          "result": "passed"
         }
       ]
     }

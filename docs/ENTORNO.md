@@ -83,7 +83,7 @@ Android Studio; no se tocó).
 & $GODOT_CLI --version                                                     # 4.7.2.stable.official.ed1daf0bf
 & "$FF_JDK\bin\java.exe" -version                                          # 17.0.20.1
 & $ADB devices -l                                                          # teléfonos conectados
-& $GODOT_CLI --headless --path . -s res://tools/smoke_test.gd               # prueba de la escena
+& $GODOT_CLI --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd  # pruebas automáticas
 & $GODOT_CLI --headless --path . --export-debug Android $FF_APK             # exportar APK
 $env:JAVA_HOME = $FF_JDK; & "$FF_SDK\build-tools\35.0.1\apksigner.bat" verify --print-certs $FF_APK
 & "$FF_SDK\build-tools\35.0.1\aapt.exe" dump badging $FF_APK                # paquete, SDK, ABIs
