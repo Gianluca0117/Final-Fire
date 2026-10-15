@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/match.gd" id="1_match"]
+[ext_resource type="PackedScene" path="res://game/arena/arenas/lava_cave.tscn" id="2_arena"]
+[ext_resource type="Script" path="res://game/match/match_controller.gd" id="3_ctl"]
+[ext_resource type="Resource" path="res://data/rules/local_match.tres" id="4_rules"]
+
+[node name="Match" type="Node2D"]
+script = ExtResource("1_match")
+
+[node name="Arena" parent="." instance=ExtResource("2_arena")]
+
+[node name="Fighters" type="Node2D" parent="."]
+
+[node name="MatchController" type="Node" parent="."]
+script = ExtResource("3_ctl")
+rules = ExtResource("4_rules")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)

@@ -1,0 +1,89 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/arena/arena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://game/arena/lava_floor_segment.gd" id="2_segment"]
+[ext_resource type="Script" path="res://game/arena/unstable_platform.gd" id="3_platform"]
+[ext_resource type="Script" path="res://game/arena/solid_block.gd" id="4_block"]
+[ext_resource type="Script" path="res://game/arena/lava_pool.gd" id="5_pool"]
+[ext_resource type="Resource" path="res://data/platforms/side_platform.tres" id="6_side"]
+[ext_resource type="Resource" path="res://data/platforms/center_platform.tres" id="7_center"]
+
+[node name="LavaCave" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="Floor" type="Node2D" parent="."]
+
+[node name="Segment1" type="StaticBody2D" parent="Floor"]
+position = Vector2(256, 620)
+script = ExtResource("2_segment")
+
+[node name="Segment2" type="StaticBody2D" parent="Floor"]
+position = Vector2(448, 620)
+script = ExtResource("2_segment")
+
+[node name="Segment3" type="StaticBody2D" parent="Floor"]
+position = Vector2(640, 620)
+script = ExtResource("2_segment")
+
+[node name="Segment4" type="StaticBody2D" parent="Floor"]
+position = Vector2(832, 620)
+script = ExtResource("2_segment")
+
+[node name="Segment5" type="StaticBody2D" parent="Floor"]
+position = Vector2(1024, 620)
+script = ExtResource("2_segment")
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Left" type="AnimatableBody2D" parent="Platforms"]
+position = Vector2(330, 430)
+script = ExtResource("3_platform")
+params = ExtResource("6_side")
+
+[node name="Right" type="AnimatableBody2D" parent="Platforms"]
+position = Vector2(950, 430)
+script = ExtResource("3_platform")
+params = ExtResource("6_side")
+
+[node name="Center" type="AnimatableBody2D" parent="Platforms"]
+position = Vector2(640, 290)
+script = ExtResource("3_platform")
+params = ExtResource("7_center")
+size = Vector2(240, 24)
+
+[node name="Ledges" type="Node2D" parent="."]
+
+[node name="LeftLedge" type="StaticBody2D" parent="Ledges"]
+position = Vector2(80, 330)
+script = ExtResource("4_block")
+size = Vector2(140, 30)
+
+[node name="RightLedge" type="StaticBody2D" parent="Ledges"]
+position = Vector2(1200, 330)
+script = ExtResource("4_block")
+size = Vector2(140, 30)
+
+[node name="LavaPool" type="Node2D" parent="."]
+position = Vector2(640, 0)
+script = ExtResource("5_pool")
+start_level_y = 690.0
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="S1" type="Marker2D" parent="Spawns"]
+position = Vector2(256, 560)
+
+[node name="S2" type="Marker2D" parent="Spawns"]
+position = Vector2(1024, 560)
+
+[node name="S3" type="Marker2D" parent="Spawns"]
+position = Vector2(448, 560)
+
+[node name="S4" type="Marker2D" parent="Spawns"]
+position = Vector2(832, 560)
+
+[node name="S5" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 560)
+
+[node name="S6" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 240)

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PhaseDefinition" format=3]
+
+[ext_resource type="Script" path="res://game/arena/phase_definition.gd" id="1_phase"]
+
+[resource]
+script = ExtResource("1_phase")
+display_name = "Cueva de lava"
+floor_waves_enabled = true
+first_wave_at = 6.0
+wave_interval = 8.0
+wave_warning = 2.0
+wave_lava_time = 4.5
+segments_first_wave = 1
+segments_increase_every = 2
+max_segments_per_wave = 3
+pool_rise_times = PackedFloat32Array(45, 75)
+pool_rise_levels = PackedFloat32Array(590, 405)
+pool_rise_warning = 3.0
+pool_rise_duration = 2.5
+sudden_death_at = 100.0
+sudden_death_speed = 30.0
+wear_multiplier = 1.0

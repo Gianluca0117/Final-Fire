@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="CharacterStats" format=3]
+
+[ext_resource type="Script" path="res://game/character/character_stats.gd" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+max_speed = 360.0
+ground_accel = 2600.0
+ground_friction = 3000.0
+air_accel = 1700.0
+air_friction = 500.0
+slope_slide_speed = 520.0
+gravity = 1900.0
+max_fall_speed = 1100.0
+jump_velocity = -900.0
+jump_cut = 0.45
+coyote_time = 0.1
+jump_buffer = 0.12
+push_range = 46.0
+push_force = 640.0
+push_lift = -300.0
+push_cooldown = 0.55
+push_active_time = 0.16
+stun_time = 0.38
+stun_control = 0.15
+knockback_friction = 700.0
+knockback_resistance = 1.0
+shield_recoil = 0.45
+shield_time = 0.7
+shield_cooldown = 2.4
+shield_knockback_factor = 0.15
+shield_move_factor = 0.55
+body_size = Vector2(40, 56)

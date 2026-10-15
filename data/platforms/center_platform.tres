@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlatformParams" format=3]
+
+[ext_resource type="Script" path="res://game/arena/platform_params.gd" id="1_params"]
+
+[resource]
+script = ExtResource("1_params")
+tilt_enabled = true
+max_tilt_deg = 20.0
+tilt_per_load_deg = 16.0
+tilt_speed_deg = 45.0
+return_speed_deg = 20.0
+wear_enabled = true
+wear_per_occupant = 0.05
+collapse_warning = 1.2
+fall_gravity = 900.0
+respawn_delay = 9.0
+respawn_warning = 1.5
