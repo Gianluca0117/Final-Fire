@@ -66,12 +66,13 @@ func _update(offset: Vector2) -> void:
 func _draw() -> void:
 	var c := size * 0.5
 	var r := _radius()
-	draw_circle(c, r, Color(1, 1, 1, 0.12))
-	draw_arc(c, r, 0, TAU, 48, Color(1, 1, 1, 0.7), 3.0, true)
-	var fg := Color(1, 1, 1, 0.75)
+	var active := _finger != -1
+	TouchStyle.ring(self, c, r, active)
+	var fg := Color(1, 1, 1, 0.85 if active else 0.6)
 	for d in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 		var tip: Vector2 = c + d * r * 0.8
 		var side: Vector2 = Vector2(d.y, d.x) * r * 0.12
-		draw_colored_polygon(PackedVector2Array([tip, tip - d * r * 0.16 + side, tip - d * r * 0.16 - side]), fg)
-	draw_circle(c + _knob * r * 0.55, r * 0.33, Color(1, 1, 1, 0.45 if _finger != -1 else 0.3))
-	draw_arc(c + _knob * r * 0.55, r * 0.33, 0, TAU, 32, Color(1, 1, 1, 0.8), 2.0, true)
+		DrawKit.poly(self, PackedVector2Array([tip, tip - d * r * 0.16 + side, tip - d * r * 0.16 - side]), fg, DrawKit.OUTLINE, 2.0)
+	var k := c + _knob * r * 0.55
+	DrawKit.circle(self, k, r * 0.33, Color(1, 0.75, 0.4, 0.55) if active else Color(1, 1, 1, 0.22), DrawKit.OUTLINE, 3.0)
+	draw_arc(k, r * 0.33, 0, TAU, 32, Color(1, 1, 1, 0.85 if active else 0.55), 2.0, true)

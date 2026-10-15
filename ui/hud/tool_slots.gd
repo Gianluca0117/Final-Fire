@@ -3,6 +3,7 @@ extends Control
 ## Ranura de herramienta de cada jugador humano local (bajo «VIVOS»): icono y nombre de la
 ## herramienta que lleva, tecla para usarla y cuenta atrás cuando va a caducar.
 ## Útil sobre todo en el modo de 2 jugadores con el mismo teclado.
+## Solo se redibuja al cambiar la herramienta o mientras parpadea por caducar.
 
 const KEYS := ["E", ","]
 
@@ -17,27 +18,27 @@ func _init() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	queue_redraw()
+	if match_ctl and match_ctl.tools.expiring:
+		queue_redraw()
 
 
 func _draw() -> void:
 	if match_ctl == null:
 		return
-	var font := get_theme_default_font()
 	var y := 0.0
 	var i := 0
 	for p in match_ctl.participants:
 		if p.kind != Participant.Kind.HUMAN_LOCAL:
 			continue
 		var def := match_ctl.tools.held_by(p)
-		draw_rect(Rect2(0, y, 300, 28), Color(0, 0, 0, 0.4))
-		draw_string(font, Vector2(10, y + 20), p.display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, p.color.lightened(0.2))
+		UiTheme.draw_panel(self, Rect2(0, y, 300, 30), 10.0)
+		DrawKit.text(self, Vector2(10, y + 21), p.display_name, 16, p.color.lightened(0.25), -1, HORIZONTAL_ALIGNMENT_LEFT, 4)
 		if def:
 			var a := 1.0
 			if match_ctl.tools.expiring:
 				a = 0.4 + 0.6 * absf(sin(_time * 9.0))
 			var col := Color(ToolIcons.color_of(def.kind), a)
-			ToolIcons.draw(self, def.kind, Vector2(56, y + 14), 20.0, col, 2.0)
+			ToolIcons.draw(self, def.kind, Vector2(56, y + 15), 20.0, col, 2.0)
 			var text := def.display_name.to_upper()
 			if not p.alive:
 				text = "—"
@@ -45,9 +46,9 @@ func _draw() -> void:
 				text += "  caduca en %d s" % ceili(match_ctl.tools.phase_left())
 			elif i < KEYS.size() and not OS.has_feature("mobile"):
 				text += "  (tecla %s)" % KEYS[i]
-			draw_string(font, Vector2(74, y + 20), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, col)
+			DrawKit.text(self, Vector2(74, y + 21), text, 15, col, -1, HORIZONTAL_ALIGNMENT_LEFT, 4)
 		else:
-			draw_rect(Rect2(46, y + 4, 20, 20), Color(1, 1, 1, 0.3), false, 1.5)
-			draw_string(font, Vector2(74, y + 20), "sin herramienta", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 1, 1, 0.45))
-		y += 32.0
+			draw_rect(Rect2(46, y + 6, 20, 18), Color(1, 1, 1, 0.3), false, 1.5)
+			DrawKit.text(self, Vector2(74, y + 21), "sin herramienta", 15, Color(1, 1, 1, 0.5), -1, HORIZONTAL_ALIGNMENT_LEFT, 4)
+		y += 34.0
 		i += 1

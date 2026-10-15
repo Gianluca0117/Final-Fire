@@ -2,7 +2,7 @@ extends SceneTree
 ## Captura vistas previas reales con el renderizador activo (necesita GPU, sin --headless):
 ##   Godot_v4.7.2-stable_win64_console.exe --path . --resolution 1280x720 -s res://tools/capture_preview.gd -- menu docs/previews/menu.png
 ##   Godot_v4.7.2-stable_win64_console.exe --path . --resolution 1280x720 -s res://tools/capture_preview.gd -- match docs/previews/partida.png 7.0 11 touch
-## Argumentos: modo (menu | match), salida, segundos de partida, semilla, "touch" para mostrar
+## Argumentos: modo (menu | match | gallery | sheets), salida, segundos de partida, semilla, "touch" para mostrar
 ## los controles táctiles. En modo match juegan 4 maniquíes (sin humanos) para que la
 ## imagen sea reproducible.
 
@@ -19,9 +19,33 @@ func _run() -> void:
 	var rng_seed := int(args[3]) if args.size() > 3 else 11
 	var show_touch := args.has("touch")
 
-	if mode == "menu":
+	if mode == "sheets":
+		# Exporta las hojas de sprites generadas (para revisar el arte fotograma a fotograma).
+		var rules: MatchRules = load("res://data/rules/local_match.tres")
+		var looks: Array[CharacterLook] = []
+		for i in 6:
+			looks.append(CharacterLook.for_index(i, rules.colors[i]))
+			CharacterSprites.request(self, looks[i])
+		while not looks.all(func(l: CharacterLook) -> bool: return CharacterSprites.is_ready(l)):
+			await process_frame
+		for i in 6:
+			var path := ProjectSettings.globalize_path("res://%s_%d.png" % [out_path.get_basename(), i + 1])
+			CharacterSprites.sheet(looks[i]).get_image().save_png(path)
+			print("hoja -> ", path)
+		quit()
+		return
+	if mode == "gallery":
+		root.add_child(load("res://scenes/dev/style_gallery.tscn").instantiate())
+		# Mínimo de fotogramas además del tiempo: al arrancar se compilan shaders y se generan
+		# las hojas de sprites, y el primer segundo puede tener muy pocos fotogramas.
+		var t0 := Time.get_ticks_msec()
+		var n := 0
+		while (Time.get_ticks_msec() - t0) / 1000.0 < seconds or n < 40:
+			await process_frame
+			n += 1
+	elif mode == "menu":
 		root.add_child(load("res://scenes/main.tscn").instantiate())
-		for i in 10:
+		for i in 40:
 			await process_frame
 	else:
 		var m: Node = load("res://scenes/match.tscn").instantiate()

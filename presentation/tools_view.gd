@@ -46,14 +46,18 @@ func _draw() -> void:
 				draw_arc(p, 30.0, 0, TAU, 32, Color(col, 0.35), 3.0, true)
 				draw_arc(p, 30.0, -PI / 2, -PI / 2 + TAU * clampf(tools.time_left / total, 0.0, 1.0), 32, col, 4.0, true)
 				ToolIcons.draw(self, def.kind, p, 34.0, Color(col, 0.4 + 0.4 * pulse))
-				draw_string(font, p + Vector2(-80, -44), "¡%s! %.1f" % [ToolIcons.short_name(def), maxf(tools.time_left, 0.0)], HORIZONTAL_ALIGNMENT_CENTER, 160, 18, Color(col, 0.95))
+				DrawKit.text(self, p + Vector2(-90, -44), "¡%s! %.1f" % [ToolIcons.short_name(def), maxf(tools.time_left, 0.0)], 18, col, 180)
 			ToolSystem.State.AVAILABLE:
-				var p := tools.position + Vector2(0, sin(_time * 3.0) * 4.0)
+				var p := tools.position + Vector2(0, -6 + sin(_time * 3.0) * 4.0)
 				var a := 1.0 if not tools.expiring else 0.35 + 0.65 * absf(sin(_time * 9.0))
-				draw_circle(tools.position + Vector2(0, 22), 24.0, Color(col, 0.18))
-				draw_circle(p, 24.0, Color(0, 0, 0, 0.45 * a))
-				draw_arc(p, 24.0, 0, TAU, 32, Color(col, a), 3.0, true)
-				ToolIcons.draw(self, def.kind, p, 32.0, Color(col, a))
+				# Pedestal de piedra con anillo de runas del color de la herramienta
+				var base := tools.position + Vector2(0, 20)
+				DrawKit.poly(self, PackedVector2Array([base + Vector2(-20, 8), base + Vector2(20, 8), base + Vector2(14, -4), base + Vector2(-14, -4)]), ViewPalette.STONE, DrawKit.OUTLINE, 2.5)
+				draw_colored_polygon(DrawKit.ellipse(base + Vector2(0, -4), 15.0, 4.0, 12), Color(col, 0.55 * a))
+				draw_circle(p, 23.0, Color(0.08, 0.05, 0.07, 0.75 * a))
+				draw_arc(p, 23.0, 0, TAU, 32, DrawKit.OUTLINE, 6.0, true)
+				draw_arc(p, 23.0, 0, TAU, 32, Color(col, a), 3.0, true)
+				ToolIcons.draw(self, def.kind, p, 30.0, Color(col, a))
 				if tools.expiring:
 					draw_string(font, p + Vector2(-40, -32), "%d" % ceili(tools.phase_left()), HORIZONTAL_ALIGNMENT_CENTER, 80, 18, Color(1, 0.5, 0.3))
 			ToolSystem.State.HELD:
@@ -61,7 +65,8 @@ func _draw() -> void:
 				if h and h.alive:
 					var head := h.fighter.global_position + Vector2(0, -h.fighter.stats.body_size.y * 0.5 - 34)
 					var a := 1.0 if not tools.expiring else 0.35 + 0.65 * absf(sin(_time * 9.0))
-					draw_circle(head, 15.0, Color(0, 0, 0, 0.55 * a))
+					draw_circle(head, 15.0, Color(0.08, 0.05, 0.07, 0.8 * a))
+					draw_arc(head, 15.0, 0, TAU, 24, DrawKit.OUTLINE, 6.0, true)
 					draw_arc(head, 15.0, 0, TAU, 24, Color(h.color, a), 3.0, true)
 					ToolIcons.draw(self, def.kind, head, 20.0, Color(col, a), 2.0)
 					if tools.expiring:

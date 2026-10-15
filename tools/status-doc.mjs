@@ -10,7 +10,8 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const STATUS = path.join(ROOT, "project-status.json");
 const OUT = path.join(ROOT, "docs", "ESTADO.md");
-const DOCS = ["README.md", "ARCHITECTURE.md", "docs/ENTORNO.md", "docs/IOS.md", "docs/DIRECCION_VISUAL.md"];
+const ROADMAP = path.join(ROOT, "ROADMAP.md");
+const DOCS = ["README.md", "ARCHITECTURE.md", "ASSETS.md", "docs/ENTORNO.md", "docs/IOS.md", "docs/DIRECCION_VISUAL.md", "docs/PRUEBA_DISPOSITIVO.md", "docs/REVISION_PUBLICACION.md"];
 const check = process.argv.includes("--check");
 
 const PHASE = { pending: "Pendiente", in_progress: "En curso", blocked: "Bloqueada", completed: "Completada" };
@@ -106,6 +107,10 @@ md.push("", "## Problemas abiertos", "");
 for (const i of open) md.push(`- **${i.id}** (${SEV[i.severity] ?? i.severity}) ${esc(i.title)}`);
 md.push("", "## Decisiones pendientes", "");
 for (const d of pend) md.push(`- **${d.id}** ${esc(d.question)}`);
+if (s.balance?.length) {
+  md.push("", "## Equilibrio provisional", "", "Valores de juego aún sin probar jugando; pueden cambiar.", "", "| Id | Área | Parámetro | Valor | Archivo |", "|---|---|---|---|---|");
+  for (const b of s.balance) md.push(`| ${b.id} | ${esc(b.area)} | ${esc(b.parameter)} | ${esc(b.value)} | \`${b.file}\` |`);
+}
 md.push("", "## Historial", "");
 for (const e of [...s.history].reverse()) {
   md.push(`### ${e.date} · ${e.title}`, "", e.description, "");
@@ -115,16 +120,36 @@ for (const e of [...s.history].reverse()) {
 }
 const output = md.join("\n").trimEnd() + "\n";
 
+// ---------- ROADMAP.md (también generado) ----------
+const MARK = { verified: "✅", done: "☑️", in_progress: "🔄", blocked: "⛔", pending: "⬜" };
+const rm = [];
+rm.push("# Roadmap de Final Fire", "");
+rm.push("> Archivo **generado** por `node tools/status-doc.mjs` a partir de `project-status.json`. No lo edites a mano.", "");
+rm.push(`Datos del ${s.project.updatedAt}. Avance: **${pct}%** (${tc.verified} de ${total} tareas verificadas).`, "");
+rm.push("Leyenda: ✅ verificada · ☑️ terminada sin verificar · 🔄 en curso · ⛔ bloqueada · ⬜ pendiente", "");
+for (const p of s.phases) {
+  const pt = s.tasks.filter((t) => t.phase === p.id);
+  rm.push(`## ${p.id} · ${p.name} — ${PHASE[p.status]} (${pt.filter((t) => t.status === "verified").length}/${pt.length})`, "");
+  if (p.description) rm.push(p.description, "");
+  if (p.note) rm.push(`> ${p.note}`, "");
+  for (const t of pt) rm.push(`- ${MARK[t.status] ?? "·"} **${t.id}** ${t.title}${t.note ? ` — _${t.note}_` : ""}`);
+  rm.push("");
+}
+const roadmap = rm.join("\n").trimEnd() + "\n";
+
 // ---------- salida ----------
 for (const w of warnings) console.log("AVISO  " + w);
 for (const e of errors) console.log("ERROR  " + e);
 if (check) {
   const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8").replace(/\r\n/g, "\n") : "";
   if (current !== output) errors.push("docs/ESTADO.md no está al día: ejecuta node tools/status-doc.mjs");
+  const currentRm = fs.existsSync(ROADMAP) ? fs.readFileSync(ROADMAP, "utf8").replace(/\r\n/g, "\n") : "";
+  if (currentRm !== roadmap) errors.push("ROADMAP.md no está al día: ejecuta node tools/status-doc.mjs");
   if (errors.length) { console.log(`${errors.length} error(es).`); process.exit(1); }
-  console.log("project-status.json válido y docs/ESTADO.md al día.");
+  console.log("project-status.json válido; docs/ESTADO.md y ROADMAP.md al día.");
 } else {
-  if (errors.length) { console.log(`${errors.length} error(es): no se regenera docs/ESTADO.md.`); process.exit(1); }
+  if (errors.length) { console.log(`${errors.length} error(es): no se regeneran los documentos.`); process.exit(1); }
   fs.writeFileSync(OUT, output);
-  console.log(`project-status.json válido. docs/ESTADO.md regenerado (${pct}% · ${tc.verified}/${total} tareas verificadas).`);
+  fs.writeFileSync(ROADMAP, roadmap);
+  console.log(`project-status.json válido. docs/ESTADO.md y ROADMAP.md regenerados (${pct}% · ${tc.verified}/${total} tareas verificadas).`);
 }

@@ -75,19 +75,18 @@ func _draw() -> void:
 	var c := size * 0.5
 	var radius := minf(size.x, size.y) * 0.5 - 2.0
 	var pressed := _finger != -1
-	draw_circle(c, radius, Color(1, 1, 1, 0.32 if pressed else 0.14))
-	draw_arc(c, radius, 0, TAU, 48, Color(1, 1, 1, 0.75), 3.0, true)
-	var fg := Color(1, 1, 1, 0.92)
+	TouchStyle.ring(self, c, radius, pressed)
+	var fg := Color(1, 1, 1, 0.95 if pressed else 0.8)
 	var u := radius * 0.5
 	match icon:
 		Icon.JUMP:
-			draw_colored_polygon(PackedVector2Array([c + Vector2(0, -u * 1.1), c + Vector2(u, 0), c + Vector2(u * 0.4, 0), c + Vector2(u * 0.4, u), c + Vector2(-u * 0.4, u), c + Vector2(-u * 0.4, 0), c + Vector2(-u, 0)]), fg)
+			DrawKit.poly(self, PackedVector2Array([c + Vector2(0, -u * 1.1), c + Vector2(u, 0), c + Vector2(u * 0.4, 0), c + Vector2(u * 0.4, u), c + Vector2(-u * 0.4, u), c + Vector2(-u * 0.4, 0), c + Vector2(-u, 0)]), fg, DrawKit.OUTLINE, 3.0)
 		Icon.PUSH:
-			# Mano abierta simplificada: palma y cuatro dedos
-			draw_rect(Rect2(c + Vector2(-u * 0.55, -u * 0.1), Vector2(u * 1.1, u * 0.9)), fg)
+			# Mano abierta: palma, cuatro dedos y pulgar, con contorno
+			DrawKit.poly(self, DrawKit.rounded_rect(Rect2(c + Vector2(-u * 0.55, -u * 0.15), Vector2(u * 1.1, u * 0.95)), u * 0.2, 2), fg, DrawKit.OUTLINE, 3.0)
 			for i in 4:
-				draw_rect(Rect2(c + Vector2(-u * 0.55 + i * u * 0.29, -u * 0.85), Vector2(u * 0.22, u * 0.8)), fg)
-			draw_rect(Rect2(c + Vector2(-u * 0.95, u * 0.0), Vector2(u * 0.45, u * 0.22)), fg)
+				DrawKit.poly(self, DrawKit.rounded_rect(Rect2(c + Vector2(-u * 0.55 + i * u * 0.29, -u * 0.9), Vector2(u * 0.24, u * 0.85)), u * 0.1, 2), fg, DrawKit.OUTLINE, 2.5)
+			DrawKit.poly(self, DrawKit.rounded_rect(Rect2(c + Vector2(-u * 1.0, u * 0.0), Vector2(u * 0.5, u * 0.26)), u * 0.1, 2), fg, DrawKit.OUTLINE, 2.5)
 		Icon.SHIELD:
 			# Escudo: borde superior curvo, lados rectos y punta abajo, con franja central.
 			var pts := PackedVector2Array()
@@ -95,8 +94,8 @@ func _draw() -> void:
 				var t := float(i) / 8.0
 				pts.append(c + Vector2(lerpf(-0.8, 0.8, t) * u, (-0.8 - 0.18 * sin(t * PI)) * u))
 			pts.append_array(PackedVector2Array([c + Vector2(u * 0.8, u * 0.1), c + Vector2(0, u * 1.0), c + Vector2(-u * 0.8, u * 0.1)]))
-			draw_colored_polygon(pts, fg)
-			draw_line(c + Vector2(0, -u * 0.85), c + Vector2(0, u * 0.85), Color(0, 0, 0, 0.35), u * 0.16)
+			DrawKit.poly(self, pts, fg, DrawKit.OUTLINE, 3.0)
+			draw_line(c + Vector2(0, -u * 0.85), c + Vector2(0, u * 0.85), Color(0, 0, 0, 0.3), u * 0.16)
 		_:
 			pass
 	if label != "":

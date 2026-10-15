@@ -5,7 +5,8 @@
 [ext_resource type="Script" path="res://game/arena/unstable_platform.gd" id="3_platform"]
 [ext_resource type="Script" path="res://game/arena/solid_block.gd" id="4_block"]
 [ext_resource type="Script" path="res://game/arena/lava_pool.gd" id="5_pool"]
-[ext_resource type="Resource" path="res://data/platforms/side_platform.tres" id="6_side"]
+[ext_resource type="Resource" path="res://data/platforms/fragile_platform.tres" id="6_fragile"]
+[ext_resource type="Resource" path="res://data/platforms/tilting_platform.tres" id="8_tilting"]
 [ext_resource type="Resource" path="res://data/platforms/center_platform.tres" id="7_center"]
 
 [node name="LavaCave" type="Node2D"]
@@ -38,12 +39,12 @@ script = ExtResource("2_segment")
 [node name="Left" type="AnimatableBody2D" parent="Platforms"]
 position = Vector2(330, 430)
 script = ExtResource("3_platform")
-params = ExtResource("6_side")
+params = ExtResource("6_fragile")
 
 [node name="Right" type="AnimatableBody2D" parent="Platforms"]
 position = Vector2(950, 430)
 script = ExtResource("3_platform")
-params = ExtResource("6_side")
+params = ExtResource("8_tilting")
 
 [node name="Center" type="AnimatableBody2D" parent="Platforms"]
 position = Vector2(640, 290)

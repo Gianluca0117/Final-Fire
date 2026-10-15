@@ -12,8 +12,15 @@ static func color_of(kind: ToolDefinition.Kind) -> Color:
 	return COLORS.get(kind, Color.WHITE)
 
 
-## Dibuja el icono de `kind` centrado en `c` con tamaño `s` (alto aproximado).
-static func draw(ci: CanvasItem, kind: ToolDefinition.Kind, c: Vector2, s: float, col: Color, width := 3.0) -> void:
+## Dibuja el icono de `kind` centrado en `c` con tamaño `s` (alto aproximado), con contorno
+## oscuro debajo (estilo v1) para que se lea sobre cualquier fondo.
+static func draw(ci: CanvasItem, kind: ToolDefinition.Kind, c: Vector2, s: float, col: Color, width := 3.0, outline := true) -> void:
+	if outline:
+		_strokes(ci, kind, c, s, Color(DrawKit.OUTLINE, col.a), width + 3.0)
+	_strokes(ci, kind, c, s, col, width)
+
+
+static func _strokes(ci: CanvasItem, kind: ToolDefinition.Kind, c: Vector2, s: float, col: Color, width: float) -> void:
 	var u := s * 0.5
 	match kind:
 		ToolDefinition.Kind.ANCHOR:

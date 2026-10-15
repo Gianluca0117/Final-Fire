@@ -109,8 +109,10 @@ func _draw() -> void:
 	var a := 1.0
 	if has_tool and expiring:
 		a = 0.4 + 0.6 * absf(sin(_time * 9.0))
-	draw_circle(c, r, Color(1, 1, 1, (0.3 if pressed else 0.14) if has_tool else 0.05))
-	draw_arc(c, r, 0, TAU, 48, Color(1, 1, 1, (0.75 if has_tool else 0.3) * a), 3.0, true)
+	if has_tool:
+		TouchStyle.ring(self, c, r, pressed, a)
+	else:
+		draw_arc(c, r, 0, TAU, 48, Color(1, 1, 1, 0.25), 2.0, true)
 	if has_tool:
 		ToolIcons.draw(self, tool_kind, c, r * 1.1, Color(ToolIcons.color_of(tool_kind), a), 3.0)
 		# Contador de usos (como la ranura de la referencia)

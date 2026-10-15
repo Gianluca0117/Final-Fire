@@ -1,111 +1,128 @@
 class_name FighterView
 extends Node2D
-## Vista provisional del personaje (formas simples). Solo lee el estado y las señales
-## del Fighter; nunca cambia la simulación.
+## Vista del personaje (estilo v1, propuesta). Elige el fotograma según el estado de la
+## simulación y dibuja UN rectángulo con textura de la hoja de sprites de su variante
+## (CharacterSprites). Encima, solo lo que cambia: deformación al saltar/aterrizar,
+## burbuja de protección, estrellas al quedar aturdido, quemadura y etiqueta.
+## Solo lee al Fighter; nunca cambia la simulación ni su colisión (40×56).
 
 var fighter: Fighter
+var look: CharacterLook
+## Índice de variante (0–5); por defecto, el del participante.
+var variant := -1
 
-var _squash := Vector2.ONE
-var _push_flash := 0.0
-var _hit_flash := 0.0
+var _t := 0.0
+var _run_phase := 0.0
+var _blink := 0.0
+var _next_blink := 2.0
+var _impact := Vector2.ONE
 var _burn := -1.0
-var _embers: Array[Vector3] = []   # x, y, vida
-var _time := 0.0
 
 
 func _ready() -> void:
 	fighter = get_parent() as Fighter
 	z_index = 5
-	fighter.jumped.connect(func() -> void: _squash = Vector2(0.75, 1.3))
-	fighter.landed.connect(func() -> void: _squash = Vector2(1.3, 0.72))
-	fighter.pushed.connect(func(_t: Array) -> void: _push_flash = 0.18)
-	fighter.was_pushed.connect(func(_by: Fighter, s: float) -> void: _hit_flash = 0.25 * clampf(s, 0.3, 1.0))
-	fighter.eliminated.connect(_on_eliminated)
+	var idx := variant if variant >= 0 else maxi(fighter.participant_id, 0)
+	look = CharacterLook.for_index(idx, fighter.color)
+	CharacterSprites.request(get_tree(), look)
+	_t = randf() * 10.0
+	fighter.landed.connect(func() -> void: _impact = Vector2(1.22, 0.8))
+	fighter.jumped.connect(func() -> void: _impact = Vector2(0.86, 1.16))
+	fighter.was_pushed.connect(func(_by: Fighter, s: float) -> void: _impact = Vector2(0.85, 1.12) if s > 0.3 else _impact)
+	fighter.eliminated.connect(func(_c: StringName, _by: Fighter) -> void: _burn = 0.0)
 
 
 func _process(delta: float) -> void:
-	_time += delta
-	_squash = _squash.lerp(Vector2.ONE, minf(delta * 12.0, 1.0))
-	_push_flash = maxf(_push_flash - delta, 0.0)
-	_hit_flash = maxf(_hit_flash - delta, 0.0)
+	_t += delta
+	_impact = _impact.lerp(Vector2.ONE, minf(delta * 10.0, 1.0))
+	_next_blink -= delta
+	if _next_blink <= 0.0:
+		_blink = 0.12
+		_next_blink = randf_range(2.2, 4.5)
+	_blink -= delta
+	if fighter.state == Fighter.State.RUN:
+		_run_phase += maxf(absf(fighter.velocity.x), 120.0) * delta * 0.05
 	if _burn >= 0.0:
 		_burn += delta
-		for i in _embers.size():
-			var e := _embers[i]
-			_embers[i] = Vector3(e.x + sin(_time * 6.0 + i) * 20.0 * delta, e.y - 90.0 * delta, e.z - delta)
-		if _burn > 1.2:
+		modulate.a = 1.0 - clampf((_burn - 0.5) / 0.5, 0.0, 1.0)
+		if _burn > 1.0:
 			visible = false
 	queue_redraw()
 
 
+## Índice del fotograma de la hoja para el estado actual (público para pruebas y galería).
+func frame_index() -> int:
+	var c := CharacterAnimations.CLIPS
+	match fighter.state:
+		Fighter.State.IDLE:
+			return c["blink"][0] if _blink > 0.0 else c["idle"][int(_t * 5.0) % 4]
+		Fighter.State.RUN:
+			return c["run"][int(_run_phase / TAU * 8.0) % 8]
+		Fighter.State.JUMP:
+			return c["jump"][0]
+		Fighter.State.FALL:
+			return c["fall"][int(_t * 10.0) % 2]
+		Fighter.State.PUSH:
+			return c["push"][0]
+		Fighter.State.SHIELDED:
+			return c["shield"][0]
+		Fighter.State.STUNNED:
+			return c["hit"][int(_t * 8.0) % 2]
+		Fighter.State.HOOKING:
+			var to := (fighter.hook_point - fighter.global_position).normalized()
+			var arm := rad_to_deg(atan2(to.x * fighter.facing, to.y))
+			var best := 0
+			for i in CharacterAnimations.HOOK_ANGLES.size():
+				if absf(arm - CharacterAnimations.HOOK_ANGLES[i]) < absf(arm - CharacterAnimations.HOOK_ANGLES[best]):
+					best = i
+			return c["hook"][best]
+		Fighter.State.ELIMINATED:
+			return c["dead"][0]
+	return c["idle"][0]
+
+
 func _draw() -> void:
-	var size := fighter.stats.body_size
-	var col := fighter.color
-	if _burn >= 0.0:
-		var t := clampf(_burn / 0.8, 0.0, 1.0)
-		var r := Rect2(-size * 0.5 * (1.0 - t * 0.5), size * (1.0 - t * 0.5))
-		draw_rect(r, col.lerp(Color(1, 0.4, 0.1), t) * Color(1, 1, 1, 1.0 - t))
-		for e in _embers:
-			if e.z > 0.0:
-				draw_circle(Vector2(e.x, e.y), 3.0 + e.z * 3.0, Color(1, 0.6, 0.15, e.z))
+	var tex := CharacterSprites.sheet(look)
+	if tex == null:
+		return
+	var feet := CharacterRig.FEET_Y
+	var rise := 0.0
+	var shrink := 1.0
+	var dead := _burn >= 0.0
+	if dead:
+		rise = -_burn * 30.0
+		shrink = 1.0 - clampf(_burn - 0.3, 0.0, 0.7) * 0.6
+	elif fighter.is_on_floor():
+		# Sombra en el suelo: ayuda a leer dónde está cada uno.
+		draw_colored_polygon(DrawKit.ellipse(Vector2(0, feet + 1.0), 17.0, 4.0, 10), Color(0, 0, 0, 0.32))
+	var sq := _impact * shrink
+	var xf := Transform2D(0, Vector2(0, feet + rise)) * Transform2D.IDENTITY.scaled(Vector2(fighter.facing * sq.x, sq.y)) * Transform2D(0, Vector2(0, -feet))
+	draw_set_transform_matrix(xf)
+	# En el primer instante de la eliminación se ve el personaje y un destello; luego, carbonizado.
+	var idx := frame_index() if not dead or _burn > 0.08 else CharacterAnimations.CLIPS["fall"][0]
+	draw_texture_rect_region(tex, Rect2(-CharacterSprites.ORIGIN, CharacterSprites.CELL), CharacterSprites.region(idx))
+	if dead and _burn < 0.12:
+		draw_circle(Vector2(0, -2), 30.0, Color(1, 0.95, 0.8, 0.7 * (1.0 - _burn / 0.12)))
+	draw_set_transform_matrix(Transform2D.IDENTITY)
+	if dead:
 		return
 
-	var bob := 0.0
-	if fighter.state == Fighter.State.RUN:
-		bob = sin(_time * 18.0) * 2.0
-	var shake := Vector2.ZERO
-	if fighter.state == Fighter.State.STUNNED:
-		shake = Vector2(sin(_time * 70.0) * 2.5, 0)
-	var s := size * _squash
-	var base := Vector2(0, size.y * 0.5)  # los pies quedan en su sitio al deformarse
-	var body := Rect2(base + Vector2(-s.x * 0.5, -s.y + bob) + shake, s)
-	var dir := float(fighter.facing)
-
-	# Capa / bufanda
-	var cape := PackedVector2Array([
-		body.position + Vector2(s.x * 0.5 - dir * s.x * 0.3, s.y * 0.28),
-		body.position + Vector2(s.x * 0.5 - dir * s.x * 0.95, s.y * 0.38 + sin(_time * 10.0) * 3.0),
-		body.position + Vector2(s.x * 0.5 - dir * s.x * 0.3, s.y * 0.5),
-	])
-	draw_colored_polygon(cape, col.darkened(0.25))
-	# Cuerpo y capucha
-	draw_rect(body, col.darkened(0.1))
-	var hood := PackedVector2Array([
-		body.position + Vector2(-2, s.y * 0.42),
-		body.position + Vector2(s.x * 0.5 - dir * s.x * 0.25, -s.y * 0.22),
-		body.position + Vector2(s.x + 2, s.y * 0.42),
-	])
-	draw_colored_polygon(hood, col)
-	# Cara y ojos (miran hacia donde se mueve)
-	var face := Rect2(body.position + Vector2(s.x * 0.5 - s.x * 0.32 + dir * 4.0, s.y * 0.18), Vector2(s.x * 0.64, s.y * 0.26))
-	draw_rect(face, Color(0.98, 0.85, 0.72))
-	var eye_y := face.position.y + face.size.y * 0.5
-	for ex in [0.32, 0.72]:
-		draw_rect(Rect2(Vector2(face.position.x + face.size.x * ex - 2.0 + dir * 2.0, eye_y - 3.0), Vector2(4, 6)), Color(0.1, 0.08, 0.1))
-
-	# Brazo extendido al empujar
-	if _push_flash > 0.0:
-		var arm_y := body.position.y + s.y * 0.6
-		var arm_x := body.position.x + (s.x if dir > 0.0 else 0.0)
-		draw_rect(Rect2(Vector2(arm_x if dir > 0.0 else arm_x - 22.0, arm_y - 5.0), Vector2(22, 10)), col.lightened(0.2))
-		for i in 3:
-			var x := arm_x + dir * (30.0 + i * 9.0)
-			draw_line(Vector2(x, arm_y - 12 + i * 8), Vector2(x + dir * 10.0, arm_y - 12 + i * 8), Color(1, 1, 1, _push_flash * 5.0), 2.0)
-	# Golpe recibido
-	if _hit_flash > 0.0:
-		draw_rect(body.grow(2.0), Color(1, 1, 1, _hit_flash * 2.5), false, 2.0)
-	# Protección
 	if fighter.is_shielded():
-		var r := maxf(size.x, size.y) * 0.75
-		draw_circle(Vector2(0, 0), r, Color(0.55, 0.85, 1.0, 0.22))
-		draw_arc(Vector2(0, 0), r, 0, TAU, 32, Color(0.7, 0.95, 1.0, 0.9), 3.0)
-	# Etiqueta con el nombre
-	var font := ThemeDB.fallback_font
-	draw_string(font, Vector2(-30, body.position.y - 10), fighter.display_name, HORIZONTAL_ALIGNMENT_CENTER, 60, 15, Color(1, 1, 1, 0.9))
-
-
-func _on_eliminated(_cause: StringName, _by: Fighter) -> void:
-	_burn = 0.0
-	var size := fighter.stats.body_size
-	for i in 10:
-		_embers.append(Vector3(randf_range(-size.x * 0.5, size.x * 0.5), randf_range(-size.y * 0.3, size.y * 0.5), randf_range(0.5, 1.0)))
+		var pts := PackedVector2Array()
+		for i in 6:
+			var a := TAU * i / 6.0 + _t * 0.6
+			pts.append(Vector2(cos(a), sin(a)) * 38.0 + Vector2(0, -2))
+		draw_colored_polygon(pts, Color(0.55, 0.88, 1.0, 0.2))
+		pts.append(pts[0])
+		draw_polyline(pts, DrawKit.OUTLINE, 5.0)
+		draw_polyline(pts, Color(0.7, 0.95, 1.0, 0.95), 3.0)
+	if fighter.state == Fighter.State.STUNNED:
+		for i in 3:
+			var a := _t * 7.0 + TAU * i / 3.0
+			draw_colored_polygon(DrawKit.star_points(Vector2(cos(a) * 17.0, -40.0 + sin(a) * 4.0), 5.0, 2.2), Color("ffd23f"))
+	# Etiqueta con el nombre (color del jugador)
+	var w := 14.0 + fighter.display_name.length() * 7.0
+	var tag := Rect2(-w * 0.5, -60, w, 15)
+	draw_rect(tag.grow(2.0), DrawKit.OUTLINE)
+	draw_rect(tag, fighter.color.darkened(0.25))
+	draw_string(ThemeDB.fallback_font, Vector2(-w * 0.5, -48.5), fighter.display_name, HORIZONTAL_ALIGNMENT_CENTER, w, 11, Color.WHITE)

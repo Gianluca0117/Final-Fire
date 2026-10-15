@@ -11,6 +11,7 @@ const SUITES := {
 	"Arena": "res://tests/test_arena.gd",
 	"Partida": "res://tests/test_match.gd",
 	"Herramientas": "res://tests/test_tools.gd",
+	"Presentación": "res://tests/test_presentation.gd",
 	"Completas": "res://tests/test_full_match.gd",
 }
 

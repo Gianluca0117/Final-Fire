@@ -54,6 +54,9 @@ func bind(p_match: MatchController, show_touch: bool) -> void:
 	t.tool_expired.connect(func(def: ToolDefinition, _r: StringName) -> void:
 		_show_banner("%s ha caducado" % ToolIcons.short_name(def), 1.5))
 	_slots.match_ctl = match_ctl
+	# La interfaz solo se redibuja cuando cambia algo (rendimiento en móviles modestos).
+	for sig in [t.tool_picked, t.tool_used, t.tool_dropped, t.tool_expired, t.phase_started]:
+		sig.connect(func(_a = null, _b = null, _c = null) -> void: _slots.queue_redraw())
 
 
 func set_touch_visible(v: bool) -> void:
@@ -64,13 +67,16 @@ func _process(delta: float) -> void:
 	if match_ctl == null:
 		return
 	var t := int(match_ctl.elapsed)
-	_timer.text = "%02d:%02d" % [floori(t / 60.0), t % 60]
+	var text := "%02d:%02d" % [floori(t / 60.0), t % 60]
 	if match_ctl.tools.phase:
-		_timer.text = "FASE %d · %s" % [match_ctl.tools.phase_index + 1, _timer.text]
-	_update_touch_tool()
+		text = "FASE %d · %s" % [match_ctl.tools.phase_index + 1, text]
 	if match_ctl.arena.sudden_death:
-		_timer.text += "  MUERTE SÚBITA"
-		_timer.add_theme_color_override("font_color", Color("ff6a1a"))
+		text += "  MUERTE SÚBITA"
+	if text != _timer.text:   # cambiar el texto cada fotograma obliga a recalcular la interfaz
+		_timer.text = text
+		if match_ctl.arena.sudden_death:
+			_timer.add_theme_color_override("font_color", Color("ff6a1a"))
+	_update_touch_tool()
 	if _banner_time > 0.0:
 		_banner_time -= delta
 		_banner.modulate.a = clampf(_banner_time * 2.0, 0.0, 1.0)
@@ -113,6 +119,8 @@ func _on_hazard(kind: StringName, _area: Rect2, seconds: float) -> void:
 
 
 func _on_eliminated(p: Participant, cause: StringName, by: Participant) -> void:
+	_alive.queue_redraw()
+	_slots.queue_redraw()
 	var how := "cayó a la lava" if cause == &"lava" else "cayó fuera"
 	if by:
 		_show_banner("%s %s (empujón de %s)" % [p.display_name, how, by.display_name], 2.0)
@@ -164,7 +172,9 @@ func _show_banner(text: String, seconds: float) -> void:
 # ---------- construcción ----------
 
 func _build(show_touch: bool) -> void:
+	var theme := UiTheme.make()
 	var safe := SafeAreaMargin.new()
+	safe.theme = theme
 	safe.set_anchors_preset(Control.PRESET_FULL_RECT)
 	safe.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(safe)
@@ -182,17 +192,23 @@ func _build(show_touch: bool) -> void:
 	_slots.position = Vector2(0, 52)
 	root.add_child(_slots)
 
-	_timer = _label("00:00", 30)
-	_timer.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	var timer_box := CenterContainer.new()
+	timer_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	timer_box.offset_left = -300
+	timer_box.offset_right = 300
+	timer_box.offset_bottom = 50
+	timer_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(timer_box)
+	var timer_panel := PanelContainer.new()
+	timer_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	timer_box.add_child(timer_panel)
+	_timer = _label("00:00", 26)
 	_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer.offset_left = -260
-	_timer.offset_right = 260
-	_timer.offset_bottom = 44
-	root.add_child(_timer)
+	timer_panel.add_child(_timer)
 
 	var pause_btn := Button.new()
 	pause_btn.text = "II"
-	pause_btn.custom_minimum_size = Vector2(64, 56)
+	pause_btn.custom_minimum_size = Vector2(60, 52)
 	pause_btn.add_theme_font_size_override("font_size", 26)
 	pause_btn.focus_mode = Control.FOCUS_NONE
 	pause_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -224,10 +240,12 @@ func _build(show_touch: bool) -> void:
 
 	_pause_overlay = _overlay("Pausa", [["Continuar", toggle_pause], ["Salir al menú", _go_menu]])
 	_pause_overlay.visible = false
+	_pause_overlay.theme = theme
 	add_child(_pause_overlay)
 
 	_results = _overlay("", [["Revancha", func() -> void: rematch_requested.emit()], ["Menú", _go_menu]])
 	_results.visible = false
+	_results.theme = theme
 	add_child(_results)
 
 

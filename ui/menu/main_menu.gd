@@ -15,8 +15,9 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	theme = UiTheme.make()
 	var bg := ColorRect.new()
-	bg.color = Color("1a0f14")
+	bg.color = Color("140a10")
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 	var safe := SafeAreaMargin.new()
@@ -28,8 +29,11 @@ func _ready() -> void:
 	box.add_theme_constant_override("separation", 14)
 	center.add_child(box)
 
-	var title := _label("FINAL FIRE", 72, Color("ff8c26"))
+	var title := _label("FINAL FIRE", 76, Color("ff8c26"))
+	title.add_theme_constant_override("outline_size", 14)
 	box.add_child(title)
+	var parade := CharacterParade.new()
+	box.add_child(parade)
 	box.add_child(_label("Prototipo F2 · partida local con herramientas", 22, Color(1, 1, 1, 0.7)))
 
 	var row := HBoxContainer.new()
