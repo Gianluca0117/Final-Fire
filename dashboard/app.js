@@ -260,7 +260,10 @@ function renderDecisions(s) {
 }
 
 function renderHistory(s) {
-  const list = [...(s.history ?? [])].sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  // Más reciente primero; con la misma fecha, la entrada añadida después va antes.
+  const list = (s.history ?? []).map((e, i) => [e, i])
+    .sort((a, b) => String(b[0].date).localeCompare(String(a[0].date)) || b[1] - a[1])
+    .map(([e]) => e);
   $("history").replaceChildren(...(list.length ? list.map((e) => h("li", { class: "entry" },
     h("div", { class: "date" }, fmtDate(e.date)),
     h("div", { class: "title" }, e.title),
