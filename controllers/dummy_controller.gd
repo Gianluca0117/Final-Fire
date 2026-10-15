@@ -16,6 +16,8 @@ var _jump_cooldown := 0.0
 var _hold_jump := 0.0
 var _reaction := 0.0
 var _tool_think := 0.0
+## Dirección comprometida al saltar un hueco: se mantiene hasta aterrizar.
+var _air_dir := 0.0
 
 
 func _init(rng_seed := 0, p_aggression := 0.55) -> void:
@@ -44,7 +46,8 @@ func sample(p_tick: int, fighter: Fighter, match_ctl: MatchController) -> InputF
 		elif rival and _rng.randf() < aggression:
 			_target_x = rival.global_position.x
 		else:
-			_target_x = _rng.randf_range(220.0, 1060.0)
+			var span := match_ctl.arena.floor_span()
+			_target_x = _rng.randf_range(span.x + 40.0, span.y - 40.0)
 
 	var escape := match_ctl.arena.escape_direction(fighter)
 	if escape != 0:
@@ -72,6 +75,23 @@ func sample(p_tick: int, fighter: Fighter, match_ctl: MatchController) -> InputF
 		f.jump_pressed = true
 		_hold_jump = 0.35
 		_jump_cooldown = 0.7
+	# Bordes: si va a salirse de la superficie donde está, salta (la arena tiene huecos con lava).
+	if fighter.is_on_floor():
+		_air_dir = 0.0
+	if f.move_x != 0.0 and fighter.is_on_floor() and _jump_cooldown <= 0.0 and _edge_ahead(fighter, match_ctl, signf(f.move_x)):
+		f.jump_pressed = true
+		_hold_jump = 0.4
+		_jump_cooldown = 0.6
+		_air_dir = signf(f.move_x)
+	elif f.jump_pressed and f.move_x != 0.0:
+		_air_dir = signf(f.move_x)
+		_hold_jump = maxf(_hold_jump, 0.45)   # salto completo al cruzar: los saltitos caen al hueco
+	elif _air_dir != 0.0 and not fighter.is_on_floor():
+		if fighter.velocity.y > 0.0 and absf(fighter.velocity.x) < 1.0:
+			# Chocó contra un lateral y cae: abandona el salto y vuelve hacia el suelo.
+			var span := match_ctl.arena.floor_span()
+			_air_dir = signf((span.x + span.y) * 0.5 - me.x)
+		f.move_x = _air_dir
 	f.jump_held = f.jump_pressed or _hold_jump > 0.0
 	_use_tool(f, fighter, match_ctl, escape, dt)
 
@@ -109,6 +129,26 @@ func _use_tool(f: InputFrame, fighter: Fighter, match_ctl: MatchController, esca
 			if escape != 0 or _rng.randf() < 0.05:
 				f.tool_pressed = true
 				f.aim = Vector2(_rng.randf_range(-0.6, 0.6), -1.0).normalized()
+
+
+func _edge_ahead(fighter: Fighter, match_ctl: MatchController, dir: float) -> bool:
+	var body := fighter.floor_body
+	var lo := 0.0
+	var hi := 0.0
+	if body is SolidBlock:
+		lo = (body as SolidBlock).global_position.x - (body as SolidBlock).size.x * 0.5
+		hi = lo + (body as SolidBlock).size.x
+	elif body is UnstablePlatform:
+		lo = (body as UnstablePlatform).rect().position.x
+		hi = (body as UnstablePlatform).rect().end.x
+	elif body is LavaFloorSegment:
+		var span := match_ctl.arena.floor_span()
+		lo = span.x
+		hi = span.y
+	else:
+		return false
+	var ahead := fighter.global_position.x + dir * 30.0
+	return ahead < lo or ahead > hi
 
 
 func _nearest_rival(fighter: Fighter, match_ctl: MatchController) -> Fighter:

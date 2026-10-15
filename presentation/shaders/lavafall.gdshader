@@ -2,7 +2,7 @@
 shader_type canvas_item;
 uniform vec4 a : source_color = vec4(0.85, 0.3, 0.08, 1.0);
 uniform vec4 b : source_color = vec4(1.0, 0.6, 0.15, 1.0);
-uniform float dim = 0.38;
+uniform float dim = 0.24;
 
 void fragment() {
 	float stripe = sin(UV.x * 18.0 + sin(UV.y * 6.0) * 1.5) * 0.5 + 0.5;

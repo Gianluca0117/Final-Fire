@@ -1,6 +1,6 @@
 # Arquitectura de Final Fire
 
-Versión 3 · 2026-10-14 · Estado: **F1 implementada; F2 (herramienta compartida: Ancla y Gancho) implementada; estilo gráfico v1 propuesto** (pendiente de aprobación). Red, bots y campaña, pendientes.
+Versión 3 · 2026-10-14 · Estado: **F1 implementada; F2 (herramienta compartida: Ancla y Gancho) implementada; estilo gráfico v2 provisional** (pendiente de aprobación). Red, bots y campaña, pendientes.
 
 Este documento define cómo se organiza el juego. Desde F1 el código sigue esta estructura; lo que
 aún no existe (herramientas, red, audio, bots) está marcado como pendiente (ver [Plan por etapas](#11-plan-por-etapas)).
@@ -220,10 +220,10 @@ Implementado en F2. `ToolSystem` (RefCounted, dentro de `MatchController`) es la
 - Vistas y efectos **reaccionan a señales y leen estado**; no deciden reglas ni tocan colisiones
   (prueba automática: con y sin vistas, la misma partida da las mismas posiciones).
 - **Presupuesto de rendimiento** (móviles modestos): el personaje se dibuja con un rig vectorial
-  **una sola vez** al arrancar y se guarda como hoja de sprites (`CharacterSprites`, 24 fotogramas
+  **una sola vez** al arrancar y se guarda como hoja de sprites (`CharacterSprites`, 32 fotogramas
   por variante); en juego es 1 rectángulo con textura. El fondo estático se pinta una vez en un
   `SubViewport` y se reutiliza. La lava es un shader en un rectángulo. Plataformas, suelo e
-  interfaz solo se redibujan al cambiar. Medición y herramientas: `tools/bench_render.gd`, ASSETS.md.
+  interfaz solo se redibujan al cambiar; sus piezas estáticas se hornean una vez con `ArtCache`. Medición y herramientas: `tools/bench_render.gd`, ASSETS.md.
 - **Capas:** fondo (z −20) < arena (0) < personajes (5) < efectos (6) < herramienta (8) <
   **avisos (9)** < lava inferior (10) < interfaz (CanvasLayer 10). Los avisos nunca quedan tapados.
 - `AudioDirector` (autoload, F5) reaccionará igual a las señales; no decide reglas.
@@ -406,7 +406,7 @@ juego no la conoce.
 | **F2** (en curso) | Fases y **herramienta única compartida** (Ancla y Gancho implementados; otras, pendientes), HUD, modo de 2 jugadores en el mismo teclado | sin conexión |
 | **F3** | Multijugador LAN: ENet, anfitrión-servidor, lobby, IP manual + descubrimiento, snapshots + interpolación, desconexiones v1 | LAN |
 | F4 | Bots en la autoridad | LAN |
-| F5 (en curso) | Arte, animación y sonido. Estilo v1 propuesto (procedural, pendiente de aprobación); arte definitivo según [ASSETS.md](ASSETS.md) | — |
+| F5 (en curso) | Arte, animación y sonido. Estilo v2 provisional en la cueva de lava (procedural, pendiente de aprobación); arte definitivo según [ASSETS.md](ASSETS.md) | — |
 | F6 | Internet: servidor dedicado headless + servicio de salas (tras decidir D6) | internet |
 | F7 | Publicación Android | — |
 | F8 | iOS (requiere Mac) | — |
@@ -442,3 +442,8 @@ No se construye infraestructura de internet antes de validar las mecánicas (F1�
 | A20 | Personajes como hojas de sprites generadas al arrancar a partir del rig vectorial | Dibujar el rig cada fotograma bajaba a 5 FPS en la Intel HD 530; con sprites, ≈ 57 FPS | Aplicada (estilo v1) |
 | A21 | Fondo horneado una vez (SubViewport) y lava con shader | Quitan ≈ 16 ms por fotograma frente a F1 | Aplicada (estilo v1) |
 | A22 | Capa de avisos z 9 por encima de efectos (z 6) y personajes (z 5) | Ningún efecto puede tapar un peligro | Aplicada (estilo v1) |
+| A23 | Tamaño aparente con cámara (zoom 1,2) y escala solo visual del sprite (1,12); colisión 40×56 sin cambios | Personajes más legibles en móvil sin alterar el juego | Aplicada (estilo v2) |
+| A24 | `ArtCache`: superficies estáticas horneadas una vez por tamaño y estado (escala 2) | Volumen y textura sin coste por fotograma | Aplicada (estilo v2) |
+| A25 | Joystick flotante y botones con área táctil 1,4× el dibujo; tamaño y opacidad ajustables (`UiSettings`, `user://settings.cfg`) | Controles discretos sin perder comodidad | Aplicada (estilo v2) |
+| A26 | Avisos breves (`EventFeed`) en lugar de mensajes centrales; los avisos de peligro siguen en su capa | No tapar la acción | Aplicada (estilo v2) |
+| A27 | Fuente Lilita One (OFL) cargada por código (`UiFonts`) | Estilo unificado; la fuente global del proyecto creaba un ciclo de respaldo | Aplicada (estilo v2) |

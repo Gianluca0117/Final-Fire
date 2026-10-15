@@ -112,6 +112,18 @@ func escape_direction(f: Fighter) -> int:
 	return 0
 
 
+## Extremos x del suelo (para que los maniquíes no se tiren por el borde).
+func floor_span() -> Vector2:
+	if segments.is_empty():
+		return Vector2(play_area.position.x + 100.0, play_area.end.x - 100.0)
+	var lo := INF
+	var hi := -INF
+	for s in segments:
+		lo = minf(lo, s.rect().position.x)
+		hi = maxf(hi, s.rect().end.x)
+	return Vector2(lo, hi)
+
+
 ## true si en la coordenada x hay un tramo de suelo anunciado o convertido en lava.
 func is_floor_danger_at(x: float) -> bool:
 	for s in segments:

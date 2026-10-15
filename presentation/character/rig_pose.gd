@@ -16,6 +16,8 @@ var arm_reach := 0.0     ## alargamiento de brazos (empujar, gancho)
 var leg_back := 0.0
 var leg_front := 0.0
 var leg_tuck := 0.0      ## 0 recta, 1 recogida (salto)
+var tuck_back := 0.0     ## flexión extra de la pierna trasera (carrera)
+var tuck_front := 0.0    ## flexión extra de la pierna delantera
 var scarf_lift := 0.0    ## -1 cae, 0 normal, 1 hacia arriba
 var scarf_stream := 0.0  ## 0 colgando, 1 ondeando hacia atrás
 var eyes: Eyes = Eyes.NORMAL
@@ -34,6 +36,8 @@ func copy() -> RigPose:
 	p.leg_back = leg_back
 	p.leg_front = leg_front
 	p.leg_tuck = leg_tuck
+	p.tuck_back = tuck_back
+	p.tuck_front = tuck_front
 	p.scarf_lift = scarf_lift
 	p.scarf_stream = scarf_stream
 	p.eyes = eyes
@@ -53,6 +57,8 @@ func blend_to(to: RigPose, t: float) -> void:
 	leg_back = lerpf(leg_back, to.leg_back, t)
 	leg_front = lerpf(leg_front, to.leg_front, t)
 	leg_tuck = lerpf(leg_tuck, to.leg_tuck, t)
+	tuck_back = lerpf(tuck_back, to.tuck_back, t)
+	tuck_front = lerpf(tuck_front, to.tuck_front, t)
 	scarf_lift = lerpf(scarf_lift, to.scarf_lift, t)
 	scarf_stream = lerpf(scarf_stream, to.scarf_stream, t)
 	eyes = to.eyes

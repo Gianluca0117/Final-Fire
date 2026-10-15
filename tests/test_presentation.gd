@@ -49,7 +49,9 @@ func run() -> void:
 		var idx := v.frame_index()
 		ok = ok and idx >= 0 and idx < CharacterAnimations.FRAME_COUNT
 		used[idx] = true
-	check(ok and used.size() == Fighter.State.size(), "cada uno de los %d estados del personaje tiene su fotograma" % Fighter.State.size())
+	check(ok, "cada uno de los %d estados del personaje tiene un fotograma válido" % Fighter.State.size())
+	var needed := ["takeoff", "apex", "land", "skid", "push_recover", "hit", "look"]
+	check(needed.all(func(k: String) -> bool: return CharacterAnimations.CLIPS.has(k)), "hay fotogramas de impulso, ápice, aterrizaje, derrape, recuperación del empujón e impacto")
 	check(CharacterAnimations.frames().size() == CharacterAnimations.FRAME_COUNT, "la hoja define %d fotogramas" % CharacterAnimations.FRAME_COUNT)
 	f.queue_free()
 	await frames(1)

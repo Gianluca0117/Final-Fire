@@ -22,11 +22,13 @@ static func draw(ci: CanvasItem, pose: RigPose, look: CharacterLook, t: float, b
 
 	_scarf(ci, body, pose, look, t, burn)
 	# Pierna y brazo traseros (más oscuros para dar profundidad)
-	_leg(ci, hip + Vector2(-4, 0), pose.leg_back, pose.leg_tuck, _c(look.dark.darkened(0.25), burn), burn)
+	_leg(ci, hip + Vector2(-4, 0), pose.leg_back, pose.leg_tuck + pose.tuck_back, _c(look.dark.darkened(0.25), burn), burn)
 	_arm(ci, body * Vector2(-7, -11), pose.arm_back - pose.lean, ARM_LEN + pose.arm_reach, dark.darkened(0.2), burn)
 	# Torso: túnica con cinturón y detalle de pecho
 	var torso := body * DrawKit.rounded_rect(Rect2(-12, -16, 24, 19), 7.0, 3)
-	DrawKit.poly(ci, torso, main)
+	ci.draw_colored_polygon(torso, main)
+	ci.draw_colored_polygon(body * DrawKit.rounded_rect(Rect2(-12, -16, 9, 19), 5.0, 2), dark.lerp(main, 0.35))
+	DrawKit.poly(ci, torso, Color(0, 0, 0, 0))
 	var belt := body * PackedVector2Array([Vector2(-10.5, -3.5), Vector2(10.5, -3.5), Vector2(10.5, 0.5), Vector2(-10.5, 0.5)])
 	ci.draw_colored_polygon(belt, dark)
 	ci.draw_colored_polygon(body * DrawKit.rounded_rect(Rect2(-3, -4.5, 6, 6), 1.5, 2), _c(Color("e8c25a"), burn))
@@ -35,7 +37,7 @@ static func draw(ci: CanvasItem, pose: RigPose, look: CharacterLook, t: float, b
 		ci.draw_colored_polygon(body * bolt, _c(look.accent, burn))
 	ci.draw_colored_polygon(body * PackedVector2Array([Vector2(-9, -15), Vector2(-2, -15), Vector2(-9, -8)]), Color(light, 0.55))
 	# Pierna delantera, cabeza y brazo delantero
-	_leg(ci, hip + Vector2(4, 0), pose.leg_front, pose.leg_tuck, _c(look.dark.darkened(0.1), burn), burn)
+	_leg(ci, hip + Vector2(4, 0), pose.leg_front, pose.leg_tuck + pose.tuck_front, _c(look.dark.darkened(0.1), burn), burn)
 	var neck := body * Vector2(0, -17)
 	var head := Transform2D(lean + deg_to_rad(pose.head_tilt), neck) * Transform2D(0, Vector2(0, -10))
 	var raised := absf(pose.arm_front) > 110.0
@@ -73,7 +75,9 @@ static func draw_head(ci: CanvasItem, xf: Transform2D, pose: RigPose, look: Char
 			DrawKit.poly(ci, xf * DrawKit.ellipse(Vector2(3, -23), 5.0, 2.6, 10), accent.lightened(0.15), DrawKit.OUTLINE, 2.0)
 	# Capucha
 	var hood := xf * DrawKit.ellipse(Vector2.ZERO, 16.5, 15.5, 22)
-	DrawKit.poly(ci, hood, main)
+	ci.draw_colored_polygon(hood, main)
+	ci.draw_colored_polygon(xf * DrawKit.ellipse(Vector2(-6.5, 2.0), 10.0, 13.2, 16), dark.lerp(main, 0.3))
+	DrawKit.poly(ci, hood, Color(0, 0, 0, 0))
 	ci.draw_colored_polygon(xf * DrawKit.ellipse(Vector2(-6, -7), 5.0, 3.0, 10), Color(light, 0.6))
 	# Abertura de la cara
 	var face := xf * DrawKit.ellipse(Vector2(3.5, 1.5), 11.0, 9.5, 18)
@@ -120,8 +124,9 @@ static func _leg(ci: CanvasItem, hip: Vector2, angle: float, tuck: float, col: C
 	var foot := knee + _dir(angle - tuck * 95.0) * 6.0
 	DrawKit.capsule(ci, hip, knee, 6.5, col)
 	DrawKit.capsule(ci, knee, foot, 6.0, col)
-	var boot := DrawKit.ellipse(foot + Vector2(2.0, 1.5), 5.2, 3.4, 10)
+	var boot := DrawKit.ellipse(foot + Vector2(2.0, 1.5), 5.4, 3.6, 10)
 	DrawKit.poly(ci, boot, _c(BOOT, burn), DrawKit.OUTLINE, 2.0)
+	ci.draw_line(foot + Vector2(0.0, 0.0), foot + Vector2(4.0, 0.0), Color(1, 1, 1, 0.25 * (1.0 - burn)), 1.5)
 
 
 static func _scarf(ci: CanvasItem, body: Transform2D, pose: RigPose, look: CharacterLook, t: float, burn: float) -> void:

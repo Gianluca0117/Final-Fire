@@ -28,5 +28,7 @@ func _draw() -> void:
 	DrawKit.poly(self, tri, Color(ViewPalette.WARN, pulse), DrawKit.OUTLINE, 2.5)
 	DrawKit.text(self, c + Vector2(-20, 8), "!", 20, Color.WHITE, 40, HORIZONTAL_ALIGNMENT_CENTER, 4)
 	DrawKit.text(self, c + Vector2(-40, 44), "%.1f" % maxf(segment.time_left, 0.0), 16, ViewPalette.LAVA_HOT, 80)
-	# Flecha hacia el tramo que se va a encender
-	draw_line(c + Vector2(0, 26), c + Vector2(0, 44), Color(ViewPalette.LAVA_HOT, pulse), 3.0)
+	# Flechas hacia el tramo que se va a encender (a los lados del número, sin taparlo)
+	for sx in [-1.0, 1.0]:
+		var ac := c + Vector2(sx * 27.0, 36.0)
+		DrawKit.poly(self, PackedVector2Array([ac + Vector2(-5, -4), ac + Vector2(5, -4), ac + Vector2(0, 4)]), Color(ViewPalette.LAVA_HOT, pulse), DrawKit.OUTLINE, 1.5)

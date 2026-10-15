@@ -4,10 +4,10 @@ Juego 2D de supervivencia para 2–6 participantes (jugadores o bots): saltos, e
 plataformas inestables y suelo que se convierte en lava. En cada fase aparece una única
 herramienta compartida que todos disputan. Primero se desarrolla el multijugador; la campaña, después.
 
-**Estado actual (F2 + estilo v1):** partida local con movimiento, salto, empujón, protección,
+**Estado actual (F2 + estilo v2):** partida local con movimiento, salto, empujón, protección,
 plataformas frágiles e inclinables, suelo de lava con aviso previo, lava que sube, eliminación y
 ganador, y la **herramienta única compartida por fase** (Ancla y Gancho). Gráficos con la
-**propuesta de estilo v1** (cartoon, procedural, **pendiente de aprobación**; ver [ASSETS.md](ASSETS.md)).
+**estilo v2** (cartoon, procedural, **provisional y pendiente de aprobación**; comparación antes/después y recursos que faltan en [ASSETS.md](ASSETS.md)).
 Los rivales son **maniquíes de prueba** (no son los bots de F4). Sin red todavía. El estado detallado está en [`project-status.json`](project-status.json) (fuente única),
 en el [panel local](#panel-de-progreso) y en [`docs/ESTADO.md`](docs/ESTADO.md) (generado a partir del JSON).
 
@@ -15,7 +15,7 @@ en el [panel local](#panel-de-progreso) y en [`docs/ESTADO.md`](docs/ESTADO.md) 
 |---|---|
 | Motor | Godot **4.7.2-stable**, edición estándar (GDScript) |
 | Renderizador | Compatibility (OpenGL ES 3; en este PC, mediante ANGLE) |
-| Identificador | **`com.elizsoft.finalfire`** (Android e iOS) · versión 0.3.0 (código 3) |
+| Identificador | **`com.elizsoft.finalfire`** (Android e iOS) · versión 0.4.0 (código 4) |
 | Plataformas | Android (activa) · iOS (preparada, requiere Mac: [`docs/IOS.md`](docs/IOS.md)) |
 | Orientación | Horizontal (gira entre ambos lados) |
 | Resolución base | 1280×720, `canvas_items` + `expand`: se adapta a cualquier proporción |
@@ -91,14 +91,14 @@ powershell -ExecutionPolicy Bypass -File tools\check-env.ps1     # entorno (no m
 ## Estilo gráfico y rendimiento
 
 - Galería de estilo con las vistas reales del juego (solo desarrollo, no se exporta): `scenes/dev/style_gallery.tscn`.
-- Capturas reales: `docs/previews/` (galería, hojas de sprites, partida, menú).
+- Capturas reales: `docs/previews/` (galería, hojas de sprites, partida, menú) y comparación antes/después a igual tamaño en `docs/previews/comparacion/` (`tools/compose_comparison.gd`).
 - Medir rendimiento en este equipo (6 maniquíes, sin vsync):
 
 ```powershell
 & "$env:LOCALAPPDATA\Programs\Godot\4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe" --path . --resolution 1280x720 -s res://tools/bench_render.gd -- 20 6
 ```
 
-Resultado actual en la Intel HD 530: ≈ 57 FPS de media (31 con los gráficos de F1). Detalles en [ASSETS.md](ASSETS.md).
+Resultado actual en la Intel HD 530: 64 FPS de media, 31 en el 1 % peor (31 de media con los gráficos de F1). Detalles en [ASSETS.md](ASSETS.md).
 
 ## Exportar a Android (APK de depuración)
 
@@ -138,7 +138,7 @@ FinalFire/
 ├─ core/          InputFrame (contrato de acciones) y capas de colisión
 ├─ game/          SIMULACIÓN sin gráficos: character/ arena/ match/
 ├─ controllers/   humano, maniquí de pruebas (y en el futuro bots y red)
-├─ presentation/  vistas (estilo v1): personaje (rig → hoja de sprites), arena, lava (shaders), efectos
+├─ presentation/  vistas (estilo v2): personaje (rig → hoja de sprites), arena, lava (shaders), efectos
 ├─ ui/            menú, HUD, controles táctiles, área segura
 ├─ data/          parámetros (.tres): personaje, plataformas, fase, reglas
 ├─ scenes/        main.tscn (menú ↔ partida), match.tscn (composición), dev/ (galería de estilo)

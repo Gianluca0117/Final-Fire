@@ -10,7 +10,9 @@ static var antialias := true
 
 static func rounded_rect(r: Rect2, radius: float, seg := 4) -> PackedVector2Array:
 	var pts := PackedVector2Array()
-	var rad := minf(radius, minf(r.size.x, r.size.y) * 0.5)
+	# Un poco menos de la mitad: si el radio es exactamente la mitad se repiten puntos y el
+	# polígono no se puede triangular.
+	var rad := maxf(minf(radius, minf(r.size.x, r.size.y) * 0.5 - 0.1), 0.0)
 	var corners := [
 		[r.position + Vector2(r.size.x - rad, rad), -PI / 2],
 		[r.end - Vector2(rad, rad), 0.0],
@@ -67,6 +69,6 @@ static func star_points(c: Vector2, r_out: float, r_in: float, n := 5, rot := 0.
 
 ## Texto con contorno (legible sobre lava o fondos claros).
 static func text(ci: CanvasItem, pos: Vector2, s: String, size: int, col: Color, width := -1.0, align := HORIZONTAL_ALIGNMENT_CENTER, outline := 5) -> void:
-	var font := ThemeDB.fallback_font
+	var font := UiFonts.display()
 	ci.draw_string_outline(font, pos, s, align, width, size, outline, OUTLINE)
 	ci.draw_string(font, pos, s, align, width, size, col)

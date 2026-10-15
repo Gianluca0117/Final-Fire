@@ -1,7 +1,7 @@
 # Dirección visual (referencia)
 
 Imagen de referencia compartida el 2026-10-14 («así debería quedar»). Es una **meta visual**, no un
-recurso del juego. Desde la versión 0.3.0 el juego usa la **propuesta de estilo v1** inspirada en
+recurso del juego. Desde la versión 0.4.0 el juego usa el **estilo v2** (provisional) inspirada en
 ella (procedural, pendiente de aprobación): guía de estilo, inventario y recursos que faltan en
 [ASSETS.md](../ASSETS.md).
 
@@ -34,7 +34,7 @@ balancearse con una cuerda.
 
 ## Diferencias con el proyecto actual
 
-| Referencia | Ahora (0.3.0, estilo v1) | Tarea |
+| Referencia | Ahora (0.4.0, estilo v2) | Tarea |
 |---|---|---|
 | Joystick + 4 botones de acción | Joystick, salto, mano, escudo y ranura de herramienta | T-017 |
 | Agarrar / empujar | Empujón con autoría | T-013 |

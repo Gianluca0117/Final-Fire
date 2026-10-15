@@ -41,8 +41,13 @@ func _process(delta: float) -> void:
 		queue_redraw()
 
 
+## Radio del dibujo (~70 % del área táctil).
 func _radius() -> float:
-	return minf(size.x, size.y) * 0.5 - 2.0
+	return minf(size.x, size.y) * 0.5 / TouchStyle.HIT_RATIO
+
+
+func _hit_radius() -> float:
+	return minf(size.x, size.y) * 0.5
 
 
 func _input(event: InputEvent) -> void:
@@ -50,7 +55,7 @@ func _input(event: InputEvent) -> void:
 		return
 	var center := get_global_rect().get_center()
 	if event is InputEventScreenTouch:
-		if event.pressed and _finger == -1 and center.distance_to(event.position) <= _radius() + 10.0:
+		if event.pressed and _finger == -1 and center.distance_to(event.position) <= _hit_radius():
 			_finger = event.index
 			_set_drag(Vector2.ZERO)
 			Input.action_press(action)
@@ -109,10 +114,11 @@ func _draw() -> void:
 	var a := 1.0
 	if has_tool and expiring:
 		a = 0.4 + 0.6 * absf(sin(_time * 9.0))
+	var op := UiSettings.touch_opacity
 	if has_tool:
-		TouchStyle.ring(self, c, r, pressed, a)
+		TouchStyle.ring(self, c, r, pressed, a * maxf(op, 0.55))
 	else:
-		draw_arc(c, r, 0, TAU, 48, Color(1, 1, 1, 0.25), 2.0, true)
+		draw_arc(c, r, 0, TAU, 48, Color(1, 1, 1, 0.25 * op), 2.0, true)
 	if has_tool:
 		ToolIcons.draw(self, tool_kind, c, r * 1.1, Color(ToolIcons.color_of(tool_kind), a), 3.0)
 		# Contador de usos (como la ranura de la referencia)

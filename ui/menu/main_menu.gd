@@ -47,6 +47,8 @@ func _ready() -> void:
 	row.add_child(_button("+", func() -> void: _set_dummies(_dummies + 1), Vector2(64, 60)))
 	box.add_child(row)
 
+	box.add_child(_touch_settings_row())
+
 	var solo := _button("Jugar", func() -> void: start_requested.emit(1, _dummies), Vector2(420, 72))
 	box.add_child(solo)
 	if not OS.has_feature("mobile"):
@@ -79,3 +81,32 @@ func _button(text: String, cb: Callable, min_size: Vector2) -> Button:
 	b.add_theme_font_size_override("font_size", 26)
 	b.pressed.connect(cb)
 	return b
+
+
+## Fila de ajustes de los controles táctiles: tamaño y opacidad (se guardan en el dispositivo).
+func _touch_settings_row() -> Control:
+	UiSettings.load_settings()
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 8)
+	row.add_child(_label("Controles:", 18, Color(1, 1, 1, 0.75)))
+	var size_l := _label("", 18, Color("ffd23f"))
+	var op_l := _label("", 18, Color("ffd23f"))
+	size_l.custom_minimum_size = Vector2(118, 0)
+	op_l.custom_minimum_size = Vector2(138, 0)
+	var refresh := func() -> void:
+		size_l.text = "tamaño %d%%" % roundi(UiSettings.touch_scale * 100.0)
+		op_l.text = "opacidad %d%%" % roundi(UiSettings.touch_opacity * 100.0)
+	var change := func(ds: float, dop: float) -> void:
+		UiSettings.touch_scale = clampf(UiSettings.touch_scale + ds, 0.75, 1.3)
+		UiSettings.touch_opacity = clampf(UiSettings.touch_opacity + dop, 0.25, 1.0)
+		UiSettings.save_settings()
+		refresh.call()
+	row.add_child(_button("−", func() -> void: change.call(-0.05, 0.0), Vector2(44, 40)))
+	row.add_child(size_l)
+	row.add_child(_button("+", func() -> void: change.call(0.05, 0.0), Vector2(44, 40)))
+	row.add_child(_button("−", func() -> void: change.call(0.0, -0.05), Vector2(44, 40)))
+	row.add_child(op_l)
+	row.add_child(_button("+", func() -> void: change.call(0.0, 0.05), Vector2(44, 40)))
+	refresh.call()
+	return row

@@ -1,7 +1,8 @@
 class_name MatchHud
 extends CanvasLayer
-## Interfaz de partida: VIVOS n/N, fase y cronómetro, pausa, cuenta atrás, avisos grandes,
-## herramienta de cada jugador local, controles táctiles y resultados.
+## Interfaz de partida (estilo v2): VIVOS n/N, fase y cronómetro, pausa, cuenta atrás compacta,
+## avisos BREVES Y DISCRETOS (pila de líneas pequeñas con cabezas e iconos, sin textos grandes
+## en el centro), herramienta de cada jugador local, controles táctiles y resultados.
 ## Solo lee la partida y emite peticiones.
 
 signal rematch_requested
@@ -13,9 +14,9 @@ var touch: TouchControls
 var _alive: AliveIndicator
 var _slots: ToolSlots
 var _timer: Label
-var _center: Label
-var _banner: Label
-var _banner_time := 0.0
+var _count: Label
+var _count_t := 0.0
+var _feed: EventFeed
 var _pause_overlay: Control
 var _results: Control
 var _results_title: Label
@@ -38,21 +39,19 @@ func bind(p_match: MatchController, show_touch: bool) -> void:
 	match_ctl.participant_eliminated.connect(_on_eliminated)
 	match_ctl.arena.hazard_warned.connect(_on_hazard)
 	var t := match_ctl.tools   # las funciones de abajo no capturan «t» para no crear ciclos
-	t.tool_announced.connect(func(def: ToolDefinition, _p: Vector2, s: float) -> void:
-		_show_banner("FASE %d · APARECE: %s (%.0f s)" % [match_ctl.tools.phase_index + 1, ToolIcons.short_name(def), s], s + 0.5))
+	t.tool_announced.connect(func(def: ToolDefinition, _p: Vector2, _s: float) -> void:
+		_feed.push([_icon_of(def), "%s en camino" % def.display_name], ToolIcons.color_of(def.kind)))
 	t.tool_picked.connect(func(def: ToolDefinition, by: Participant) -> void:
-		_show_banner("%s tiene %s" % [by.display_name, _with_article(def)], 1.8))
+		_feed.push([by, _icon_of(def), "recogida"], ToolIcons.color_of(def.kind)))
 	t.tool_used.connect(func(def: ToolDefinition, by: Participant, _t: ToolTarget) -> void:
-		_show_banner("%s usó %s" % [by.display_name, _with_article(def)], 1.8))
-	t.tool_use_failed.connect(func(_def: ToolDefinition, by: Participant, reason: StringName) -> void:
+		_feed.push([by, _icon_of(def), "usada"], ToolIcons.color_of(def.kind)))
+	t.tool_use_failed.connect(func(def: ToolDefinition, by: Participant, reason: StringName) -> void:
 		if by.kind == Participant.Kind.HUMAN_LOCAL:
-			_show_banner("Sin destino válido (%s): no se gasta" % ToolsView.REASONS.get(reason, "no válido"), 1.5))
+			_feed.push([_icon_of(def), "%s · no se gasta" % ToolsView.REASONS.get(reason, "no válido")], ViewPalette.UI_TEXT))
 	t.tool_dropped.connect(func(def: ToolDefinition, by: Participant) -> void:
-		_show_banner("%s perdió %s" % [by.display_name, _with_article(def)], 1.8))
+		_feed.push([by, _icon_of(def), "perdida"], ToolIcons.color_of(def.kind)))
 	t.tool_expiring.connect(func(def: ToolDefinition, s: float) -> void:
-		_show_banner("%s caduca en %d s" % [ToolIcons.short_name(def), ceili(s)], 2.0))
-	t.tool_expired.connect(func(def: ToolDefinition, _r: StringName) -> void:
-		_show_banner("%s ha caducado" % ToolIcons.short_name(def), 1.5))
+		_feed.push([_icon_of(def), "caduca en %d s" % ceili(s)], ViewPalette.UI_ACCENT))
 	_slots.match_ctl = match_ctl
 	# La interfaz solo se redibuja cuando cambia algo (rendimiento en móviles modestos).
 	for sig in [t.tool_picked, t.tool_used, t.tool_dropped, t.tool_expired, t.phase_started]:
@@ -77,10 +76,9 @@ func _process(delta: float) -> void:
 		if match_ctl.arena.sudden_death:
 			_timer.add_theme_color_override("font_color", Color("ff6a1a"))
 	_update_touch_tool()
-	if _banner_time > 0.0:
-		_banner_time -= delta
-		_banner.modulate.a = clampf(_banner_time * 2.0, 0.0, 1.0)
-		_banner.visible = _banner_time > 0.0
+	if _count.visible:
+		_count_t += delta
+		_count.scale = Vector2.ONE * (1.0 + 0.35 * maxf(0.0, 1.0 - _count_t * 6.0))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -99,33 +97,35 @@ func toggle_pause() -> void:
 	_pause_overlay.visible = paused
 
 
+## Cuenta atrás compacta bajo el cronómetro (no tapa el escenario).
 func _on_countdown(seconds_left: int) -> void:
-	_center.visible = true
-	_center.text = str(seconds_left) if seconds_left > 0 else "¡YA!"
+	_count.visible = true
+	_count.text = str(seconds_left) if seconds_left > 0 else "¡YA!"
+	_count_t = 0.0
 	if seconds_left == 0:
-		get_tree().create_timer(0.7).timeout.connect(func() -> void:
+		get_tree().create_timer(0.6).timeout.connect(func() -> void:
 			if match_ctl.phase == MatchController.Phase.RUNNING:
-				_center.visible = false)
+				_count.visible = false)
 
 
 func _on_hazard(kind: StringName, _area: Rect2, seconds: float) -> void:
 	match kind:
 		&"pool_rise":
-			_show_banner("¡LA LAVA VA A SUBIR! (%d s)" % ceili(seconds), seconds + 0.5)
+			_feed.push([&"warn", "La lava sube en %d s" % ceili(seconds)], ViewPalette.LAVA_HOT)
 		&"sudden_death":
-			_show_banner("¡MUERTE SÚBITA! LA LAVA NO PARA", 3.0)
+			_feed.push([&"warn", "Muerte súbita"], ViewPalette.WARN)
 		&"anchor_ending":
-			_show_banner("¡EL ANCLA SE SUELTA! (%.1f s)" % seconds, seconds + 0.3)
+			_feed.push([&"anchor", "se suelta"], ViewPalette.ANCHOR)
 
 
 func _on_eliminated(p: Participant, cause: StringName, by: Participant) -> void:
 	_alive.queue_redraw()
 	_slots.queue_redraw()
-	var how := "cayó a la lava" if cause == &"lava" else "cayó fuera"
+	var mark: StringName = &"flame" if cause == &"lava" else &"warn"
 	if by:
-		_show_banner("%s %s (empujón de %s)" % [p.display_name, how, by.display_name], 2.0)
+		_feed.push([by, &"push", p, mark], ViewPalette.UI_TEXT)
 	else:
-		_show_banner("%s %s" % [p.display_name, how], 2.0)
+		_feed.push([p, mark], ViewPalette.UI_TEXT)
 
 
 func _on_finished(winner: Participant) -> void:
@@ -144,9 +144,8 @@ func _on_finished(winner: Participant) -> void:
 	touch.visible = false
 
 
-func _with_article(def: ToolDefinition) -> String:
-	# «el ancla» y «el gancho»: ambos llevan «el».
-	return "el " + def.display_name.to_lower()
+func _icon_of(def: ToolDefinition) -> StringName:
+	return &"anchor" if def.kind == ToolDefinition.Kind.ANCHOR else &"hook"
 
 
 ## El botón táctil muestra la herramienta de J1 (la del primer humano local).
@@ -161,12 +160,6 @@ func _update_touch_tool() -> void:
 	var def := match_ctl.tools.held_by(p1) if p1 else null
 	touch.tool.tool_kind = def.kind if def else -1
 	touch.tool.expiring = def != null and match_ctl.tools.expiring
-
-
-func _show_banner(text: String, seconds: float) -> void:
-	_banner.text = text
-	_banner_time = seconds
-	_banner.visible = true
 
 
 # ---------- construcción ----------
@@ -202,7 +195,7 @@ func _build(show_touch: bool) -> void:
 	var timer_panel := PanelContainer.new()
 	timer_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	timer_box.add_child(timer_panel)
-	_timer = _label("00:00", 26)
+	_timer = _label("00:00", 22)
 	_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	timer_panel.add_child(_timer)
 
@@ -217,26 +210,21 @@ func _build(show_touch: bool) -> void:
 	pause_btn.pressed.connect(toggle_pause)
 	root.add_child(pause_btn)
 
-	_center = _label("", 110)
-	_center.set_anchors_preset(Control.PRESET_CENTER)
-	_center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_center.offset_left = -300
-	_center.offset_right = 300
-	_center.offset_top = -120
-	_center.offset_bottom = 60
-	root.add_child(_center)
+	_count = _label("", 40)
+	_count.add_theme_color_override("font_color", ViewPalette.UI_ACCENT)
+	_count.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_count.offset_left = -80
+	_count.offset_right = 80
+	_count.offset_top = 52
+	_count.offset_bottom = 104
+	_count.pivot_offset = Vector2(80, 26)
+	_count.visible = false
+	root.add_child(_count)
 
-	_banner = _label("", 26)
-	_banner.add_theme_color_override("font_color", Color("ffd23f"))
-	_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_banner.offset_left = -500
-	_banner.offset_right = 500
-	_banner.offset_top = 64
-	_banner.offset_bottom = 110
-	_banner.visible = false
-	root.add_child(_banner)
+	_feed = EventFeed.new()
+	_feed.position = Vector2(0, 122)
+	root.add_child(_feed)
 
 	_pause_overlay = _overlay("Pausa", [["Continuar", toggle_pause], ["Salir al menú", _go_menu]])
 	_pause_overlay.visible = false
@@ -266,7 +254,7 @@ func _label(text: String, font_size: int) -> Label:
 
 func _overlay(title: String, buttons: Array) -> Control:
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.6)
+	dim.color = Color(0, 0, 0, 0.4)
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
@@ -278,7 +266,7 @@ func _overlay(title: String, buttons: Array) -> Control:
 	box.offset_top = -200
 	box.offset_bottom = 200
 	dim.add_child(box)
-	var t := _label(title, 52)
+	var t := _label(title, 44)
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(t)
 	if title == "":

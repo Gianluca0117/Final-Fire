@@ -50,7 +50,7 @@ func _draw() -> void:
 	draw_rect(Rect2(-200, -200, 1680, 1120), Color("1f1218"))
 	draw_rect(Rect2(0, 266, 1280, 2), Color(1, 1, 1, 0.08))
 	draw_rect(Rect2(0, 462, 1280, 2), Color(1, 1, 1, 0.08))
-	DrawKit.text(self, Vector2(0, 24), "Final Fire · propuesta de estilo v1 (pendiente de aprobación)", 18, ViewPalette.UI_TEXT, 1280)
+	DrawKit.text(self, Vector2(0, 24), "Final Fire · estilo v2 provisional (pendiente de aprobación)", 18, ViewPalette.UI_TEXT, 1280)
 	for l in _labels:
 		DrawKit.text(self, l[0] + Vector2(-80, 0), l[1], 16, ViewPalette.UI_ACCENT, 160)
 

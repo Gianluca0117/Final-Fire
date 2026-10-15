@@ -10,6 +10,11 @@ Revisión del 2026-10-14 sobre lo que quedaría expuesto al subir la rama `main`
 > contraseñas, tokens, APK ni rutas absolutas; el mayor archivo es una captura de 208 KB. Lo visible
 > no cambia (el correo ya estaba publicado por decisión D7).
 
+> **Repetida** el 14-10-2026 a las 22:58 antes de subir la revisión gráfica v2 (228 archivos): sin claves,
+> contraseñas, tokens, APK ni rutas absolutas (el preset conserva las contraseñas vacías). Novedades:
+> la fuente Lilita One con su licencia OFL (redistribución permitida) y capturas de comparación de
+> hasta 335 KB (las únicas por encima de 200 KB, junto con la galería de 243 KB).
+
 Cómo repetirla: los comandos están al final.
 
 ## Resultado

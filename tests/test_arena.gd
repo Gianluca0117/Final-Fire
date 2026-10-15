@@ -1,5 +1,5 @@
 extends TestSuite
-## Arena: inclinación, desgaste y caída, suelo de lava con aviso, subida de lava.
+## Arena: inclinaciÃ³n, desgaste y caÃ­da, suelo de lava con aviso, subida de lava.
 
 
 func run() -> void:
@@ -8,6 +8,7 @@ func run() -> void:
 	await _floor_waves()
 	await _pool_rise()
 	await _same_seed_same_hazards()
+	await _lava_cave_routes()
 
 
 func _tilt_and_slide() -> void:
@@ -26,8 +27,8 @@ func _tilt_and_slide() -> void:
 	await wait_until(func() -> bool:
 		max_tilt[0] = maxf(max_tilt[0], p.rotation_degrees)
 		return f.floor_body != p, 120)
-	check(max_tilt[0] > 5.0, "la plataforma se inclina hacia el lado cargado (máx. %.1f°)" % max_tilt[0])
-	check(max_tilt[0] <= params.max_tilt_deg + 0.01, "la inclinación respeta el máximo")
+	check(max_tilt[0] > 5.0, "la plataforma se inclina hacia el lado cargado (mÃ¡x. %.1fÂ°)" % max_tilt[0])
+	check(max_tilt[0] <= params.max_tilt_deg + 0.01, "la inclinaciÃ³n respeta el mÃ¡ximo")
 	check(f.global_position.x > x0 + 20.0, "quieto en la plataforma inclinada se resbala hacia abajo (%.0f px)" % (f.global_position.x - x0))
 	check(await wait_until(func() -> bool: return absf(p.rotation_degrees) < 0.5, 120), "sin carga vuelve a nivelarse")
 	await cleanup(TestWorld.holder_of(m))
@@ -54,7 +55,7 @@ func _wear_and_respawn() -> void:
 	check(warn_i >= 0 and warn_i < events.find("FALLING"), "avisa antes de caer: " + ", ".join(events))
 	check(await wait_until(func() -> bool: return p.stage == UnstablePlatform.Stage.GONE, 200), "desaparece tras caer")
 	check(await wait_until(func() -> bool: return p.stage == UnstablePlatform.Stage.INTACT, 200), "reaparece entera tras el aviso")
-	check(events.has("CRACKED") and events.has("CRITICAL") and events.has("RESPAWNING"), "pasa por agrietada, crítica y reapareciendo")
+	check(events.has("CRACKED") and events.has("CRITICAL") and events.has("RESPAWNING"), "pasa por agrietada, crÃ­tica y reapareciendo")
 	await cleanup(TestWorld.holder_of(m))
 
 
@@ -88,14 +89,14 @@ func _floor_waves() -> void:
 	check(warnings.size() > 0 and warnings[0][0] == &"floor_lava" and is_equal_approx(warnings[0][1], 0.5), "el aviso indica el tiempo restante (0,5 s)")
 	var seg: LavaFloorSegment = warned[0]
 	await frames(20)
-	check(seg.stage == LavaFloorSegment.Stage.WARNING, "durante el aviso el tramo todavía es seguro")
+	check(seg.stage == LavaFloorSegment.Stage.WARNING, "durante el aviso el tramo todavÃ­a es seguro")
 	var victims := m.participants.filter(func(p: Participant) -> bool:
 		return p.fighter.floor_body is LavaFloorSegment and warned.has(p.fighter.floor_body))
 	check(await wait_until(func() -> bool: return seg.stage == LavaFloorSegment.Stage.LAVA, 30), "tras el aviso el tramo se convierte en lava")
 	await frames(2)
 	var burned := victims.all(func(p: Participant) -> bool: return not p.alive and p.elimination_cause == &"lava")
 	check(victims.size() > 0 and burned, "quien estaba encima es eliminado por la lava (%d)" % victims.size())
-	check(await wait_until(func() -> bool: return seg.stage == LavaFloorSegment.Stage.SAFE, 60), "la lava del suelo se enfría después")
+	check(await wait_until(func() -> bool: return seg.stage == LavaFloorSegment.Stage.SAFE, 60), "la lava del suelo se enfrÃ­a despuÃ©s")
 	await cleanup(TestWorld.holder_of(m))
 
 
@@ -122,7 +123,7 @@ func _pool_rise() -> void:
 	check(warned_at[0] > 0.0 and warned_at[0] <= 0.6 - 0.35, "la subida se anuncia antes (a los %.2f s)" % warned_at[0])
 	await frames(2)
 	check(not m.participants[0].alive and m.participants[0].elimination_cause == &"lava", "quien queda por debajo de la lava es eliminado")
-	check(m.participants[1].alive and m.participants[2].alive, "quienes están a salvo en alto siguen vivos")
+	check(m.participants[1].alive and m.participants[2].alive, "quienes estÃ¡n a salvo en alto siguen vivos")
 	await cleanup(TestWorld.holder_of(m))
 
 
@@ -149,4 +150,75 @@ func _same_seed_same_hazards() -> void:
 		await frames(90)
 		runs.append(seq)
 		await cleanup(TestWorld.holder_of(m))
-	check(runs[0].size() > 3 and runs[0] == runs[1], "misma semilla → mismos peligros (%s)" % str(runs[0]))
+	check(runs[0].size() > 3 and runs[0] == runs[1], "misma semilla â†’ mismos peligros (%s)" % str(runs[0]))
+
+
+## La arena real: todas las superficies se alcanzan saltando desde el suelo, con la altura de
+## salto real (vÂ²/2g) y un margen. AdemÃ¡s, un salto simulado del suelo al puente de madera.
+func _lava_cave_routes() -> void:
+	var stats: CharacterStats = load("res://data/characters/default_stats.tres")
+	var jump_h := stats.jump_velocity * stats.jump_velocity / (2.0 * stats.gravity)
+	var max_up := jump_h * 0.88
+	var arena: Arena = load("res://game/arena/arenas/lava_cave.tscn").instantiate()
+	tree.root.add_child(arena)
+	arena.setup(HazardSchedule.new(), 1)
+	var surfaces := []   # [nombre, x0, x1, top]
+	for s in arena.segments:
+		surfaces.append([s.name, s.rect().position.x, s.rect().end.x, s.rect().position.y])
+	for b in arena.blocks:
+		surfaces.append([b.name, b.global_position.x - b.size.x * 0.5, b.global_position.x + b.size.x * 0.5, b.top_y()])
+	for p in arena.platforms:
+		surfaces.append([p.name, p.rect().position.x, p.rect().end.x, p.rect().position.y])
+	var reached := {}
+	for s in surfaces:
+		if s[0].begins_with("Segment"):
+			reached[s[0]] = true
+	var changed := true
+	while changed:
+		changed = false
+		for a_s in surfaces:
+			if not reached.has(a_s[0]):
+				continue
+			for b_s in surfaces:
+				if reached.has(b_s[0]):
+					continue
+				var gap := maxf(0.0, maxf(b_s[1] - a_s[2], a_s[1] - b_s[2]))
+				var dy: float = a_s[3] - b_s[3]   # > 0: b estÃ¡ mÃ¡s arriba
+				if (dy > 0.0 and dy <= max_up and gap <= 150.0) or (dy <= 0.0 and gap <= 250.0):
+					reached[b_s[0]] = true
+					changed = true
+	var missing := surfaces.filter(func(s: Array) -> bool: return not reached.has(s[0])).map(func(s: Array) -> String: return s[0])
+	check(missing.is_empty(), "todas las superficies de la cueva son alcanzables (salto %.0f px; sin alcanzar: %s)" % [jump_h, str(missing)])
+	var levels := {}
+	for s in surfaces:
+		levels[snappedf(s[3], 40.0)] = true
+	check(levels.size() >= 5, "la arena usa la altura: %d niveles de superficie" % levels.size())
+	arena.queue_free()
+	await frames(1)
+
+	# Salto simulado: desde el hueco central del suelo hacia el puente de la izquierda.
+	var m: Node = load("res://scenes/match.tscn").instantiate()
+	tree.root.add_child(m)
+	var ctl := ScriptedController.new()
+	var other := ScriptedController.new()
+	var list: Array[Participant] = [Participant.new(0, "P0", Participant.Kind.DUMMY, ctl), Participant.new(0, "P1", Participant.Kind.DUMMY, other)]
+	var mc: MatchController = m.match_ctl
+	var rules := TestWorld.quiet_rules()
+	mc.rules = rules
+	mc.setup(m.arena, list, m.fighters_root, 1)
+	m._configured = true
+	mc.start()
+	var f := list[0].fighter
+	var bridge: UnstablePlatform = m.arena.get_node("Platforms/LeftBridge")
+	f.global_position = Vector2(640, 525)
+	list[1].fighter.global_position = Vector2(1066, 400)
+	await frames(20)
+	ctl.move_x = -1.0
+	await frames(4)
+	ctl.press_jump()
+	var landed := await wait_until(func() -> bool: return f.floor_body == bridge, 90)
+	ctl.move_x = 0.0
+	ctl.jump_held = false
+	check(landed, "salto real desde el suelo al puente de madera (ruta alcanzable)")
+	m.queue_free()
+	await frames(2)

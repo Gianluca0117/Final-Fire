@@ -17,4 +17,5 @@ script = ExtResource("3_ctl")
 rules = ExtResource("4_rules")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(640, 360)
+position = Vector2(640, 374)
+zoom = Vector2(1.2, 1.2)

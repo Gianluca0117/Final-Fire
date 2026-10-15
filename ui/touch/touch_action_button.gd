@@ -52,8 +52,9 @@ func _notification(what: int) -> void:
 
 func _hit(pos: Vector2) -> bool:
 	# Área circular (los botones son redondos), un poco más grande que el dibujo.
+	# Área táctil: todo el círculo del Control (mayor que el dibujo).
 	var r := get_global_rect()
-	return r.get_center().distance_to(pos) <= minf(r.size.x, r.size.y) * 0.5 + 10.0
+	return r.get_center().distance_to(pos) <= minf(r.size.x, r.size.y) * 0.5
 
 
 func _press(finger: int) -> void:
@@ -73,10 +74,12 @@ func _release() -> void:
 
 func _draw() -> void:
 	var c := size * 0.5
-	var radius := minf(size.x, size.y) * 0.5 - 2.0
+	# El dibujo ocupa ~70 % del área táctil: tapa menos el escenario.
+	var radius := minf(size.x, size.y) * 0.5 / TouchStyle.HIT_RATIO
 	var pressed := _finger != -1
-	TouchStyle.ring(self, c, radius, pressed)
-	var fg := Color(1, 1, 1, 0.95 if pressed else 0.8)
+	var op := UiSettings.touch_opacity
+	TouchStyle.ring(self, c, radius, pressed, op)
+	var fg := Color(1, 1, 1, (0.95 if pressed else 0.85) * maxf(op, 0.5))
 	var u := radius * 0.5
 	match icon:
 		Icon.JUMP:

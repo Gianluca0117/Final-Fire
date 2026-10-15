@@ -1,13 +1,13 @@
 class_name CharacterSprites
 ## Hojas de sprites del personaje generadas al iniciar el juego: cada variante se dibuja una
-## vez (24 fotogramas) en una textura mediante un SubViewport que se renderiza una sola vez.
+## vez (32 fotogramas) en una textura mediante un SubViewport que se renderiza una sola vez.
 ## Después, cada personaje en pantalla es un único rectángulo con textura (1 llamada de
 ## dibujo), lo que permite mantener el estilo vectorial en equipos modestos.
 ## En modo headless no se genera nada (no hay GPU) y las vistas simplemente no dibujan.
 
 const SCALE := 1.5                     ## resolución de la hoja respecto al tamaño en juego
-const CELL := Vector2(88, 100)         ## tamaño lógico de cada fotograma
-const ORIGIN := Vector2(44, 64)        ## centro de la colisión dentro del fotograma
+const CELL := Vector2(100, 100)        ## tamaño lógico de cada fotograma
+const ORIGIN := Vector2(50, 64)        ## centro de la colisión dentro del fotograma
 const COLS := 8
 
 static var _sheets := {}

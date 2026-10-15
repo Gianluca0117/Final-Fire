@@ -15,9 +15,12 @@ static func color_of(kind: ToolDefinition.Kind) -> Color:
 ## Dibuja el icono de `kind` centrado en `c` con tamaño `s` (alto aproximado), con contorno
 ## oscuro debajo (estilo v1) para que se lea sobre cualquier fondo.
 static func draw(ci: CanvasItem, kind: ToolDefinition.Kind, c: Vector2, s: float, col: Color, width := 3.0, outline := true) -> void:
+	# Trazo grueso proporcional al tamaño (aspecto cartoon «relleno») con brillo.
+	var w := maxf(width, s * 0.12)
 	if outline:
-		_strokes(ci, kind, c, s, Color(DrawKit.OUTLINE, col.a), width + 3.0)
-	_strokes(ci, kind, c, s, col, width)
+		_strokes(ci, kind, c, s, Color(DrawKit.OUTLINE, col.a), w + 4.0)
+	_strokes(ci, kind, c, s, col, w)
+	_strokes(ci, kind, c + Vector2(-0.35, -0.35) * w, s, Color(col.lightened(0.55), col.a * 0.8), w * 0.3)
 
 
 static func _strokes(ci: CanvasItem, kind: ToolDefinition.Kind, c: Vector2, s: float, col: Color, width: float) -> void:

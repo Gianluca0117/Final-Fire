@@ -5,6 +5,7 @@ class_name UiTheme
 
 static func make() -> Theme:
 	var t := Theme.new()
+	t.default_font = UiFonts.display()
 	t.set_stylebox("normal", "Button", box(ViewPalette.UI_PANEL, ViewPalette.UI_BORDER))
 	t.set_stylebox("hover", "Button", box(Color(0.24, 0.11, 0.1, 0.94), ViewPalette.UI_ACCENT))
 	t.set_stylebox("pressed", "Button", box(Color(0.42, 0.18, 0.08, 0.96), ViewPalette.UI_ACCENT))

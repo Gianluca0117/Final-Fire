@@ -1,154 +1,174 @@
 # Recursos gráficos de Final Fire
 
-Estado al 2026-10-14: **propuesta de estilo v1, pendiente de tu aprobación.**
-Todo el arte actual es **procedural** (formas vectoriales dibujadas por código y convertidas a
-sprites al arrancar). **No es el arte definitivo**: sirve para revisar el estilo, la legibilidad y
-el rendimiento dentro del juego. Las herramientas disponibles no permiten generar ilustración
-pintada como la de la referencia; lo que faltaría para la versión definitiva está en
-[Recursos que faltan](#recursos-que-faltan-para-el-arte-definitivo).
+Estado al 2026-10-14: **estilo v2 (revisión gráfica de una sección jugable), provisional y
+pendiente de tu aprobación (D8).**
+Todo el arte actual es **procedural** (formas vectoriales dibujadas por código y horneadas a
+texturas al arrancar). **No es el arte definitivo.** La v2 se aplicó **solo a la cueva de lava**
+(una sección jugable); antes de extender gráficos provisionales al resto del juego hay que decidir
+qué ilustraciones externas se encargan: ver [§3](#3-recursos-externos-que-faltan-antes-de-extender-al-resto-del-juego).
 
 Capturas reales (renderizador Compatibility, Intel HD 530): [`docs/previews/`](docs/previews/)
-- `estilo_galeria.png` — las 6 variantes, las 8 animaciones y la sección de arena en cada estado.
-- `hoja_1.png` … `hoja_6.png` — las hojas de sprites que genera el juego (24 fotogramas por variante).
-- `partida_estilo.png`, `partida_herramienta.png`, `partida_ancha.png`, `menu.png` — en partida, con HUD y controles táctiles.
+- **`comparacion/antes_despues_1.png` y `antes_despues_2.png`** — antes (v1, commit `079651d`) a la
+  izquierda (franja gris) y después (v2) a la derecha (franja naranja). Misma pantalla (1280×720),
+  misma semilla y mismo instante (semilla 11 a 7,2 s; semilla 22 a 4,0 s), con controles táctiles.
+  Las capturas sueltas están en la misma carpeta (`antes_N.png`, `despues_N.png`).
+- `estilo_galeria.png` — las 6 variantes, animaciones y estados de las superficies.
+- `hoja_1.png` … `hoja_6.png` — hojas de sprites que genera el juego (32 fotogramas por variante).
+- `partida_estilo.png`, `partida_herramienta.png`, `partida_ancha.png` (≈ 1,9:1), `menu.png`.
+
+Las comparaciones se regeneran con:
+
+```powershell
+& $godot --path . --resolution 1280x720 --fixed-fps 60 -s res://tools/capture_preview.gd -- match docs/previews/comparacion/despues_1.png 7.2 11 touch
+& $godot --path . --headless -s res://tools/compose_comparison.gd -- docs/previews/comparacion/antes_1.png docs/previews/comparacion/despues_1.png docs/previews/comparacion/antes_despues_1.png
+```
 
 ---
 
-## 1. Guía de estilo v1
+## 1. Revisión v2: qué cambió y por qué
 
-| Regla | Valor |
-|---|---|
-| Estilo | 2D cartoon, formas redondeadas, **contorno oscuro grueso** `#1b0f14` (3 px a escala de juego) |
-| Personaje | cabeza/capucha grande (expresión legible en móvil), cuerpo pequeño, ≈ 60 px de alto sobre una colisión de 40×56 |
-| Primer plano vs. fondo | lo jugable lleva contorno y colores saturados; el fondo **no** lleva contorno, es más oscuro y apagado |
-| Contraste | piedra fría (gris azulado) frente a lava cálida (naranja/amarillo) |
-| Avisos | capa propia **por encima** de personajes y efectos (z 9): nunca quedan tapados |
-| Efectos | ≤ 0,8 s, alfa ≤ 0,6, radio ≤ 44 px, **debajo** de los avisos (z 6) |
-| Controles táctiles | aro doble (oscuro + claro); en reposo semitransparentes para ver el suelo; cálidos al pulsar |
-
-**Paleta** (`presentation/view_palette.gd`)
-
-| Uso | Colores |
-|---|---|
-| Contorno | `#1b0f14` |
-| Piedra segura | `#5d6273` · borde `#8f97ab` · sombra `#373a47` |
-| Madera frágil | `#9b5e33` · claro `#c98b52` · oscuro `#5c3218` |
-| Lava | profunda `#a81d0c` · cuerpo `#ff5a14` · caliente `#ffb21f` · cresta `#fff0a6` · aviso `#ff3b1f` |
-| Ancla | `#5fd8ff` |
-| Interfaz | panel `#1c0f14` (86 %) · borde `#f2a33a` · texto `#fff3e0` · acento `#ffd23f` |
-| Personajes | rojo `#e8433a`, azul `#3a7be8`, verde `#43b24a`, amarillo `#f2c230`, morado `#a35ee0`, cian `#2ec4c4` |
-
-**Variantes** (color + detalle de silueta, `presentation/character/character_look.gd`)
-
-| # | Nombre | Color | Detalle visible |
+| # | Pedido | Cambio en v2 | Comprobación |
 |---|---|---|---|
-| 1 | Brasa | rojo | cinta en la frente con dos colas al viento, punta corta |
-| 2 | Escarcha | azul | gafas sobre la capucha redonda |
-| 3 | Musgo | verde | dos hojas en lo alto, bufanda más larga |
-| 4 | Chispa | amarillo | pompón en la punta, rayo en el pecho |
-| 5 | Sombra | morado | antifaz y punta larga caída |
-| 6 | Marea | cian | aletas laterales, bufanda a rayas |
+| 1 | Personajes más grandes y legibles sin cambiar colisiones | Cámara con zoom 1,2 centrada en la acción + escala visual del sprite 1,12 → el personaje mide ≈ 80 px en una pantalla de 720 (antes ≈ 60). **Colisión intacta: 40×56.** Capucha con sombreado, botas con brillo, etiqueta con fuente redondeada | Prueba «la vista no altera la simulación» (misma partida con y sin vistas) |
+| 2 | Plataformas ilustradas con volumen, textura y deterioro | Piedra: bloques con cara frontal, juntas, borde superior iluminado por la lava, grietas y goteo; losa con bandas de hierro y remaches; suelo con rejilla que se enrojece al avisar. Madera: dos tablones con veta, travesaños y amarres de cuerda; **deterioro visible**: segura → combada con grietas → falta un trozo, chamuscada y astillada | Galería y capturas |
+| 3 | Composición vertical con rutas alcanzables | Arena nueva en **5 niveles** (suelo, repisas laterales, puente y losa, salientes altos, plataforma central y atalaya); las herramientas aparecen arriba y a los lados para repartir la acción | Prueba de rutas: grafo de alcance con la altura real de salto (≤ 150 px arriba) y un **salto simulado** del suelo al puente |
+| 4 | Controles más discretos, cómodos y ajustables | Joystick **flotante** (aparece donde tocas, en reposo solo un aro tenue); botones dibujados más pequeños pero con **área táctil 1,4× mayor** que el dibujo; **tamaño (75–130 %) y opacidad (25–100 %) ajustables** en el menú y guardados en el dispositivo. Botones y repisas recolocados para que no tapen superficies pisables | Pruebas de toques simulados; capturas |
+| 5 | Estilo cartoon unificado | Fuente **Lilita One** (OFL) en HUD, menú, avisos y etiquetas; iconos de herramienta con el mismo contorno grueso; HUD con los mismos colores y bordes | Capturas |
+| 6 | Fondo con profundidad, menos llamativo | 5 capas: cueva → ruinas lejanas de bajo contraste → banda de calima → pilares y arco con borde iluminado → marco oscuro de primer término; cascadas más estrechas y atenuadas | Capturas |
+| 7 | Avisos breves en vez de mensajes centrales | Lista discreta bajo el marcador (máx. 3 líneas, 2,6 s): cabeza + nombre + icono (empujón, lava, herramienta). Cuenta atrás inicial pequeña bajo el reloj. Los avisos de peligro siguen en su capa sobre el escenario | Capturas |
+| 8 | Animaciones con peso y personalidad | 32 fotogramas (antes 24): ciclo de carrera con contacto y paso, **derrape**, **despegue**, **ápice**, caída, **aterrizaje con aplastamiento proporcional a la velocidad de caída**, golpe de empujón + recuperación, impacto con **congelación de 0,07 s y destello**, aterrizaje tras golpe, mirar alrededor en reposo, respiración | Hojas `hoja_1…6.png`; prueba de clips obligatorios |
 
-**Rendimiento** (medido con `tools/bench_render.gd`, 6 maniquíes, 1280×720, Intel HD 530 vía ANGLE, sin vsync)
+No se ha resuelto añadiendo partículas: los cambios son de dibujo (rig, superficies, fondo),
+composición (cámara, arena, HUD, controles) y animación.
+
+**Rendimiento** (`tools/bench_render.gd -- 20 6`, 6 maniquíes, 1280×720, Intel HD 530 vía ANGLE, sin vsync)
 
 | Versión | FPS medio | FPS 1 % peor | Llamadas de dibujo |
 |---|---|---|---|
 | Gráficos provisionales de F1 | 31 | 25 | 145 |
-| Estilo v1 dibujado vectorialmente cada fotograma | 5 | 4 | 1 486 |
-| **Estilo v1 actual** (personajes horneados a sprites, fondo horneado, lava con shader) | **55–59** | **≈ 31** | **≈ 290** |
+| Estilo v1 | 55–59 | ≈ 31 | ≈ 290 |
+| **Estilo v2** (superficies horneadas con `ArtCache`) | **64** | **31** | **178** |
 
-Claves: cada personaje es 1 rectángulo con textura; el fondo estático se pinta una sola vez;
-la lava es un shader en un rectángulo; plataformas, suelo e interfaz solo se redibujan al cambiar.
-
----
-
-## 2. Inventario actual (todo provisional, estilo v1)
-
-| Recurso | Dónde | Cómo se genera | Estado |
-|---|---|---|---|
-| Personaje base (rig) | `presentation/character/character_rig.gd` | vectorial por código | propuesta v1 |
-| 6 variantes | `presentation/character/character_look.gd` | color + accesorio | propuesta v1 |
-| 24 fotogramas por variante: reposo ×4, parpadeo ×1, correr ×8, saltar ×1, caer ×2, empujar ×1, protegerse ×1, impacto ×2, gancho ×3 (90°/135°/180°), eliminado ×1 | `presentation/character/character_animations.gd` | horneados al arrancar (`character_sprites.gd`, 1056×450 px por variante) | propuesta v1 |
-| Efectos del personaje | `presentation/fighter_view.gd` | deformación al saltar/aterrizar, burbuja de protección, estrellas, quemadura | propuesta v1 |
-| Bloque de piedra (normal) | `presentation/block_view.gd` | vectorial, dibujado una vez | propuesta v1 |
-| Plataforma frágil (madera) e inclinable (losa con pivote) con estados segura / agrietada / crítica / a punto de caer / reaparece / anclada | `presentation/platform_view.gd`, `platform_overlay.gd` | vectorial | propuesta v1 |
-| Suelo: seguro / aviso (calor + señal con cuenta atrás) / lava / enfriándose | `presentation/segment_view.gd`, `segment_overlay.gd` | vectorial | propuesta v1 |
-| Lava inferior y aviso de subida | `presentation/lava_pool_view.gd`, `shaders/lava.gdshader`, `shaders/glow.gdshader` | shader | propuesta v1 |
-| Fondo de cueva (ruinas, pilares, estandartes, estalactitas) + 2 cascadas + brasas | `presentation/background_view.gd`, `shaders/lavafall.gdshader` | horneado una vez + shader | propuesta v1 |
-| Efectos: polvo, impacto, destello de recogida, humo | `presentation/vfx_layer.gd` | partículas dibujadas | propuesta v1 |
-| Herramientas: iconos Ancla y Gancho, pedestal, vista previa | `presentation/tool_icons.gd`, `tools_view.gd` | vectorial | propuesta v1 |
-| HUD (VIVOS con cabezas, fase y tiempo, pausa, ranuras, resultados) y tema | `ui/hud/*`, `ui/ui_theme.gd` | StyleBoxFlat + recortes de las hojas | propuesta v1 |
-| Controles táctiles | `ui/touch/*` | vectorial | propuesta v1 |
-| Menú con desfile de personajes | `ui/menu/*` | hojas de sprites | propuesta v1 |
-| Tipografía | fuente por defecto de Godot | — | **provisional** (falta fuente propia) |
-| Sonido | — | — | **no existe** (fase F5) |
+Las piezas estáticas (bloques, suelo, tablones) se pintan una vez en una textura (`ArtCache`,
+escala 2) y se reutilizan; solo se redibuja en vivo lo que cambia (brillo de aviso, lava, cuerdas).
 
 ---
 
-## 3. Recursos que faltan para el arte definitivo
+## 2. Guía de estilo e inventario (todo provisional)
 
-Para pasar del estilo vectorial a arte pintado como el de la referencia hace falta un artista (o
-herramientas de ilustración/IA de imagen que este entorno no tiene). Especificaciones para que
-los recursos encajen **sin tocar la simulación ni las colisiones**:
+| Regla | Valor |
+|---|---|
+| Estilo | 2D cartoon, formas redondeadas, **contorno oscuro grueso** `#1b0f14` |
+| Personaje | capucha grande, cuerpo pequeño, ≈ 80 px en pantalla sobre una colisión de 40×56 |
+| Primer plano vs. fondo | lo jugable lleva contorno, volumen y luz cálida de la lava; el fondo no lleva contorno y es más oscuro |
+| Tipografía | Lilita One (SIL OFL 1.1, `assets/fonts/`) |
+| Avisos de peligro | capa propia **por encima** de personajes y efectos (z 9) |
+| Efectos | ≤ 0,8 s, alfa ≤ 0,6, radio ≤ 44 px, debajo de los avisos |
+
+Paleta en `presentation/view_palette.gd`; variantes en `presentation/character/character_look.gd`
+(Brasa, Escarcha, Musgo, Chispa, Sombra, Marea: color + detalle de silueta).
+
+| Recurso | Dónde | Estado |
+|---|---|---|
+| Rig del personaje y 6 variantes | `presentation/character/` | provisional v2 |
+| 32 fotogramas por variante (hojas de 1200×600 px) | `character_animations.gd`, `character_sprites.gd` | provisional v2 |
+| Animación en juego (aplastar/estirar, congelación, destello) | `presentation/fighter_view.gd` | provisional v2 |
+| Superficies: piedra, losa, suelo con rejilla, tablones de madera con 3 niveles de deterioro | `presentation/style/arena_art.gd`, `block_view.gd`, `platform_view.gd`, `segment_view.gd` | provisional v2 |
+| Fondo por capas + cascadas + brasas | `presentation/background_view.gd` | provisional v2 |
+| Lava y avisos | `lava_pool_view.gd`, `segment_overlay.gd`, `shaders/` | provisional v2 |
+| Iconos de herramienta | `presentation/tool_icons.gd` | provisional v2 |
+| HUD, lista de avisos, menú | `ui/hud/`, `ui/menu/`, `ui/ui_theme.gd` | provisional v2 |
+| Controles táctiles flotantes y ajustables | `ui/touch/`, `ui/ui_settings.gd` | provisional v2 |
+| Fuente Lilita One | `assets/fonts/LilitaOne-Regular.ttf` + `OFL.txt` (Google Fonts, verificada por hash) | definitiva si se aprueba |
+| Sonido | — | **no existe** (F5) |
+
+---
+
+## 3. Recursos externos que faltan antes de extender al resto del juego
+
+La v2 llega hasta donde permite el dibujo vectorial por código. **Para alcanzar la calidad de la
+referencia (ilustración pintada) hacen falta ilustraciones externas** — de un artista o de
+herramientas de imagen que este entorno no tiene. Recomendación: **no extender los gráficos
+provisionales a nuevas arenas, herramientas o menús hasta decidir (D8)** si se encargan estos
+recursos, para no rehacer el trabajo dos veces.
+
+Prioridad (lo que más mejora la imagen por cada recurso):
+
+1. **Personajes** (§3.1): una hoja por variante. Es lo que más se mira.
+2. **Superficies de la arena** (§3.2): piedra, madera con sus estados de deterioro y suelo.
+3. **Fondo pintado en 3 capas** (§3.2).
+4. **Iconos de herramienta y botones táctiles** (§3.4).
+5. Efectos (§3.3): se pueden mantener los actuales más tiempo.
+
+Especificaciones para que los recursos encajen **sin tocar la simulación ni las colisiones**:
 
 ### 3.1 Personajes (6 variantes)
 
-- **Formato:** PNG RGBA de 32 bits, fondo transparente, sin recortes por fotograma (celda fija).
-- **Celda:** 132 × 150 px (88 × 100 lógicos a escala 1,5). **Origen** (centro de la colisión) en
-  (66, 96); **pies** en y = 138 px. Colisión de referencia: 60 × 84 px centrada en el origen.
-- **Hoja:** 8 columnas; un archivo por variante: `assets/characters/<brasa|escarcha|musgo|chispa|sombra|marea>/sheet.png`.
+- **Formato:** PNG RGBA de 32 bits, fondo transparente, celda fija (sin recortes por fotograma).
+- **Celda:** 150 × 150 px (100 × 100 lógicos a escala 1,5). **Origen** (centro de la colisión) en
+  (75, 96); **pies** en y = 138 px. Colisión de referencia: 60 × 84 px centrada en el origen.
+- **Hoja:** 8 columnas × 4 filas; un archivo por variante: `assets/characters/<brasa|escarcha|musgo|chispa|sombra|marea>/sheet.png`.
 - **Solo mirando a la derecha** (el juego refleja en horizontal).
-- **Animaciones y fotogramas mínimos** (12 fps salvo indicación):
+- **Fotogramas** (mismo orden que `CharacterAnimations.CLIPS`, 32 en total):
 
-| Animación | Fotogramas | Notas |
+| Clip | Fotogramas | Notas |
 |---|---|---|
-| Reposo | 4 + 1 parpadeo | respiración suave |
-| Correr | 8 | ciclo completo; cuerpo inclinado hacia delante |
-| Saltar | 2 | despegue y subida (brazos arriba) |
-| Caer | 2 | brazos agitándose, ojos muy abiertos |
-| Empujar | 3 | anticipación, golpe (brazos extendidos), recuperación |
-| Protegerse | 2 | guardia con brazos delante |
-| Recibir impacto | 2 | mareado (ojos en espiral), cuerpo hacia atrás |
-| Gancho | 3 | brazo hacia delante, en diagonal y hacia arriba |
-| Eliminado | 6 | destello → carbonizado → se deshace en humo |
-| Aterrizar | 2 | aplastado (opcional; ahora se simula deformando el sprite) |
+| idle | 4 | respiración suave |
+| blink | 1 | |
+| run | 8 | contacto, paso y empuje con la pierna trasera; cuerpo inclinado |
+| skid | 1 | frenazo al cambiar de sentido |
+| takeoff | 1 | agachado antes de despegar |
+| jump | 1 | subida, brazos arriba |
+| apex | 1 | punto más alto, piernas recogidas |
+| fall | 2 | brazos agitándose |
+| land | 2 | aplastado y recuperación |
+| push | 1 | golpe con brazos extendidos |
+| push_recover | 1 | |
+| shield | 1 | guardia con brazos delante |
+| hit | 2 | mareado, cuerpo hacia atrás |
+| hook | 3 | brazo a 90°, 135° y 180° |
+| dead | 1 | (idealmente 6: destello → carbonizado → humo) |
+| look | 1 | mira alrededor en reposo |
+| hit_land | 1 | aterriza aturdido |
 
-- **Silueta:** cada variante debe reconocerse en negro (sin color) por su detalle de la tabla de variantes.
-- **Iconos de cabeza** para el HUD: 64 × 64 px por variante, vivo y eliminado.
+- **Silueta:** cada variante debe reconocerse en negro por su detalle (cinta, gafas, hojas, pompón, antifaz, aletas).
+- **Cabezas para el HUD y los avisos:** 64 × 64 px por variante, viva y eliminada.
 
 ### 3.2 Arena (cueva de lava)
 
 | Recurso | Formato | Tamaño | Notas |
 |---|---|---|---|
-| Fondo lejano (ruinas, cascadas) | WebP/JPG | 2048 × 1152 | sin contorno, oscuro |
-| Fondo medio (pilares, estandartes) | PNG RGBA | 2048 × 1152 | parallax opcional |
-| Cascada de lava animada | PNG tira | 8 × (64 × 512) | bucle |
-| Bloque de piedra | PNG 9-slice | 96 × 48 | borde superior claro = pisable |
-| Plataforma frágil (madera) | PNG | 4 estados × 200 × 24 | segura, agrietada, crítica (bordes al rojo), restos al caer |
-| Losa inclinable + pivote | PNG | 240 × 24 + 32 × 32 | pivote separado |
+| Fondo lejano (cueva, ruinas) | WebP/JPG | 3360 × 2080 | sin contorno, bajo contraste |
+| Fondo medio (pilares, arco, estandartes) | PNG RGBA | 3360 × 2080 | más oscuro que lo jugable |
+| Primer término (marco de roca, estalactitas) | PNG RGBA | 3360 × 2080 | casi negro |
+| Cascada de lava animada | PNG tira | 8 × (68 × 840) | bucle |
+| Bloque de piedra | PNG 9-slice | 260 × 60 (×2) | borde superior claro = pisable |
+| Saliente / atalaya | PNG | 232 × 56, 192 × 52 | con goteo y grietas |
+| Puente de madera | PNG | 3 estados × 380 × 48 | seguro, agrietado/combado, roto y chamuscado |
+| Losa inclinable + pivote | PNG | 380 × 48 + 32 × 32 | pivote separado |
 | Cuerdas y cadenas | PNG mosaico vertical | 16 × 64 | |
-| Tramo de suelo | PNG | 192 × 40 × 3 estados | seguro, aviso (rejillas al rojo), lava (tira de 8 fotogramas) |
+| Tramo de suelo | PNG | 320 × 80 × 3 estados | seguro, aviso (rejilla al rojo), lava |
 | Superficie de lava | PNG mosaico horizontal | 256 × 64 × 8 fotogramas | o se conserva el shader |
-| Indicador del Ancla | PNG | 64 × 64 | normal y «se suelta» |
+
+(Tamaños al doble de la resolución lógica, como hornea `ArtCache`.)
 
 ### 3.3 Efectos
 
 | Efecto | Fotogramas | Celda |
 |---|---|---|
-| Polvo al aterrizar | 6 | 64 × 32 |
+| Polvo al aterrizar / derrapar | 6 | 64 × 32 |
 | Impacto del empujón | 5 | 64 × 64 |
 | Destello al recoger herramienta | 6 | 96 × 96 |
 | Humo al ser eliminado | 8 | 64 × 64 |
-| Brasa | 1 | 8 × 8 |
 
 ### 3.4 Interfaz
 
 | Recurso | Formato | Tamaño |
 |---|---|---|
 | Iconos Ancla y Gancho (y futuras herramientas) | SVG o PNG | 128 × 128 |
-| Botones táctiles: salto, empujar, protección, herramienta, joystick (base y mando) | PNG | 256 × 256, normal y pulsado |
+| Iconos de botones: salto, empujar, protección, herramienta | SVG o PNG | 128 × 128 (el aro lo dibuja el juego) |
+| Iconos de avisos: empujón, lava, peligro | SVG o PNG | 48 × 48 |
 | Panel 9-slice | PNG | 64 × 64 |
-| Fuente de títulos (redondeada, gruesa) y de texto | TTF/OTF con licencia OFL | — |
 | Icono de la app | PNG | 512 × 512 (y adaptativo de Android 432 × 432 con capas) |
 
 ### 3.5 Organización propuesta
@@ -156,21 +176,20 @@ los recursos encajen **sin tocar la simulación ni las colisiones**:
 ```
 assets/
 ├─ characters/<variante>/sheet.png, head.png
-├─ arena/lava_cave/{background_far.webp, background_mid.png, lavafall.png, tiles/*.png}
+├─ arena/lava_cave/{bg_far.webp, bg_mid.png, bg_near.png, lavafall.png, tiles/*.png}
 ├─ vfx/*.png
-├─ ui/{icons/*.svg, touch/*.png, panel.png}
+├─ ui/{icons/*.svg, panel.png}
 └─ fonts/*.ttf (+ licencias)
 ```
 
-Al llegar estos recursos solo cambian las vistas (`presentation/`) y la interfaz (`ui/`):
-las celdas y orígenes coinciden con los actuales, así que la simulación, las colisiones y las
+Al llegar estos recursos solo cambian las vistas (`presentation/`) y la interfaz (`ui/`): celdas,
+orígenes y tamaños coinciden con los actuales, así que la simulación, las colisiones y las
 pruebas no cambian.
 
 ---
 
 ## 4. Proceso
 
-1. **Ahora:** revisar el estilo v1 en el juego (APK 0.3.0 y capturas) y decidir (D8 en el panel).
-2. Si se aprueba: extender el estilo (más variantes de plataforma, animación de aterrizaje y
-   eliminado más larga, decoración de arena, iconos de herramientas futuras).
-3. Arte definitivo: cuando haya ilustraciones según la sección 3, sustituir las vistas sin tocar `game/`.
+1. **Ahora:** revisar la v2 en las comparaciones y en el APK 0.4.0, y decidir (D8).
+2. Si se encargan ilustraciones: sustituir las vistas de la cueva según §3, sin tocar `game/`.
+3. Solo después, extender el estilo a nuevas arenas, herramientas y menús.

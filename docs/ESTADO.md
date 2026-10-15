@@ -2,16 +2,16 @@
 
 > Archivo **generado** por `node tools/status-doc.mjs` a partir de `project-status.json`. No lo edites a mano.
 
-Datos del 2026-10-14T22:14:45-05:00.
+Datos del 2026-10-14T22:56:00-05:00.
 
 ## Resumen
 
-- **Avance del desarrollo: 53%** = 25 tareas verificadas ÷ 47 tareas registradas. Las terminadas sin verificar (7) no cuentan.
-- Tareas: 25 verificadas · 7 sin verificar · 1 en curso · 2 bloqueadas · 12 pendientes.
+- **Avance del desarrollo: 45%** = 25 tareas verificadas ÷ 55 tareas registradas. Las terminadas sin verificar (14) no cuentan.
+- Tareas: 25 verificadas · 14 sin verificar · 1 en curso · 2 bloqueadas · 13 pendientes.
 - **Pruebas · Automatizada (PC)**: 10/10 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
 - **Pruebas · En dispositivo**: 0/2 aprobadas · 0 fallidas · 1 requieren tu intervención · 1 sin ejecutar.
-- **Pruebas · Revisión manual**: 5/5 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
-- Problemas abiertos: 10 · Decisiones pendientes: 3.
+- **Pruebas · Revisión manual**: 6/6 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
+- Problemas abiertos: 8 · Decisiones pendientes: 3.
 
 ## Fases
 
@@ -22,7 +22,7 @@ Datos del 2026-10-14T22:14:45-05:00.
 | F2 · Partida y herramienta compartida (sin conexión) | En curso | 5/8 | Ancla y Gancho implementados y verificados con pruebas automáticas. Faltan otras herramientas (escudo, tablón), la prueba en un teléfono y ajustar el equilibrio jugando. |
 | F3 · Multijugador LAN (anfitrión-servidor) | Pendiente | 0/5 |  |
 | F4 · Bots | Pendiente | 0/1 |  |
-| F5 · Arte, animación y sonido | En curso | 1/8 | Propuesta de estilo v1 (procedural) en el juego, pendiente de tu aprobación (D8). Arte definitivo y sonido, pendientes (ver ASSETS.md). |
+| F5 · Arte, animación y sonido | En curso | 1/16 | Propuesta de estilo v1 (procedural) en el juego, pendiente de tu aprobación (D8). Arte definitivo y sonido, pendientes (ver ASSETS.md). |
 | F6 · Internet: servidor dedicado y salas | Pendiente | 0/1 | Requiere decidir el alojamiento (D6). |
 | F7 · Publicación Android | Pendiente | 1/2 |  |
 | F8 · Exportación iOS | Bloqueada | 0/1 | Bloqueada: requiere un Mac con Xcode (ver D4). |
@@ -59,7 +59,7 @@ Datos del 2026-10-14T22:14:45-05:00.
 | T-025 | F3 | Desconexiones v1 (cliente y anfitrión) | Pendiente |
 | T-026 | F3 | Prueba con varios teléfonos en la misma Wi-Fi | Pendiente |
 | T-027 | F4 | Bots básicos en la autoridad | Pendiente |
-| T-028 | F5 | Estilo artístico: 6 personajes y cueva de lava (propuesta v1) | En curso |
+| T-028 | F5 | Estilo artístico: 6 personajes y cueva de lava (v2 provisional) | En curso |
 | T-029 | F5 | Sonidos y música | Pendiente |
 | T-030 | F6 | Servidor dedicado headless y servicio de salas | Pendiente |
 | T-031 | F7 | Clave de publicación, NDK y AAB firmado | Pendiente |
@@ -73,40 +73,49 @@ Datos del 2026-10-14T22:14:45-05:00.
 | T-039 | F2 | Apuntado táctil (mantener, arrastrar, soltar) con vista previa del destino | Terminada sin verificar |
 | T-040 | F2 | Indicadores de posesión, uso y caducidad | Terminada sin verificar |
 | T-041 | F2 | Más herramientas (candidatas de la referencia: escudo, tablón) | Pendiente |
-| T-042 | F5 | Personaje base animado con 6 variantes (color + detalle) y 8 animaciones | Terminada sin verificar |
+| T-042 | F5 | Personaje base animado con 6 variantes (color + detalle) y 32 fotogramas (v2) | Terminada sin verificar |
 | T-043 | F5 | Sección de arena: plataformas normales, frágiles e inclinables con estados visuales | Terminada sin verificar |
 | T-044 | F5 | Efectos breves: aterrizaje, empujón, recogida de herramienta y eliminación | Terminada sin verificar |
 | T-045 | F5 | HUD, menú y controles táctiles coherentes con el estilo | Terminada sin verificar |
 | T-046 | F5 | Arte definitivo pintado (recursos listados en ASSETS.md) | Pendiente |
 | T-047 | F5 | Rendimiento del estilo en equipo modesto | Verificada |
+| T-048 | F5 | Revisión gráfica v2: personajes más grandes y legibles sin cambiar colisiones | Terminada sin verificar |
+| T-049 | F5 | Superficies ilustradas con volumen, textura y deterioro visible | Terminada sin verificar |
+| T-050 | F5 | Cueva de lava en 5 niveles con rutas de salto alcanzables | Terminada sin verificar |
+| T-051 | F5 | Controles táctiles discretos, flotantes y ajustables (tamaño y opacidad) | Terminada sin verificar |
+| T-052 | F5 | Estilo unificado (fuente Lilita One OFL), fondo por capas y avisos breves | Terminada sin verificar |
+| T-053 | F5 | Animaciones de movimiento, impacto y aterrizaje con peso | Terminada sin verificar |
+| T-054 | F5 | Comparación antes/después a igual tamaño de pantalla | Terminada sin verificar |
+| T-055 | F5 | Encargar u obtener las ilustraciones externas de ASSETS.md §3 antes de extender el estilo | Pendiente |
 
 ## Última compilación
 
-- Android · debug · 0.3.0 (3) · 2026-10-14T22:08:17-05:00
-- `builds/android/FinalFire-debug.apk` (57815649 bytes) · SHA-256 `67705599BCAD7C83FA399D328350A5CA074D5B0CDE2A7FAA2AEF251525E98AAE`
-- Probada en dispositivo: **no**. F2 (Ancla y Gancho) + propuesta de estilo v1. Actualiza a la 0.2.0 si estuviera instalada (mismo paquete, código mayor). Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md).
+- Android · debug · 0.4.0 (4) · 2026-10-14T22:50:45-05:00
+- `builds/android/FinalFire-debug.apk` (57861754 bytes) · SHA-256 `2C9662091A2FCDEDA6EE1AAF1BC841DBCA60E27AF3FCBC4B0337DAA8C8D72EA0`
+- Probada en dispositivo: **no**. Revisión gráfica v2 (provisional). Actualiza a la 0.3.0 si estuviera instalada. Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md).
 
 ## Pruebas
 
 | Id | Tipo | Prueba | Resultado | Última ejecución |
 |---|---|---|---|---|
-| TEST-01 | Automatizada (PC) | Entradas y controles táctiles (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-02 | Revisión manual | Renderizado Compatibility en este PC (capturas revisadas) | Aprobada | 2026-10-14T22:07:14-05:00 |
-| TEST-03 | Automatizada (PC) | Exportación del APK de depuración | Aprobada | 2026-10-14T22:08:17-05:00 |
-| TEST-04 | Automatizada (PC) | Firma y manifiesto del APK | Aprobada | 2026-10-14T22:08:17-05:00 |
+| TEST-01 | Automatizada (PC) | Entradas y controles táctiles (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-02 | Revisión manual | Renderizado Compatibility en este PC (capturas revisadas) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-03 | Automatizada (PC) | Exportación del APK de depuración | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-04 | Automatizada (PC) | Firma y manifiesto del APK | Aprobada | 2026-10-14T22:50:45-05:00 |
 | TEST-05 | En dispositivo | Instalación y ejecución en un teléfono Android | Requiere tu intervención | 2026-10-14T22:08:25-05:00 |
 | TEST-06 | En dispositivo | Exportación y compilación para iOS | Sin ejecutar | — |
 | TEST-07 | Revisión manual | Panel de progreso: visualización y actualización en vivo | Aprobada | 2026-10-14T22:14:45-05:00 |
-| TEST-08 | Automatizada (PC) | Personaje (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-09 | Automatizada (PC) | Arena (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-10 | Automatizada (PC) | Partida (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-08 | Automatizada (PC) | Personaje (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-09 | Automatizada (PC) | Arena (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-10 | Automatizada (PC) | Partida (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
 | TEST-12 | Automatizada (PC) | Validez del identificador com.elizsoft.finalfire | Aprobada | 2026-10-14 |
 | TEST-13 | Revisión manual | Revisión de exposición antes de publicar | Aprobada | 2026-10-14T22:15:16-05:00 |
 | TEST-14 | Revisión manual | Publicación en GitHub verificada | Aprobada | 2026-10-14T20:01:25-05:00 |
-| TEST-15 | Automatizada (PC) | Herramientas (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-16 | Automatizada (PC) | Presentación (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
-| TEST-17 | Revisión manual | Rendimiento del estilo v1 en este PC | Aprobada | 2026-10-14 |
+| TEST-15 | Automatizada (PC) | Herramientas (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-16 | Automatizada (PC) | Presentación (suite automatizada) | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-17 | Revisión manual | Rendimiento del estilo v2 en este PC | Aprobada | 2026-10-14T22:50:45-05:00 |
+| TEST-18 | Revisión manual | Comparación antes/después (v1 → v2) a igual tamaño | Aprobada | 2026-10-14T22:50:45-05:00 |
 
 ## Problemas abiertos
 
@@ -116,16 +125,14 @@ Datos del 2026-10-14T22:14:45-05:00.
 - **ISS-05** (Info) Godot firma con apksigner de build-tools 36.0.0
 - **ISS-08** (Bajo) Ajuste de jugabilidad sin probar con personas
 - **ISS-09** (Info) Sin sonido
-- **ISS-10** (Bajo) En pantallas 16:9 el joystick tapa parte del tramo izquierdo del suelo
 - **ISS-11** (Info) Bajadas puntuales a ≈ 31 FPS en la Intel HD 530
-- **ISS-12** (Bajo) Tipografía por defecto de Godot
 - **ISS-13** (Info) El arte actual es una propuesta procedural, no el definitivo
 
 ## Decisiones pendientes
 
 - **D4** ¿Tendrás acceso a un Mac para la versión de iOS? (no bloquea F1)
 - **D6** ¿Dónde se alojarán los servidores para jugar por internet? (no urgente, fase F6)
-- **D8** ¿Apruebas la propuesta de estilo v1 para extenderla?
+- **D8** ¿Apruebas el estilo v2 (provisional) y cómo seguimos con el arte?
 
 ## Equilibrio provisional
 
@@ -143,8 +150,26 @@ Valores de juego aún sin probar jugando; pueden cambiar.
 | BAL-08 | Plataformas | Inclinable: inclinación máxima y por carga | 16° / 12° por persona en el borde | `data/platforms/tilting_platform.tres` |
 | BAL-09 | Personaje | Empujón / protección | 640 de fuerza, 0,55 s de espera / 0,7 s, reduce al 15 %, espera 2,4 s | `data/characters/default_stats.tres` |
 | BAL-10 | Lava | Oleadas de suelo / subidas / muerte súbita | cada 8 s con 2 s de aviso / 45 s y 75 s / 100 s | `data/hazards/lava_cave.tres` |
+| BAL-11 | Presentación | Zoom de cámara / escala visual del personaje | 1,2 (centrada en 640, 374) / 1,12 | `scenes/match.tscn, presentation/fighter_view.gd` |
+| BAL-12 | Controles | Tamaño / opacidad táctil por defecto; área táctil | 100 % (75–130 %) / 60 % (25–100 %); 1,4× el dibujo | `ui/ui_settings.gd, ui/touch/touch_style.gd` |
+| BAL-13 | Arena | Niveles de la cueva y subidas de la lava | 5 niveles (suelo y = 560 … atalaya y = 165); lava 642 → 548 → 412 | `game/arena/arenas/lava_cave.tscn, data/hazards/lava_cave.tres` |
 
 ## Historial
+
+### 2026-10-14 · Revisión gráfica v2 de la cueva de lava
+
+Revisión concreta de una sección jugable: dibujo, composición y animación (no solo efectos). Comparación antes/después a igual tamaño. Sigue siendo provisional; las ilustraciones externas que faltan están en ASSETS.md §3.
+
+- Personajes ≈ 80 px en pantalla (cámara 1,2 + escala visual 1,12) con colisión 40×56 intacta
+- Superficies con volumen, textura y deterioro visible (piedra, losa, rejilla, madera en 3 estados)
+- Arena en 5 niveles con rutas comprobadas
+- Joystick flotante; botones discretos con área táctil 1,4×; tamaño y opacidad ajustables
+- Fuente Lilita One (OFL), iconos y HUD unificados; fondo en 5 capas más apagado
+- Avisos breves bajo el marcador en lugar de mensajes centrales
+- 32 fotogramas: derrape, despegue, ápice, aterrizaje con aplastamiento, golpe con congelación y destello
+- Rendimiento: 64 FPS de media (v1 55–59); APK 0.4.0
+
+Pruebas: Automatizadas: 152/152 (rutas de la arena, clips, vistas sin efecto en la simulación) (Aprobada) · Manual: comparación antes/después a igual tamaño (Aprobada) · Manual: rendimiento 64 FPS en este PC (Aprobada) · En dispositivo: tacto, legibilidad y rendimiento en un teléfono (Requiere tu intervención) · Tu aprobación del estilo v2 (D8) (Requiere tu intervención)
 
 ### 2026-10-14 · Identidad gráfica: propuesta de estilo v1
 

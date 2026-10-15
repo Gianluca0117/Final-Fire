@@ -2,7 +2,7 @@
 
 > Archivo **generado** por `node tools/status-doc.mjs` a partir de `project-status.json`. No lo edites a mano.
 
-Datos del 2026-10-14T22:14:45-05:00. Avance: **53%** (25 de 47 tareas verificadas).
+Datos del 2026-10-14T22:56:00-05:00. Avance: **45%** (25 de 55 tareas verificadas).
 
 Leyenda: ✅ verificada · ☑️ terminada sin verificar · 🔄 en curso · ⛔ bloqueada · ⬜ pendiente
 
@@ -71,20 +71,28 @@ Bots ejecutados en la autoridad de la partida con las mismas acciones que un hum
 
 - ⬜ **T-027** Bots básicos en la autoridad
 
-## F5 · Arte, animación y sonido — En curso (1/8)
+## F5 · Arte, animación y sonido — En curso (1/16)
 
 Recursos definitivos según docs/DIRECCION_VISUAL.md.
 
 > Propuesta de estilo v1 (procedural) en el juego, pendiente de tu aprobación (D8). Arte definitivo y sonido, pendientes (ver ASSETS.md).
 
-- 🔄 **T-028** Estilo artístico: 6 personajes y cueva de lava (propuesta v1) — _Implementada como propuesta (T-042 a T-045); falta tu aprobación (D8) para extenderla._
+- 🔄 **T-028** Estilo artístico: 6 personajes y cueva de lava (v2 provisional) — _Implementada como propuesta (T-042 a T-045); falta tu aprobación (D8) para extenderla._
 - ⬜ **T-029** Sonidos y música
-- ☑️ **T-042** Personaje base animado con 6 variantes (color + detalle) y 8 animaciones
+- ☑️ **T-042** Personaje base animado con 6 variantes (color + detalle) y 32 fotogramas (v2)
 - ☑️ **T-043** Sección de arena: plataformas normales, frágiles e inclinables con estados visuales
 - ☑️ **T-044** Efectos breves: aterrizaje, empujón, recogida de herramienta y eliminación
 - ☑️ **T-045** HUD, menú y controles táctiles coherentes con el estilo
 - ⬜ **T-046** Arte definitivo pintado (recursos listados en ASSETS.md) — _Requiere ilustración que este entorno no puede generar: especificaciones exactas en ASSETS.md §3._
 - ✅ **T-047** Rendimiento del estilo en equipo modesto
+- ☑️ **T-048** Revisión gráfica v2: personajes más grandes y legibles sin cambiar colisiones
+- ☑️ **T-049** Superficies ilustradas con volumen, textura y deterioro visible
+- ☑️ **T-050** Cueva de lava en 5 niveles con rutas de salto alcanzables
+- ☑️ **T-051** Controles táctiles discretos, flotantes y ajustables (tamaño y opacidad)
+- ☑️ **T-052** Estilo unificado (fuente Lilita One OFL), fondo por capas y avisos breves
+- ☑️ **T-053** Animaciones de movimiento, impacto y aterrizaje con peso
+- ☑️ **T-054** Comparación antes/después a igual tamaño de pantalla
+- ⬜ **T-055** Encargar u obtener las ilustraciones externas de ASSETS.md §3 antes de extender el estilo — _Decisión D8. No se extienden gráficos provisionales a otras arenas hasta decidirlo._
 
 ## F6 · Internet: servidor dedicado y salas — Pendiente (0/1)
 

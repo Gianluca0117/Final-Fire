@@ -4,6 +4,10 @@ class_name TouchStyle
 ## ni los avisos; al pulsar se iluminan en cálido.
 
 
+## Área táctil / radio dibujado.
+const HIT_RATIO := 1.4
+
+
 static func ring(ci: CanvasItem, c: Vector2, r: float, pressed: bool, alpha := 1.0) -> void:
 	ci.draw_circle(c, r, Color(1.0, 0.62, 0.25, 0.32 * alpha) if pressed else Color(0.08, 0.04, 0.06, 0.22 * alpha))
 	ci.draw_arc(c, r, 0, TAU, 48, Color(DrawKit.OUTLINE, 0.75 * alpha), 6.0, true)
