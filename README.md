@@ -127,10 +127,10 @@ FinalFire/
 
 ## Git
 
-Rama `main` con commits locales firmados como **Gianluca Ugalde** (identidad configurada solo en
-este repositorio). Remoto `origin` → <https://github.com/Gianluca0117/Final-Fire> (**público**).
-**No se ha subido nada.** Antes de hacerlo, revisa [`docs/REVISION_PUBLICACION.md`](docs/REVISION_PUBLICACION.md):
-tu correo aparece en los metadatos de cada commit.
+Rama `main` publicada en <https://github.com/Gianluca0117/Final-Fire> (**público**) desde el 14-10-2026.
+Commits firmados como **Gianluca Ugalde** (identidad configurada solo en este repositorio; el correo
+institucional es visible en el historial por decisión del propietario).
+Antes de cada subida conviene repetir la revisión de [`docs/REVISION_PUBLICACION.md`](docs/REVISION_PUBLICACION.md).
 
 El `.gitignore` excluye `.godot/`, compilaciones, claves de firma, credenciales y temporales.
 

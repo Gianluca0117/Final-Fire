@@ -8,7 +8,7 @@
       "Android",
       "iOS (pendiente, requiere Mac)"
     ],
-    "updatedAt": "2026-10-14T19:19:18-05:00",
+    "updatedAt": "2026-10-14T20:01:25-05:00",
     "packageId": "com.elizsoft.finalfire",
     "version": "0.2.0 (2)"
   },
@@ -472,6 +472,16 @@
       "lastRun": "2026-10-14T19:14:04-05:00",
       "result": "passed",
       "details": "Sin claves, contraseñas, tokens, compilaciones ni rutas absolutas. Visible: tu nombre y correo en los commits, usuario de GitHub, identificador y datos del PC."
+    },
+    {
+      "id": "TEST-14",
+      "kind": "manual",
+      "name": "Publicación en GitHub verificada",
+      "platform": "GitHub",
+      "command": "git push -u origin main; git ls-remote origin main; gh api repos/Gianluca0117/Final-Fire/commits",
+      "lastRun": "2026-10-14T20:01:25-05:00",
+      "result": "passed",
+      "details": "La rama main remota coincide con la local (d87ad2d). La API de GitHub lista los 4 commits y 132 archivos; ningún APK, clave ni carpeta .godot/. Repositorio público."
     }
   ],
   "builds": [
@@ -651,11 +661,11 @@
     },
     {
       "id": "ISS-06",
-      "title": "Tu correo quedaría público en los commits",
+      "title": "Correo visible en los commits públicos (aceptado)",
       "severity": "medium",
-      "status": "open",
+      "status": "resolved",
       "createdAt": "2026-10-14",
-      "details": "El repositorio de GitHub es público y cada commit lleva gugalde3775@utm.edu.ec. Ver docs/REVISION_PUBLICACION.md y la decisión D7."
+      "details": "El propietario decidió publicar con gugalde3775@utm.edu.ec (D7). Queda visible en el historial de GitHub."
     },
     {
       "id": "ISS-07",
@@ -743,7 +753,8 @@
         "Todavía no"
       ],
       "recommendation": "Resolver D7 y decidir público/privado; después, push.",
-      "status": "pending"
+      "status": "answered",
+      "answer": "Subir ahora al repositorio público (14-10-2026). Publicado: rama main con 4 commits."
     },
     {
       "id": "D6",
@@ -766,7 +777,8 @@
         "Usar la dirección privada de GitHub"
       ],
       "recommendation": "Usar la dirección privada si no quieres que tu correo institucional quede expuesto en un repositorio público.",
-      "status": "pending"
+      "status": "answered",
+      "answer": "Mantener el correo institucional en los commits públicos (14-10-2026)."
     }
   ],
   "history": [
@@ -878,6 +890,25 @@
         },
         {
           "name": "Manual: panel con los datos de F1",
+          "result": "passed"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "title": "Publicación en GitHub",
+      "description": "Primera subida de la rama main al repositorio público Gianluca0117/Final-Fire, tras la revisión de exposición y las decisiones D5 (subir ahora, público) y D7 (correo institucional).",
+      "changes": [
+        "git push de 4 commits (entorno, F1, identificador, documentación)",
+        "README y revisión de publicación actualizados: el proyecto ya está publicado"
+      ],
+      "checks": [
+        {
+          "name": "Manual: rama remota = local y archivos verificados con la API de GitHub",
+          "result": "passed"
+        },
+        {
+          "name": "Manual: sin APK, claves ni .godot/ en GitHub",
           "result": "passed"
         }
       ]

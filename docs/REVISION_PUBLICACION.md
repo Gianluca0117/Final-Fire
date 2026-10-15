@@ -1,7 +1,10 @@
 # Revisión antes de publicar en GitHub
 
 Revisión del 2026-10-14 sobre lo que quedaría expuesto al subir la rama `main` al repositorio
-**público** <https://github.com/Gianluca0117/Final-Fire>. **No se ha subido nada.**
+**público** <https://github.com/Gianluca0117/Final-Fire>.
+
+> **Publicado** el 14-10-2026 tras esta revisión: el propietario decidió subir ahora, en público y con
+> el correo institucional (D5 y D7). GitHub confirmó los 4 commits y 132 archivos, sin APK, claves ni `.godot/`.
 
 Cómo repetirla: los comandos están al final.
 
@@ -22,22 +25,19 @@ Cómo repetirla: los comandos están al final.
 1. **Tu nombre y correo en cada commit**: `Gianluca Ugalde <gugalde3775@utm.edu.ec>`.
    En un repositorio público cualquiera puede verlos (`git log`) y quedan en el historial aunque
    después se cambie la configuración. No aparece en el contenido de ningún archivo.
-   - Si prefieres no exponer el correo institucional: GitHub ofrece una dirección privada del tipo
-     `ID+Gianluca0117@users.noreply.github.com` (GitHub → Settings → Emails → «Keep my email
-     addresses private»). Como aún no se ha subido nada, se puede reescribir el autor de los commits
-     locales antes del primer push (te lo hago si lo pides).
+   - Decisión del propietario (D7): mantener el correo institucional. Para commits futuros se podría usar
+     la dirección privada de GitHub (`…@users.noreply.github.com`), pero los ya publicados conservan el correo.
 2. **Usuario de GitHub** `Gianluca0117` en README, `project-status.json` y `docs/ESTADO.md` (ya es público por ser el dueño del repositorio).
 3. **Identificador** `com.elizsoft.finalfire` en `export_presets.cfg` y `tools/env.ps1` (normal: será público en Google Play).
 4. **Datos del PC** en `docs/ENTORNO.md` y `project-status.json`: Windows 10, i5-6500, 7,9 GB de RAM,
    Intel HD 530, espacio libre en disco. Riesgo bajo; se pueden quitar si lo prefieres.
 5. **Capturas** en `docs/previews/`: solo muestran el juego con gráficos provisionales.
 
-## Pendiente de tu decisión
+## A tener en cuenta en próximas subidas
 
 - La imagen de referencia (`docs/referencias/estilo-objetivo.png`) **no está** en el repositorio.
-  Si la añades y el repositorio es público, comprueba que tienes derecho a publicarla.
-- ¿Repositorio público o privado? Un repositorio privado evita casi todo lo anterior y se puede
-  hacer público más tarde.
+  Si la añades, al ser público, comprueba que tienes derecho a publicarla.
+- Decidido el 14-10-2026: repositorio **público** (D5) y correo institucional en los commits (D7).
 
 ## Comandos usados
 

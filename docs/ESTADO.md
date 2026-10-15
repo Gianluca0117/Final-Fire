@@ -2,7 +2,7 @@
 
 > Archivo **generado** por `node tools/status-doc.mjs` a partir de `project-status.json`. No lo edites a mano.
 
-Datos del 2026-10-14T19:19:18-05:00.
+Datos del 2026-10-14T20:01:25-05:00.
 
 ## Resumen
 
@@ -10,8 +10,8 @@ Datos del 2026-10-14T19:19:18-05:00.
 - Tareas: 20 verificadas · 1 sin verificar · 1 en curso · 2 bloqueadas · 12 pendientes.
 - **Pruebas · Automatizada (PC)**: 8/8 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
 - **Pruebas · En dispositivo**: 0/2 aprobadas · 0 fallidas · 1 requieren tu intervención · 1 sin ejecutar.
-- **Pruebas · Revisión manual**: 3/3 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
-- Problemas abiertos: 7 · Decisiones pendientes: 4.
+- **Pruebas · Revisión manual**: 4/4 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
+- Problemas abiertos: 6 · Decisiones pendientes: 2.
 
 ## Fases
 
@@ -92,6 +92,7 @@ Datos del 2026-10-14T19:19:18-05:00.
 | TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
 | TEST-12 | Automatizada (PC) | Validez del identificador com.elizsoft.finalfire | Aprobada | 2026-10-14 |
 | TEST-13 | Revisión manual | Revisión de exposición antes de publicar | Aprobada | 2026-10-14T19:14:04-05:00 |
+| TEST-14 | Revisión manual | Publicación en GitHub verificada | Aprobada | 2026-10-14T20:01:25-05:00 |
 
 ## Problemas abiertos
 
@@ -99,18 +100,24 @@ Datos del 2026-10-14T19:19:18-05:00.
 - **ISS-02** (Bajo) El driver OpenGL de la Intel HD 530 no se usa directamente
 - **ISS-04** (Info) NDK y CMake no instalados
 - **ISS-05** (Info) Godot firma con apksigner de build-tools 36.0.0
-- **ISS-06** (Medio) Tu correo quedaría público en los commits
 - **ISS-08** (Bajo) Ajuste de jugabilidad sin probar con personas
 - **ISS-09** (Info) Sin sonido
 
 ## Decisiones pendientes
 
 - **D4** ¿Tendrás acceso a un Mac para la versión de iOS? (no bloquea F1)
-- **D5** ¿Subo el proyecto al repositorio de GitHub Gianluca0117/Final-Fire?
 - **D6** ¿Dónde se alojarán los servidores para jugar por internet? (no urgente, fase F6)
-- **D7** ¿Qué correo debe aparecer en los commits públicos?
 
 ## Historial
+
+### 2026-10-14 · Publicación en GitHub
+
+Primera subida de la rama main al repositorio público Gianluca0117/Final-Fire, tras la revisión de exposición y las decisiones D5 (subir ahora, público) y D7 (correo institucional).
+
+- git push de 4 commits (entorno, F1, identificador, documentación)
+- README y revisión de publicación actualizados: el proyecto ya está publicado
+
+Pruebas: Manual: rama remota = local y archivos verificados con la API de GitHub (Aprobada) · Manual: sin APK, claves ni .godot/ en GitHub (Aprobada)
 
 ### 2026-10-14 · F1: primera partida local
 
