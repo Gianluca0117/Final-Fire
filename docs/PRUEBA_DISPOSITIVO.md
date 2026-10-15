@@ -1,59 +1,51 @@
 # Prueba en un teléfono Android
 
-APK: `builds/android/FinalFire-debug.apk` — **Final Fire 0.2.0 (código 2)**,
+APK: `builds/android/FinalFire-debug.apk` — **Final Fire 0.3.0 (código 3)**,
 paquete `com.elizsoft.finalfire`, firmado con la clave de **depuración** (no sirve para publicar).
 Requiere Android 7.0 (API 24) o superior, con procesador ARM (casi todos los teléfonos).
+Incluye F1, la herramienta compartida (F2) y la **propuesta de estilo v1** (pendiente de aprobación).
 
-> Hasta ahora **no se ha probado en ningún dispositivo**. Las 83 pruebas automáticas se
-> ejecutan en el PC sin pantalla y no sustituyen esta prueba.
+> **Pendiente desde F1: todavía no se ha probado en ningún dispositivo.** Las 148 pruebas
+> automáticas se ejecutan en el PC sin pantalla y no sustituyen esta prueba.
 
-## Opción A: por cable (recomendada)
+## Instalar
 
-1. En el teléfono: **Ajustes → Información del teléfono** → pulsa 7 veces **Número de compilación**.
-2. **Ajustes → Sistema → Opciones para desarrolladores** → activa **Depuración USB**.
-3. Conecta el teléfono al PC por USB y acepta **«¿Permitir depuración USB?»** en el teléfono.
-4. En PowerShell, dentro de la carpeta del proyecto:
+**Por cable (recomendado).** En el teléfono: Ajustes → Información del teléfono → pulsa 7 veces
+*Número de compilación*; luego *Opciones para desarrolladores* → *Depuración USB*. Conéctalo,
+acepta el aviso y ejecuta en la carpeta del proyecto:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\install-apk.ps1
 ```
 
-Instala con `adb install -r` (si ya existía la app la actualiza **conservando sus datos**;
-no toca otras aplicaciones), la abre y muestra el registro del juego. `Ctrl+C` para salir.
+Usa `adb install -r`: si ya tenías la 0.2.0 la **actualiza conservando sus datos** (mismo paquete
+y código de versión mayor). No toca otras aplicaciones.
 
-## Opción B: sin cable
+**Sin cable.** Copia el APK al teléfono, ábrelo y permite «Instalar apps desconocidas».
 
-Copia el APK al teléfono (USB, Drive, correo…), ábrelo y permite **«Instalar apps desconocidas»**
-para la app con la que lo abras. Android puede mostrar un aviso de Play Protect por ser una app
-de depuración sin publicar: es esperable.
+## Lista breve (marca ✅ / ❌ y cuéntame qué viste)
 
-## Sobre el cambio de identificador
+**F1 · base**
+1. [ ] Abre sin cerrarse, en horizontal, y nada queda bajo la muesca o la cámara.
+2. [ ] Menú: «−»/«+» y **Jugar** responden al tacto.
+3. [ ] Joystick mueve; flecha salta (más alto si la mantienes); se puede mover y saltar a la vez.
+4. [ ] Mano empuja; escudo pone la burbuja y apenas te mueven.
+5. [ ] El suelo **avisa** (señal con cuenta atrás) **antes** de volverse lava; caer a la lava elimina y baja **VIVOS**.
+6. [ ] Plataforma de madera: se agrieta, tiembla con «!» y cae. Losa colgante: se inclina y resbalas.
+7. [ ] Al quedar uno: «¡Gana …!», **Revancha** y **Menú** funcionan. Pausa (II y botón atrás) funciona.
 
-El APK anterior (0.1.0) usaba `com.finalfire.game`. Android trata un identificador distinto como
-**otra aplicación**: el nuevo APK **no actualiza** al anterior, se instala aparte. Como el APK
-anterior nunca llegó a instalarse en un teléfono, no hay nada que migrar. Si lo hubieras instalado,
-desinstálalo a mano (Ajustes → Aplicaciones → Final Fire → Desinstalar). A partir de ahora todas
-las versiones usarán `com.elizsoft.finalfire` y sí se actualizarán entre sí.
+**F2 · herramienta compartida**
+8. [ ] Al empezar cada fase se **anuncia** dónde y qué herramienta aparece (haz de luz y nombre).
+9. [ ] Al tocarla la recoges: aparece sobre tu cabeza y en el botón de herramienta (con «1»).
+10. [ ] **Ancla:** sobre una plataforma, pulsa y suelta el botón → se nivela, brilla en cian y no cae; avisa «¡SE SUELTA!» antes de terminar.
+11. [ ] **Gancho:** mantén el botón y **arrastra** hacia una plataforma → ves la línea y el destino verde; al soltar te lanza. Apuntando a la nada, sale rojo y **no se gasta**.
+12. [ ] Avisa «caduca en 3 s» y desaparece al acabar la fase.
 
-## Qué comprobar (y contarme)
+**Estilo v1 · legibilidad**
+13. [ ] Distingues a los personajes por color **y** por su detalle (cinta, gafas, hojas, pompón, antifaz, aletas).
+14. [ ] Se distinguen plataforma segura, frágil, inclinable y a punto de caer; la lava y sus avisos se ven claros.
+15. [ ] Los botones táctiles no tapan peligros importantes (sobre todo el joystick sobre el suelo izquierdo).
+16. [ ] Fluidez: ¿va suave o a tirones? ¿Se calienta? **Modelo del teléfono y versión de Android.**
 
-Marca cada punto como ✅, ❌ o «no sé», y si algo falla dime qué viste:
-
-1. [ ] La app se instala y abre sin cerrarse.
-2. [ ] Se ve en **horizontal** y no se sale nada de la pantalla (ni bajo la muesca o la cámara).
-3. [ ] El menú responde al tacto: «−»/«+» cambian el número de maniquíes y **Jugar** inicia la partida.
-4. [ ] Cuenta atrás 3-2-1-¡YA! y luego el personaje **J1** responde al **joystick** (izquierda/derecha).
-5. [ ] **Salto** (flecha): salta; mantenerlo pulsado salta más alto.
-6. [ ] Se puede **mover y saltar a la vez** (dos dedos).
-7. [ ] **Mano**: empuja a un maniquí cercano.
-8. [ ] **Escudo**: aparece una burbuja y los empujones apenas te mueven.
-9. [ ] Las plataformas colgantes **se inclinan** y, si te quedas encima, **se agrietan, tiemblan y caen**.
-10. [ ] Un tramo del suelo **avisa** (parpadea con cuenta atrás) **antes** de convertirse en lava.
-11. [ ] Caer a la lava **elimina** y el contador **VIVOS** baja.
-12. [ ] Al quedar uno, aparece **«¡Gana …!»** con la clasificación; **Revancha** y **Menú** funcionan.
-13. [ ] **Pausa** (botón II y botón «atrás» de Android) detiene la partida.
-14. [ ] Fluidez: ¿va suave o a tirones? ¿Se calienta el teléfono?
-15. [ ] Modelo del teléfono y versión de Android.
-
-Con tus respuestas actualizo `project-status.json`: la prueba **TEST-05** pasa a aprobada o fallida
-y la compilación queda marcada como probada en dispositivo solo si realmente funcionó.
+Con tus respuestas actualizo `project-status.json`: la prueba **TEST-05** pasará a aprobada o fallida,
+y la compilación solo se marcará como probada en dispositivo si realmente funcionó.

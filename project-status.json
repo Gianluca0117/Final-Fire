@@ -8,9 +8,9 @@
       "Android",
       "iOS (pendiente, requiere Mac)"
     ],
-    "updatedAt": "2026-10-14T20:01:25-05:00",
+    "updatedAt": "2026-10-14T22:14:45-05:00",
     "packageId": "com.elizsoft.finalfire",
-    "version": "0.2.0 (2)"
+    "version": "0.3.0 (3)"
   },
   "phases": [
     {
@@ -30,8 +30,9 @@
     {
       "id": "F2",
       "name": "Partida y herramienta compartida (sin conexión)",
-      "status": "pending",
-      "description": "Participantes, fases, una herramienta por fase, eliminaciones, ganador, HUD y resultados."
+      "status": "in_progress",
+      "description": "Participantes, fases, una herramienta por fase, eliminaciones, ganador, HUD y resultados.",
+      "note": "Ancla y Gancho implementados y verificados con pruebas automáticas. Faltan otras herramientas (escudo, tablón), la prueba en un teléfono y ajustar el equilibrio jugando."
     },
     {
       "id": "F3",
@@ -48,8 +49,9 @@
     {
       "id": "F5",
       "name": "Arte, animación y sonido",
-      "status": "pending",
-      "description": "Recursos definitivos según docs/DIRECCION_VISUAL.md."
+      "status": "in_progress",
+      "description": "Recursos definitivos según docs/DIRECCION_VISUAL.md.",
+      "note": "Propuesta de estilo v1 (procedural) en el juego, pendiente de tu aprobación (D8). Arte definitivo y sonido, pendientes (ver ASSETS.md)."
     },
     {
       "id": "F6",
@@ -225,14 +227,17 @@
       "id": "T-019",
       "phase": "F2",
       "title": "MatchController: participantes, fases, eliminaciones y ganador",
-      "status": "in_progress",
-      "note": "Participantes, eliminaciones, ganador y empate hechos en F1 (T-034). Falta encadenar varias fases por partida."
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Herramientas» (automatizada): la partida avanza por fases (PhaseDefinition) con su herramienta; tras la última se repite la última. Eliminaciones, ganador y empate ya verificados en F1."
     },
     {
       "id": "T-020",
       "phase": "F2",
-      "title": "Herramienta compartida: una por fase (candidatas: escudo, tablón, gancho)",
-      "status": "pending"
+      "title": "Herramienta única compartida por fase (aviso, recogida, caducidad, portador eliminado)",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Herramientas» (automatizada): aviso previo con ubicación, tipo y tiempo; orden fase → aviso → aparece → caduca → nueva fase; nunca dos a la vez; fases seguidas no repiten; recogida única también simultánea (6 semillas, empates sorteados); una por jugador; portador eliminado (reaparece con aviso o se pierde); fin de fase. Partidas completas: ningún eliminado conserva una herramienta."
     },
     {
       "id": "T-021",
@@ -281,9 +286,9 @@
     {
       "id": "T-028",
       "phase": "F5",
-      "title": "Estilo artístico: 6 personajes encapuchados y cueva de lava",
-      "status": "pending",
-      "note": "Según la referencia visual."
+      "title": "Estilo artístico: 6 personajes y cueva de lava (propuesta v1)",
+      "status": "in_progress",
+      "note": "Implementada como propuesta (T-042 a T-045); falta tu aprobación (D8) para extenderla."
     },
     {
       "id": "T-029",
@@ -340,6 +345,85 @@
       "status": "verified",
       "verifiedAt": "2026-10-14",
       "verification": "Válido para Android (3 segmentos, minúsculas, sin palabras reservadas) e iOS. Google Play responde 404 para ese id (no lo usa ninguna app publicada). Configurado en el preset; aapt confirma package com.elizsoft.finalfire 0.2.0 (2)."
+    },
+    {
+      "id": "T-037",
+      "phase": "F2",
+      "title": "Ancla: estabiliza temporalmente una plataforma inestable",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Herramientas»: se consume en un uso; la plataforma se nivela, no se desgasta y no cae; todos los que están encima la aprovechan; avisa antes de soltarse (tolerancia de un tick) y luego vuelve a inclinarse y desgastarse; salva una plataforma que ya avisaba de caer; sin plataforma cerca no se gasta."
+    },
+    {
+      "id": "T-038",
+      "phase": "F2",
+      "title": "Gancho: desplazamiento a una superficie válida con alcance limitado",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "Suite «Herramientas»: la vista previa muestra el destino antes de usarlo; con destino válido tira del portador hasta la superficie y se consume; el rayo se detiene en el primer obstáculo (no atraviesa); no se engancha fuera del escenario ni más allá del alcance; con destino inválido no se gasta ni se mueve."
+    },
+    {
+      "id": "T-039",
+      "phase": "F2",
+      "title": "Apuntado táctil (mantener, arrastrar, soltar) con vista previa del destino",
+      "status": "done",
+      "verification": "Suite «Entradas» (toques simulados): mantener = apuntar sin usar; arrastrar fija la dirección; al soltar se usa en esa dirección y una sola vez; J2 tiene su tecla. Sin probar con dedos reales en un teléfono (TEST-05)."
+    },
+    {
+      "id": "T-040",
+      "phase": "F2",
+      "title": "Indicadores de posesión, uso y caducidad",
+      "status": "done",
+      "verification": "Aviso con haz de luz, nombre y cuenta atrás; pedestal; icono sobre la cabeza del portador; ranura del HUD y del botón táctil con «1»; parpadeo y segundos al caducar; avisos en el HUD. Revisado en capturas reales; falta valorarlo jugando."
+    },
+    {
+      "id": "T-041",
+      "phase": "F2",
+      "title": "Más herramientas (candidatas de la referencia: escudo, tablón)",
+      "status": "pending"
+    },
+    {
+      "id": "T-042",
+      "phase": "F5",
+      "title": "Personaje base animado con 6 variantes (color + detalle) y 8 animaciones",
+      "status": "done",
+      "verification": "24 fotogramas por variante (reposo, parpadeo, correr ×8, saltar, caer ×2, empujar, protegerse, impacto ×2, gancho ×3, eliminado) generados como hoja de sprites; galería y hojas exportadas en docs/previews/. Suite «Presentación»: 6 variantes con color y detalle distintos y un fotograma por estado. Pendiente de tu aprobación."
+    },
+    {
+      "id": "T-043",
+      "phase": "F5",
+      "title": "Sección de arena: plataformas normales, frágiles e inclinables con estados visuales",
+      "status": "done",
+      "verification": "Segura, agrietada, crítica (bordes al rojo), a punto de caer («!» y temblor), reaparición y estabilizada por el Ancla; suelo seguro / aviso / lava / enfriándose; lava inferior con shader y aviso de subida. Galería y partida capturadas. Pendiente de tu aprobación."
+    },
+    {
+      "id": "T-044",
+      "phase": "F5",
+      "title": "Efectos breves: aterrizaje, empujón, recogida de herramienta y eliminación",
+      "status": "done",
+      "verification": "Suite «Presentación»: efectos ≤ 0,6 de alfa y ≤ 44 px, por debajo de la capa de avisos (z 6 < 9). Revisado en capturas; falta valorarlo jugando."
+    },
+    {
+      "id": "T-045",
+      "phase": "F5",
+      "title": "HUD, menú y controles táctiles coherentes con el estilo",
+      "status": "done",
+      "verification": "Tema de interfaz, VIVOS con cabezas de los personajes, fase y tiempo, pausa, ranuras; controles con aro doble, semitransparentes en reposo; menú con desfile de personajes. Capturas reales en docs/previews/."
+    },
+    {
+      "id": "T-046",
+      "phase": "F5",
+      "title": "Arte definitivo pintado (recursos listados en ASSETS.md)",
+      "status": "pending",
+      "note": "Requiere ilustración que este entorno no puede generar: especificaciones exactas en ASSETS.md §3."
+    },
+    {
+      "id": "T-047",
+      "phase": "F5",
+      "title": "Rendimiento del estilo en equipo modesto",
+      "status": "verified",
+      "verifiedAt": "2026-10-14",
+      "verification": "tools/bench_render.gd, 6 maniquíes, 1280×720, Intel HD 530 (ANGLE), sin vsync: 55–59 FPS de media (31 con los gráficos de F1; 5 con el rig redibujado cada fotograma, descartado), ≈ 290 llamadas de dibujo."
     }
   ],
   "tests": [
@@ -348,9 +432,9 @@
       "name": "Entradas y controles táctiles (suite automatizada)",
       "platform": "Windows (headless)",
       "command": "Godot --headless --fixed-fps 60 --path . -s res://tests/run_tests.gd -- Entradas",
-      "lastRun": "2026-10-14T19:16:18-05:00",
+      "lastRun": "2026-10-14T22:07:55-05:00",
       "result": "passed",
-      "details": "22/22: acciones p1/p2, controlador humano, joystick analógico, botones y multitáctil con toques simulados.",
+      "details": "27/27: acciones p1/p2, controlador humano, joystick, botones, multitáctil y botón de herramienta (mantener = apuntar, arrastrar = dirección, soltar = usar, una sola vez) con toques simulados.",
       "kind": "automated"
     },
     {
@@ -358,9 +442,9 @@
       "name": "Renderizado Compatibility en este PC (capturas revisadas)",
       "platform": "Windows",
       "command": "Godot --path . -s res://tools/capture_preview.gd -- match …",
-      "lastRun": "2026-10-14T19:12:19-05:00",
+      "lastRun": "2026-10-14T22:07:14-05:00",
       "result": "passed",
-      "details": "Capturas reales del menú, la partida y los resultados a 1280×720 y ~1,9:1 (gl_compatibility mediante ANGLE en la Intel HD 530). Revisadas a ojo: HUD, avisos, lava, quemadura y controles táctiles se ven correctamente.",
+      "details": "Capturas reales con el estilo v1 (galería, partida a 1280×720 y ~1,9:1, menú, hojas de sprites) con gl_compatibility (ANGLE, Intel HD 530). Revisadas a ojo: personajes, plataformas, avisos, lava, HUD y controles se leen bien; en 16:9 el joystick tapa parte del suelo izquierdo (ISS-10).",
       "kind": "manual"
     },
     {
@@ -368,9 +452,9 @@
       "name": "Exportación del APK de depuración",
       "platform": "Android",
       "command": "tools/export-android.ps1",
-      "lastRun": "2026-10-14T19:12:59-05:00",
+      "lastRun": "2026-10-14T22:08:17-05:00",
       "result": "passed",
-      "details": "Código de salida 0. APK 0.2.0 de 57.720.626 bytes. El script ejecuta antes las 83 pruebas.",
+      "details": "Código de salida 0. APK 0.3.0 de 57.815.649 bytes. El script ejecuta antes las 148 pruebas.",
       "kind": "automated"
     },
     {
@@ -378,9 +462,9 @@
       "name": "Firma y manifiesto del APK",
       "platform": "Android",
       "command": "apksigner verify --print-certs; aapt dump badging",
-      "lastRun": "2026-10-14T19:13:00-05:00",
+      "lastRun": "2026-10-14T22:08:17-05:00",
       "result": "passed",
-      "details": "apksigner verify correcto. aapt: package com.elizsoft.finalfire, versionCode 2, versionName 0.2.0, minSdk 24, targetSdk 36, arm64-v8a y armeabi-v7a, screenOrientation=userLandscape. Sin tests/, tools/ ni el panel dentro del APK.",
+      "details": "apksigner verify correcto. aapt: package com.elizsoft.finalfire, versionCode 3, versionName 0.3.0. Sin pruebas, galería de estilo ni panel dentro del APK.",
       "kind": "automated"
     },
     {
@@ -388,9 +472,9 @@
       "name": "Instalación y ejecución en un teléfono Android",
       "platform": "Android (dispositivo físico)",
       "command": "tools/install-apk.ps1 (pasos y lista de comprobación en docs/PRUEBA_DISPOSITIVO.md)",
-      "lastRun": "2026-10-14T19:13:11-05:00",
+      "lastRun": "2026-10-14T22:08:25-05:00",
       "result": "requires_user",
-      "details": "No había ningún teléfono conectado y autorizado (adb devices vacío). Nunca se ha probado en un dispositivo.",
+      "details": "No había ningún teléfono conectado (adb devices vacío). Nunca se ha probado en un dispositivo: ni F1 ni F2 ni el estilo v1.",
       "kind": "device"
     },
     {
@@ -408,9 +492,9 @@
       "name": "Panel de progreso: visualización y actualización en vivo",
       "platform": "Navegador",
       "command": "node dashboard/server.mjs",
-      "lastRun": "2026-10-14T19:19:18-05:00",
+      "lastRun": "2026-10-14T22:14:45-05:00",
       "result": "passed",
-      "details": "Datos de F1 revisados en el navegador integrado a 375 px y en escritorio: avance 20/36, pruebas automatizadas, en dispositivo y manuales por separado, compilación B-0003 «no probada en dispositivo», inventario con vistas previas, sin desbordes. El cambio de esta prueba apareció sin recargar la página.",
+      "details": "Datos de F2 y del estilo v1 revisados en el navegador integrado a 375 px y en escritorio: avance 25/47, pruebas automatizadas (10/10) separadas de las de dispositivo (0/2), equilibrio provisional (10 valores), inventario con las 6 hojas de sprites, D8 pendiente, sin desbordes. El cambio de esta prueba apareció sin recargar.",
       "kind": "manual"
     },
     {
@@ -419,7 +503,7 @@
       "name": "Personaje (suite automatizada)",
       "platform": "Windows (headless)",
       "command": "… run_tests.gd -- Personaje",
-      "lastRun": "2026-10-14T19:16:18-05:00",
+      "lastRun": "2026-10-14T22:07:55-05:00",
       "result": "passed",
       "details": "17/17: movimiento, salto y salto corto, empujón (fuerza, aturdimiento, autoría, enfriamiento, alcance) y protección (reducción, rebote, duración, enfriamiento)."
     },
@@ -429,7 +513,7 @@
       "name": "Arena (suite automatizada)",
       "platform": "Windows (headless)",
       "command": "… run_tests.gd -- Arena",
-      "lastRun": "2026-10-14T19:16:18-05:00",
+      "lastRun": "2026-10-14T22:07:55-05:00",
       "result": "passed",
       "details": "22/22: inclinación y resbalón, desgaste/caída/reaparición con aviso, oleadas de suelo con aviso previo, subida de la lava con aviso, misma semilla → mismos peligros."
     },
@@ -439,7 +523,7 @@
       "name": "Partida (suite automatizada)",
       "platform": "Windows (headless)",
       "command": "… run_tests.gd -- Partida",
-      "lastRun": "2026-10-14T19:16:18-05:00",
+      "lastRun": "2026-10-14T22:07:55-05:00",
       "result": "passed",
       "details": "11/11: cuenta atrás, eliminación por empujón a la lava con autoría, ganador y puestos, empate."
     },
@@ -449,9 +533,9 @@
       "name": "Partidas completas con maniquíes (suite automatizada)",
       "platform": "Windows (headless)",
       "command": "… run_tests.gd -- Completas",
-      "lastRun": "2026-10-14T19:16:18-05:00",
+      "lastRun": "2026-10-14T22:07:55-05:00",
       "result": "passed",
-      "details": "11/11: menú → partida; tres partidas de 4 maniquíes (semillas 11, 22, 33) terminan entre 9 y 24 s simulados con ganador y resultados visibles."
+      "details": "16/16: menú → partida; modo de 2 jugadores en el mismo teclado; tres partidas de 4 maniquíes terminan con resultados; en todas aparece la herramienta y ningún eliminado conserva una."
     },
     {
       "id": "TEST-12",
@@ -469,9 +553,9 @@
       "name": "Revisión de exposición antes de publicar",
       "platform": "Git",
       "command": "git ls-files / git grep (docs/REVISION_PUBLICACION.md)",
-      "lastRun": "2026-10-14T19:14:04-05:00",
+      "lastRun": "2026-10-14T22:15:16-05:00",
       "result": "passed",
-      "details": "Sin claves, contraseñas, tokens, compilaciones ni rutas absolutas. Visible: tu nombre y correo en los commits, usuario de GitHub, identificador y datos del PC."
+      "details": "Repetida antes de subir F2 y el estilo v1: 207 archivos, sin claves, contraseñas, tokens, APK ni rutas absolutas. Visible (ya publicado, decisión D7): nombre y correo en commits y en el registro de decisiones; usuario de GitHub; identificador; datos del PC."
     },
     {
       "id": "TEST-14",
@@ -482,6 +566,36 @@
       "lastRun": "2026-10-14T20:01:25-05:00",
       "result": "passed",
       "details": "La rama main remota coincide con la local (d87ad2d). La API de GitHub lista los 4 commits y 132 archivos; ningún APK, clave ni carpeta .godot/. Repositorio público."
+    },
+    {
+      "id": "TEST-15",
+      "kind": "automated",
+      "name": "Herramientas (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Herramientas",
+      "lastRun": "2026-10-14T22:07:55-05:00",
+      "result": "passed",
+      "details": "45/45: ciclo de fases y aviso previo, recogida (también simultánea con 6 semillas), una por jugador, portador eliminado (reaparece o se pierde), fin de fase, Ancla (incluido su final y salvar un derrumbe), Gancho (destino válido, obstáculos, fuera del escenario, fuera de alcance)."
+    },
+    {
+      "id": "TEST-16",
+      "kind": "automated",
+      "name": "Presentación (suite automatizada)",
+      "platform": "Windows (headless)",
+      "command": "… run_tests.gd -- Presentación",
+      "lastRun": "2026-10-14T22:07:55-05:00",
+      "result": "passed",
+      "details": "10/10: con y sin gráficos la misma partida da las mismas posiciones tras 420 ticks; las colisiones no cambian; efectos semitransparentes, pequeños y por debajo de los avisos; avisos en capa z 9; 6 variantes distintas; un fotograma por estado."
+    },
+    {
+      "id": "TEST-17",
+      "kind": "manual",
+      "name": "Rendimiento del estilo v1 en este PC",
+      "platform": "Windows (Intel HD 530, ANGLE)",
+      "command": "tools/bench_render.gd -- 20 6",
+      "lastRun": "2026-10-14",
+      "result": "passed",
+      "details": "55–59 FPS de media, ≈ 31 FPS en el 1 % peor, ≈ 290 llamadas de dibujo (F1: 31 FPS y 145 llamadas). Medida en PC; el rendimiento en un teléfono está pendiente (TEST-05)."
     }
   ],
   "builds": [
@@ -529,7 +643,7 @@
       "type": "debug",
       "version": "0.2.0 (2)",
       "packageId": "com.elizsoft.finalfire",
-      "path": "builds/android/FinalFire-debug.apk",
+      "path": null,
       "sizeBytes": 57720626,
       "sha256": "FFB00622736E0437657CC31F1F6B6418163A769BEA54FC86A73A8E6B07C0D443",
       "createdAt": "2026-10-14T19:12:59-05:00",
@@ -546,46 +660,129 @@
         "TEST-05"
       ],
       "deviceTested": false,
-      "notes": "Primera partida local (F1). Nuevo identificador: no actualiza a las versiones com.finalfire.game, que nunca se instalaron. Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md)."
+      "notes": "Sustituida por B-0004 (el archivo se sobrescribió). Nunca se instaló en un teléfono."
+    },
+    {
+      "id": "B-0004",
+      "platform": "Android",
+      "type": "debug",
+      "version": "0.3.0 (3)",
+      "packageId": "com.elizsoft.finalfire",
+      "path": "builds/android/FinalFire-debug.apk",
+      "sizeBytes": 57815649,
+      "sha256": "67705599BCAD7C83FA399D328350A5CA074D5B0CDE2A7FAA2AEF251525E98AAE",
+      "createdAt": "2026-10-14T22:08:17-05:00",
+      "engine": "Godot 4.7.2-stable",
+      "signing": "Clave de depuración de Godot (%APPDATA%\\Godot\\keystores\\debug.keystore)",
+      "tests": [
+        "TEST-01",
+        "TEST-08",
+        "TEST-09",
+        "TEST-10",
+        "TEST-15",
+        "TEST-16",
+        "TEST-11",
+        "TEST-03",
+        "TEST-04",
+        "TEST-05"
+      ],
+      "deviceTested": false,
+      "notes": "F2 (Ancla y Gancho) + propuesta de estilo v1. Actualiza a la 0.2.0 si estuviera instalada (mismo paquete, código mayor). Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md)."
     }
   ],
   "inventory": {
     "characters": [
       {
         "id": "CHR-01",
-        "name": "Personaje provisional encapuchado (6 colores)",
-        "status": "placeholder",
-        "path": "presentation/fighter_view.gd",
-        "preview": "docs/previews/personajes.png",
-        "notes": "Dibujado con formas: capucha, cara, capa y etiqueta J1/M2…; colores de la referencia (rojo, azul, verde, amarillo, morado, cian). Muestra brazo al empujar, burbuja de protección y destello al recibir un golpe."
+        "name": "Brasa (rojo)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_1.png",
+        "notes": "Variante 1: cinta con dos colas. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
+      },
+      {
+        "id": "CHR-02",
+        "name": "Escarcha (azul)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_2.png",
+        "notes": "Variante 2: gafas. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
+      },
+      {
+        "id": "CHR-03",
+        "name": "Musgo (verde)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_3.png",
+        "notes": "Variante 3: dos hojas. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
+      },
+      {
+        "id": "CHR-04",
+        "name": "Chispa (amarillo)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_4.png",
+        "notes": "Variante 4: pompón y rayo. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
+      },
+      {
+        "id": "CHR-05",
+        "name": "Sombra (morado)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_5.png",
+        "notes": "Variante 5: antifaz y punta larga. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
+      },
+      {
+        "id": "CHR-06",
+        "name": "Marea (cian)",
+        "status": "draft",
+        "path": "presentation/character/character_look.gd",
+        "preview": "docs/previews/hoja_6.png",
+        "notes": "Variante 6: aletas y bufanda a rayas. Hoja de sprites real generada por el juego (24 fotogramas). Propuesta de estilo v1, pendiente de aprobación; no es arte definitivo."
       }
     ],
     "animations": [
       {
         "id": "ANI-01",
-        "name": "Animaciones procedurales provisionales",
-        "status": "placeholder",
-        "path": "presentation/fighter_view.gd",
-        "preview": "docs/previews/partida_empujon_lava.png",
-        "notes": "Por código, sin sprites: estirar/aplastar al saltar y aterrizar, balanceo al correr, temblor al quedar aturdido, quemadura con brasas al ser eliminado. Plataformas que tiemblan antes de caer y lava con oleaje."
+        "name": "24 fotogramas por variante",
+        "status": "draft",
+        "path": "presentation/character/character_animations.gd",
+        "preview": "docs/previews/hoja_1.png",
+        "notes": "Reposo ×4, parpadeo, correr ×8, saltar, caer ×2, empujar, protegerse, impacto ×2, gancho ×3 (90°/135°/180°), eliminado. Más deformación al saltar/aterrizar, burbuja, estrellas y quemadura en tiempo real."
       }
     ],
     "scenarios": [
       {
         "id": "SCN-01",
-        "name": "Cueva de lava (F1): aviso de lava en el suelo",
-        "status": "placeholder",
-        "path": "game/arena/arenas/lava_cave.tscn",
-        "preview": "docs/previews/partida_aviso.png",
-        "notes": "5 tramos de suelo que se vuelven lava, 3 plataformas colgantes inestables, 2 repisas fijas y lava inferior que sube. Captura real a 1280×720 con controles táctiles."
+        "name": "Galería de estilo: personajes, animaciones y sección de arena",
+        "status": "draft",
+        "path": "scenes/dev/style_gallery.tscn",
+        "preview": "docs/previews/estilo_galeria.png",
+        "notes": "Vistas reales del juego con estados fijados: normal, frágil (segura / agrietada / a punto de caer / anclada), inclinable, suelo seguro / aviso / lava y lava inferior. Solo desarrollo."
       },
       {
         "id": "SCN-02",
-        "name": "Cueva de lava (F1): empujón a la lava",
-        "status": "placeholder",
+        "name": "Cueva de lava en partida (16:9)",
+        "status": "draft",
         "path": "game/arena/arenas/lava_cave.tscn",
-        "preview": "docs/previews/partida_empujon_lava.png",
-        "notes": "Tramo de suelo convertido en lava y eliminación acreditada a quien empujó."
+        "preview": "docs/previews/partida_estilo.png",
+        "notes": "Fondo horneado (ruinas, estandartes, cascadas), madera frágil, losas inclinables, aviso de lava en el suelo, controles táctiles."
+      },
+      {
+        "id": "SCN-03",
+        "name": "Cueva de lava con la herramienta (Ancla) en su pedestal",
+        "status": "draft",
+        "path": "game/arena/arenas/lava_cave.tscn",
+        "preview": "docs/previews/partida_herramienta.png",
+        "notes": "Fase 1, Ancla disponible; burbuja de protección de un maniquí."
+      },
+      {
+        "id": "SCN-04",
+        "name": "Cueva de lava en pantalla ancha (~1,9:1)",
+        "status": "draft",
+        "path": "game/arena/arenas/lava_cave.tscn",
+        "preview": "docs/previews/partida_ancha.png",
+        "notes": "El escenario queda centrado y los controles se apartan del suelo."
       }
     ],
     "sounds": [],
@@ -602,19 +799,19 @@
     "ui": [
       {
         "id": "UI-01",
-        "name": "Menú de inicio",
-        "status": "placeholder",
+        "name": "Menú de inicio con desfile de personajes",
+        "status": "draft",
         "path": "ui/menu/main_menu.gd",
         "preview": "docs/previews/menu.png",
-        "notes": "Número de maniquíes (1–5), Jugar y 2 jugadores con el mismo teclado (solo en PC)."
+        "notes": "Tema v1; tipografía por defecto de Godot (falta fuente propia, ISS-12)."
       },
       {
         "id": "UI-02",
-        "name": "Resultados en pantalla ancha",
-        "status": "placeholder",
+        "name": "HUD y controles táctiles en partida",
+        "status": "draft",
         "path": "ui/hud/match_hud.gd",
-        "preview": "docs/previews/resultados_ancha.png",
-        "notes": "Clasificación, revancha y menú. Captura a ~1,9:1: el escenario queda centrado y el HUD anclado a las esquinas."
+        "preview": "docs/previews/partida_herramienta.png",
+        "notes": "VIVOS con cabezas, fase y tiempo, pausa, joystick, salto, mano, escudo y ranura de herramienta."
       }
     ]
   },
@@ -625,7 +822,7 @@
       "severity": "high",
       "status": "open",
       "createdAt": "2026-10-14",
-      "details": "Ni la versión 0.1.0 ni la 0.2.0 se han instalado en un dispositivo. Hasta entonces no se confirman el tacto real, el rendimiento, la orientación ni el área segura."
+      "details": "Ninguna versión (0.1.0, 0.2.0, 0.3.0) se ha instalado en un dispositivo. Sin eso no se confirman el tacto real, el apuntado del Gancho, el rendimiento del estilo v1, la orientación ni el área segura."
     },
     {
       "id": "ISS-02",
@@ -681,7 +878,7 @@
       "severity": "low",
       "status": "open",
       "createdAt": "2026-10-14",
-      "details": "Con 4 maniquíes las partidas duran 9–24 s; quieto en una plataforma inclinada se resbala fuera en ~1 s; los empujones lanzan ~190 px. Valores en data/*.tres, a ajustar tras jugar en el teléfono."
+      "details": "Valores de herramientas, plataformas y lava son provisionales (lista «Equilibrio provisional»). Con 4 maniquíes las partidas duran 5–25 s y la herramienta suele aparecer una vez por partida. Ajustar tras jugar en el teléfono."
     },
     {
       "id": "ISS-09",
@@ -690,6 +887,54 @@
       "status": "open",
       "createdAt": "2026-10-14",
       "details": "No hay audio todavía (fase F5). La arquitectura ya prevé que el audio reaccione a las señales de la partida."
+    },
+    {
+      "id": "ISS-10",
+      "title": "En pantallas 16:9 el joystick tapa parte del tramo izquierdo del suelo",
+      "severity": "low",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Los controles son semitransparentes en reposo y los avisos van en su propia capa, pero el tramo izquierdo queda bajo el joystick. En pantallas más anchas (19,5:9–20:9) el escenario se centra y no ocurre. Comprobar en el teléfono."
+    },
+    {
+      "id": "ISS-11",
+      "title": "Bajadas puntuales a ≈ 31 FPS en la Intel HD 530",
+      "severity": "info",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Media 55–59 FPS; el 1 % peor ronda 31 FPS (cambios de estado y efectos). Pendiente de medir en un teléfono."
+    },
+    {
+      "id": "ISS-12",
+      "title": "Tipografía por defecto de Godot",
+      "severity": "low",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Falta una fuente de títulos con licencia libre (OFL) coherente con el estilo (ASSETS.md §3.4)."
+    },
+    {
+      "id": "ISS-13",
+      "title": "El arte actual es una propuesta procedural, no el definitivo",
+      "severity": "info",
+      "status": "open",
+      "createdAt": "2026-10-14",
+      "details": "Vectorial dibujado por código y convertido a sprites. El arte pintado como el de la referencia necesita los recursos de ASSETS.md §3."
+    },
+    {
+      "id": "ISS-14",
+      "title": "La galería de estilo no mostraba personajes en algunas capturas",
+      "severity": "low",
+      "status": "resolved",
+      "createdAt": "2026-10-14",
+      "details": "La herramienta de captura esperaba 1 s, pero al arrancar hay pocos fotogramas (compilación de shaders) y las hojas de sprites aún no estaban listas. Ahora espera también un mínimo de fotogramas y la generación ya no depende de la señal de fin de dibujo."
+    },
+    {
+      "id": "ISS-15",
+      "title": "El ToolSystem quedaba retenido en memoria al terminar cada partida",
+      "severity": "medium",
+      "status": "resolved",
+      "createdAt": "2026-10-14",
+      "details": "Detectado por el aviso «resources still in use» de las pruebas: funciones conectadas a sus señales lo capturaban (ciclo de referencias). Corregido con ToolSystem.release() al salir la partida (ARCHITECTURE A19)."
     }
   ],
   "decisions": [
@@ -779,6 +1024,18 @@
       "recommendation": "Usar la dirección privada si no quieres que tu correo institucional quede expuesto en un repositorio público.",
       "status": "answered",
       "answer": "Mantener el correo institucional en los commits públicos (14-10-2026)."
+    },
+    {
+      "id": "D8",
+      "question": "¿Apruebas la propuesta de estilo v1 para extenderla?",
+      "context": "Personaje con 6 variantes y 8 animaciones, arena con plataformas normales, frágiles e inclinables, lava y avisos, efectos, HUD y controles. Es procedural (no pintado). Revísalo en el APK 0.3.0 y en docs/previews/ (estilo_galeria.png, hoja_1–6.png, partida_*.png).",
+      "options": [
+        "Aprobar y extender",
+        "Ajustar (dime qué: proporciones, colores, expresiones, fondo…)",
+        "Encargar arte pintado según ASSETS.md"
+      ],
+      "recommendation": "Probarlo primero en el teléfono: la legibilidad real depende del tamaño de pantalla.",
+      "status": "pending"
     }
   ],
   "history": [
@@ -912,6 +1169,159 @@
           "result": "passed"
         }
       ]
+    },
+    {
+      "date": "2026-10-14",
+      "title": "F2: herramienta única compartida (Ancla y Gancho)",
+      "description": "La partida se divide en fases con una sola herramienta compartida, anunciada antes de aparecer. Implementados el Ancla y el Gancho con reglas en la autoridad, separadas de gráficos y controles, y apuntado táctil con vista previa.",
+      "changes": [
+        "Calendario de lava separado de las fases (HazardSchedule / PhaseDefinition)",
+        "ToolSystem: aviso, una herramienta a la vez, recogida única (empates por semilla), caducidad, portador eliminado",
+        "Ancla (estabiliza una plataforma, avisa antes de soltarse) y Gancho (rayos en cono, no atraviesa, no sale del escenario, no se gasta si no hay destino)",
+        "Apuntado táctil: mantener, arrastrar, soltar; teclas E (J1) y , (J2); modo de 2 jugadores conservado",
+        "Corregido: ciclo de referencias que retenía el ToolSystem (ISS-15)",
+        "Maniquíes que disputan la herramienta"
+      ],
+      "checks": [
+        {
+          "name": "Automatizadas: Herramientas 45/45",
+          "result": "passed"
+        },
+        {
+          "name": "Automatizadas: Entradas 27/27 (incluye el botón de herramienta)",
+          "result": "passed"
+        },
+        {
+          "name": "Automatizadas: partidas completas con herramienta 16/16",
+          "result": "passed"
+        },
+        {
+          "name": "En dispositivo: probar F1 y herramientas en un teléfono",
+          "result": "requires_user"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "title": "Identidad gráfica: propuesta de estilo v1",
+      "description": "Estilo 2D cartoon procedural para revisar en el juego: personaje base con 6 variantes y 8 animaciones, arena con estados visuales claros, lava animada y avisos, efectos breves, HUD, menú y controles coherentes. Optimizado para equipos modestos. No es arte definitivo: lo que falta está en ASSETS.md.",
+      "changes": [
+        "Personaje: rig vectorial con contorno grueso → hojas de sprites de 24 fotogramas por variante al arrancar",
+        "Arena: piedra segura, madera frágil, losa inclinable con pivote; estados segura / agrietada / crítica / a punto de caer / anclada",
+        "Lava con shader, suelo que avisa con señal y cuenta atrás en una capa que nada tapa, aviso de subida de la lava",
+        "Fondo de cueva horneado una vez; efectos de polvo, impacto, recogida y humo",
+        "HUD y menú con tema propio; VIVOS con cabezas; controles táctiles semitransparentes en reposo",
+        "Rendimiento en Intel HD 530: 31 → 55–59 FPS de media",
+        "ASSETS.md, galería de estilo y APK 0.3.0"
+      ],
+      "checks": [
+        {
+          "name": "Automatizadas: Presentación 10/10 (el arte no altera simulación ni colisiones)",
+          "result": "passed"
+        },
+        {
+          "name": "Manual: capturas reales del estilo v1",
+          "result": "passed"
+        },
+        {
+          "name": "Manual: rendimiento 55–59 FPS en este PC",
+          "result": "passed"
+        },
+        {
+          "name": "En dispositivo: legibilidad y rendimiento en un teléfono",
+          "result": "requires_user"
+        },
+        {
+          "name": "Tu aprobación del estilo (D8)",
+          "result": "requires_user"
+        },
+        {
+          "name": "Manual: panel con los datos nuevos",
+          "result": "passed"
+        }
+      ]
+    }
+  ],
+  "balance": [
+    {
+      "id": "BAL-01",
+      "area": "Fases",
+      "parameter": "Duración de cada fase",
+      "value": "20 s",
+      "file": "data/phases/standard_phase.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-02",
+      "area": "Fases",
+      "parameter": "Aviso antes de aparecer / aviso de caducidad",
+      "value": "1 s + 2,5 s / 3 s",
+      "file": "data/phases/standard_phase.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-03",
+      "area": "Herramientas",
+      "parameter": "Radio de recogida",
+      "value": "40 px",
+      "file": "data/rules/local_match.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-04",
+      "area": "Herramientas",
+      "parameter": "Portador eliminado",
+      "value": "reaparece con 1,5 s de aviso si quedan ≥ 5 s de fase",
+      "file": "data/rules/local_match.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-05",
+      "area": "Ancla",
+      "parameter": "Duración / aviso / alcance",
+      "value": "6 s / 1,5 s / 260 px",
+      "file": "data/tools/anchor.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-06",
+      "area": "Gancho",
+      "parameter": "Alcance / cono / velocidad / impulso final",
+      "value": "380 px / ±24° / 1150 px/s / −520",
+      "file": "data/tools/hook.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-07",
+      "area": "Plataformas",
+      "parameter": "Frágil: desgaste por persona; caída tras aviso",
+      "value": "0,1/s; 1 s; reaparece a los 7 s",
+      "file": "data/platforms/fragile_platform.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-08",
+      "area": "Plataformas",
+      "parameter": "Inclinable: inclinación máxima y por carga",
+      "value": "16° / 12° por persona en el borde",
+      "file": "data/platforms/tilting_platform.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-09",
+      "area": "Personaje",
+      "parameter": "Empujón / protección",
+      "value": "640 de fuerza, 0,55 s de espera / 0,7 s, reduce al 15 %, espera 2,4 s",
+      "file": "data/characters/default_stats.tres",
+      "status": "provisional"
+    },
+    {
+      "id": "BAL-10",
+      "area": "Lava",
+      "parameter": "Oleadas de suelo / subidas / muerte súbita",
+      "value": "cada 8 s con 2 s de aviso / 45 s y 75 s / 100 s",
+      "file": "data/hazards/lava_cave.tres",
+      "status": "provisional"
     }
   ]
 }

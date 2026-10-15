@@ -1,6 +1,6 @@
 # Arquitectura de Final Fire
 
-Versión 2 · 2026-10-14 · Estado: **F1 implementada** (simulación, controladores, vistas e interfaz sin conexión). F2 en adelante, pendiente.
+Versión 3 · 2026-10-14 · Estado: **F1 implementada; F2 (herramienta compartida: Ancla y Gancho) implementada; estilo gráfico v1 propuesto** (pendiente de aprobación). Red, bots y campaña, pendientes.
 
 Este documento define cómo se organiza el juego. Desde F1 el código sigue esta estructura; lo que
 aún no existe (herramientas, red, audio, bots) está marcado como pendiente (ver [Plan por etapas](#11-plan-por-etapas)).
@@ -132,7 +132,8 @@ estado y las señales (animación, partículas, sonido). En el servidor dedicado
 Todos producen el mismo `InputFrame` y se lo entregan al `Fighter` cada tick:
 
 ```
-InputFrame { tick, move_x ∈ [-1, 1], jump_pressed, jump_held, push_pressed, shield_pressed }   (+ tool_pressed en F2)
+InputFrame { tick, move_x ∈ [-1, 1], jump_pressed, jump_held, push_pressed, shield_pressed,
+             tool_pressed (al soltar), tool_held (apuntando), aim ∈ círculo unidad }
 ```
 
 | Controlador | Dónde corre | Fuente |
@@ -176,13 +177,34 @@ LOBBY → COUNTDOWN → PHASE(n) → … → RESULTS
 
 ### 4.5 Herramientas (`game/tools/`)
 
-- **Una sola herramienta compartida por fase**: `MatchController` crea exactamente un `ToolPickup`
-  al inicio de cada fase y no crea otro hasta la siguiente fase.
-- Estados: `SPAWNED → HELD(owner) → ACTIVE(restante) → CONSUMED`. Si el portador es eliminado,
-  la herramienta cae donde estaba (si cae en lava, se destruye) — regla configurable.
-- Recogida, propietario, activación, duración, usos y consumo los decide **la autoridad**.
-- `ToolDefinition` (Resource): id, nombre, icono, duración, usos, enfriamiento y escena del efecto.
-  Candidatas de la referencia visual: escudo, tablón, gancho/cuerda.
+Implementado en F2. `ToolSystem` (RefCounted, dentro de `MatchController`) es la **autoridad**:
+
+- **Fases:** la partida es una secuencia de `PhaseDefinition` (duración, herramientas posibles,
+  retardo y duración del aviso, aviso de caducidad); tras la última se repite la última. El
+  calendario de lava es independiente (`HazardSchedule`).
+- **Ciclo:** `NONE → ANNOUNCED` (aviso con ubicación, tipo y cuenta atrás) `→ AVAILABLE → HELD →`
+  `GONE` (consumida o caducada). Como mucho **una** herramienta a la vez; la siguiente solo se
+  anuncia al empezar otra fase, tras consumirse o caducar la anterior. Fases seguidas no repiten tipo.
+- **Recogida:** se resuelve en un único sitio por tick: gana el más cercano; en empate exacto,
+  sorteo con la semilla de la partida (reproducible en la autoridad). Cada jugador lleva ≤ 1.
+- **Portador eliminado** (`MatchRules.on_carrier_eliminated`): por defecto `RESPAWN` — vuelve a su
+  punto con un aviso de 1,5 s si quedan ≥ 5 s de fase; si no, se pierde hasta la fase siguiente.
+- **Fin de fase:** aviso a 3 s; al terminar, la herramienta (en el suelo o en mano) caduca.
+- **Uso:** el `InputFrame` lleva `tool_pressed` y `aim`; `ToolSystem.try_use()` busca el objetivo
+  y, **si no es válido, no se consume** (`tool_use_failed` con el motivo).
+- **Ancla** (`AnchorTool`): estabiliza la plataforma donde está el portador (o la más cercana
+  en 260 px) durante 6 s: no se inclina, no se desgasta y no se derrumba (salva incluso una que
+  ya avisaba de caer). A falta de 1,5 s avisa (`anchor_ending`) y luego vuelve a su comportamiento.
+- **Gancho** (`HookTool`): 9 rayos en un cono de ±24° alrededor de la dirección apuntada, alcance
+  380 px; cada rayo se detiene en el primer obstáculo (nunca atraviesa); válido: bloques,
+  plataformas en su sitio y suelo que no está en lava, **dentro de la zona visible**; no cuenta
+  la superficie que pisa el portador. Tira del portador (`Fighter.start_hook`) y termina al llegar,
+  al chocar o a los 0,7 s; un empujón lo cancela.
+- **Vista previa:** `ToolSystem.previews` calcula cada tick el objetivo del portador (mismas reglas
+  que el uso), así la interfaz muestra el destino antes de activar.
+- **Apuntado táctil:** botón de herramienta = segundo joystick: mantener (ver destino), arrastrar
+  (elegir dirección), soltar (usar). Sin arrastrar: arriba inclinado hacia donde se mueve.
+- Valores de equilibrio **provisionales** en `data/tools/*.tres` y `data/phases/*.tres`.
 
 ### 4.6 Interfaz (`ui/`)
 
@@ -193,9 +215,18 @@ LOBBY → COUNTDOWN → PHASE(n) → … → RESULTS
   Multitáctiles, anclados a las esquinas, con margen de área segura.
 - La UI nunca cambia el estado del juego directamente: lee estado y emite órdenes (p. ej. «listo» en el lobby).
 
-### 4.7 Audio y efectos (`presentation/`)
+### 4.7 Presentación, efectos y audio (`presentation/`)
 
-- `AudioDirector` (autoload) y vistas/VFX **reaccionan a señales** del juego; no deciden reglas.
+- Vistas y efectos **reaccionan a señales y leen estado**; no deciden reglas ni tocan colisiones
+  (prueba automática: con y sin vistas, la misma partida da las mismas posiciones).
+- **Presupuesto de rendimiento** (móviles modestos): el personaje se dibuja con un rig vectorial
+  **una sola vez** al arrancar y se guarda como hoja de sprites (`CharacterSprites`, 24 fotogramas
+  por variante); en juego es 1 rectángulo con textura. El fondo estático se pinta una vez en un
+  `SubViewport` y se reutiliza. La lava es un shader en un rectángulo. Plataformas, suelo e
+  interfaz solo se redibujan al cambiar. Medición y herramientas: `tools/bench_render.gd`, ASSETS.md.
+- **Capas:** fondo (z −20) < arena (0) < personajes (5) < efectos (6) < herramienta (8) <
+  **avisos (9)** < lava inferior (10) < interfaz (CanvasLayer 10). Los avisos nunca quedan tapados.
+- `AudioDirector` (autoload, F5) reaccionará igual a las señales; no decide reglas.
 - Buses: `Master`, `Music`, `SFX`, `UI`. En el servidor dedicado no se instancian.
 - En un cliente remoto, los mismos eventos llegan desde la red (§5.4), así que la presentación
   funciona igual sin conexión, como anfitrión o como cliente.
@@ -311,7 +342,9 @@ Los clientes los ven como cualquier otro participante remoto.
 |---|---|---|
 | `CharacterStats` | movimiento, salto, empujón, resistencia, protección | `data/characters/` |
 | `ToolDefinition` | id, nombre, icono, duración, usos, enfriamiento, escena del efecto | `data/tools/` |
-| `PhaseDefinition` | duración, lava, desgaste, herramientas posibles, apariciones | `data/phases/` |
+| `HazardSchedule` | calendario de lava: oleadas de suelo, subidas, muerte súbita, desgaste | `data/hazards/` |
+| `PhaseDefinition` | duración de la fase, herramientas posibles, avisos | `data/phases/` |
+| `PlatformParams` | inclinación, desgaste, caída y reaparición (tipos frágil e inclinable) | `data/platforms/` |
 | `ArenaDefinition` | escena de arena, límites, puntos de aparición | `data/arenas/` |
 | `MatchRules` | 2–6 participantes, fases, regla de desconexión, desempate | `data/rules/` |
 
@@ -370,10 +403,10 @@ juego no la conoce.
 |---|---|---|
 | F0 | Entorno y escena de comprobación | — |
 | **F1** ✔ | Estructura por módulos, `InputFrame`, controladores (humano + maniquí), `Fighter` con empujón y protección, Resources, arena (inclinación, desgaste, lava, avisos), vistas separadas, controles táctiles, **partida local mínima con eliminación y ganador** | sin conexión |
-| **F2** | Partida: participantes, fases, una herramienta por fase, eliminaciones, ganador, HUD y resultados. Prueba con 2 jugadores locales en el PC | sin conexión |
+| **F2** (en curso) | Fases y **herramienta única compartida** (Ancla y Gancho implementados; otras, pendientes), HUD, modo de 2 jugadores en el mismo teclado | sin conexión |
 | **F3** | Multijugador LAN: ENet, anfitrión-servidor, lobby, IP manual + descubrimiento, snapshots + interpolación, desconexiones v1 | LAN |
 | F4 | Bots en la autoridad | LAN |
-| F5 | Arte, animación y sonido (según la [dirección visual](docs/DIRECCION_VISUAL.md)) | — |
+| F5 (en curso) | Arte, animación y sonido. Estilo v1 propuesto (procedural, pendiente de aprobación); arte definitivo según [ASSETS.md](ASSETS.md) | — |
 | F6 | Internet: servidor dedicado headless + servicio de salas (tras decidir D6) | internet |
 | F7 | Publicación Android | — |
 | F8 | iOS (requiere Mac) | — |
@@ -403,3 +436,9 @@ No se construye infraestructura de internet antes de validar las mecánicas (F1�
 | A14 | Las vistas se acoplan desde la escena de partida (`ArenaViews.attach`); las escenas de `game/` no referencian `presentation/` | Dependencias en un solo sentido; servidor sin gráficos | Aplicada (F1) |
 | A15 | Peligros del suelo con RNG con semilla de la partida | Misma semilla → mismos peligros (necesario para red y pruebas) | Aplicada (F1) |
 | A16 | Identificador `com.elizsoft.finalfire` para Android e iOS | Decisión del propietario (D2); válido en ambas plataformas y libre en Google Play | Aplicada (F1) |
+| A17 | Calendario de lava (`HazardSchedule`) separado de las fases de herramienta (`PhaseDefinition`) | Son ritmos distintos; evita confundir «fase» | Aplicada (F2) |
+| A18 | `ToolSystem` como autoridad única de la herramienta; objetivo inválido no consume | Recogida sin duplicados y lista para servidor | Aplicada (F2) |
+| A19 | `ToolSystem.release()` desconecta sus señales al salir la partida | Las lambdas conectadas creaban un ciclo que retenía el sistema (detectado por las pruebas) | Aplicada (F2) |
+| A20 | Personajes como hojas de sprites generadas al arrancar a partir del rig vectorial | Dibujar el rig cada fotograma bajaba a 5 FPS en la Intel HD 530; con sprites, ≈ 57 FPS | Aplicada (estilo v1) |
+| A21 | Fondo horneado una vez (SubViewport) y lava con shader | Quitan ≈ 16 ms por fotograma frente a F1 | Aplicada (estilo v1) |
+| A22 | Capa de avisos z 9 por encima de efectos (z 6) y personajes (z 5) | Ningún efecto puede tapar un peligro | Aplicada (estilo v1) |

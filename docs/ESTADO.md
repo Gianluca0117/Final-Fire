@@ -2,16 +2,16 @@
 
 > Archivo **generado** por `node tools/status-doc.mjs` a partir de `project-status.json`. No lo edites a mano.
 
-Datos del 2026-10-14T20:01:25-05:00.
+Datos del 2026-10-14T22:14:45-05:00.
 
 ## Resumen
 
-- **Avance del desarrollo: 56%** = 20 tareas verificadas ÷ 36 tareas registradas. Las terminadas sin verificar (1) no cuentan.
-- Tareas: 20 verificadas · 1 sin verificar · 1 en curso · 2 bloqueadas · 12 pendientes.
-- **Pruebas · Automatizada (PC)**: 8/8 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
+- **Avance del desarrollo: 53%** = 25 tareas verificadas ÷ 47 tareas registradas. Las terminadas sin verificar (7) no cuentan.
+- Tareas: 25 verificadas · 7 sin verificar · 1 en curso · 2 bloqueadas · 12 pendientes.
+- **Pruebas · Automatizada (PC)**: 10/10 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
 - **Pruebas · En dispositivo**: 0/2 aprobadas · 0 fallidas · 1 requieren tu intervención · 1 sin ejecutar.
-- **Pruebas · Revisión manual**: 4/4 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
-- Problemas abiertos: 6 · Decisiones pendientes: 2.
+- **Pruebas · Revisión manual**: 5/5 aprobadas · 0 fallidas · 0 requieren tu intervención · 0 sin ejecutar.
+- Problemas abiertos: 10 · Decisiones pendientes: 3.
 
 ## Fases
 
@@ -19,10 +19,10 @@ Datos del 2026-10-14T20:01:25-05:00.
 |---|---|---|---|
 | F0 · Entorno y proyecto mínimo | En curso | 8/9 | Falta la prueba en un teléfono Android físico (TEST-05). |
 | F1 · Arquitectura y mecánicas base (sin conexión) | En curso | 10/11 | Implementada y verificada con pruebas automáticas en el PC. Falta la prueba en un teléfono (TEST-05) y tu valoración del control y del ritmo. |
-| F2 · Partida y herramienta compartida (sin conexión) | Pendiente | 1/3 |  |
+| F2 · Partida y herramienta compartida (sin conexión) | En curso | 5/8 | Ancla y Gancho implementados y verificados con pruebas automáticas. Faltan otras herramientas (escudo, tablón), la prueba en un teléfono y ajustar el equilibrio jugando. |
 | F3 · Multijugador LAN (anfitrión-servidor) | Pendiente | 0/5 |  |
 | F4 · Bots | Pendiente | 0/1 |  |
-| F5 · Arte, animación y sonido | Pendiente | 0/2 |  |
+| F5 · Arte, animación y sonido | En curso | 1/8 | Propuesta de estilo v1 (procedural) en el juego, pendiente de tu aprobación (D8). Arte definitivo y sonido, pendientes (ver ASSETS.md). |
 | F6 · Internet: servidor dedicado y salas | Pendiente | 0/1 | Requiere decidir el alojamiento (D6). |
 | F7 · Publicación Android | Pendiente | 1/2 |  |
 | F8 · Exportación iOS | Bloqueada | 0/1 | Bloqueada: requiere un Mac con Xcode (ver D4). |
@@ -50,8 +50,8 @@ Datos del 2026-10-14T20:01:25-05:00.
 | T-016 | F1 | Vista separada de la simulación (animaciones y efectos por señales) | Verificada |
 | T-017 | F1 | Controles táctiles: joystick + salto, empujar y protección | Terminada sin verificar |
 | T-018 | F1 | Pruebas headless de las reglas (tests/) | Verificada |
-| T-019 | F2 | MatchController: participantes, fases, eliminaciones y ganador | En curso |
-| T-020 | F2 | Herramienta compartida: una por fase (candidatas: escudo, tablón, gancho) | Pendiente |
+| T-019 | F2 | MatchController: participantes, fases, eliminaciones y ganador | Verificada |
+| T-020 | F2 | Herramienta única compartida por fase (aviso, recogida, caducidad, portador eliminado) | Verificada |
 | T-021 | F2 | HUD: VIVOS n/6, cronómetro, pausa y resultados | Verificada |
 | T-022 | F3 | Conexión ENet anfitrión/cliente con IP manual y permiso INTERNET | Pendiente |
 | T-023 | F3 | Lobby y descubrimiento en LAN | Pendiente |
@@ -59,7 +59,7 @@ Datos del 2026-10-14T20:01:25-05:00.
 | T-025 | F3 | Desconexiones v1 (cliente y anfitrión) | Pendiente |
 | T-026 | F3 | Prueba con varios teléfonos en la misma Wi-Fi | Pendiente |
 | T-027 | F4 | Bots básicos en la autoridad | Pendiente |
-| T-028 | F5 | Estilo artístico: 6 personajes encapuchados y cueva de lava | Pendiente |
+| T-028 | F5 | Estilo artístico: 6 personajes y cueva de lava (propuesta v1) | En curso |
 | T-029 | F5 | Sonidos y música | Pendiente |
 | T-030 | F6 | Servidor dedicado headless y servicio de salas | Pendiente |
 | T-031 | F7 | Clave de publicación, NDK y AAB firmado | Pendiente |
@@ -68,31 +68,45 @@ Datos del 2026-10-14T20:01:25-05:00.
 | T-034 | F1 | Partida local mínima: menú, cuenta atrás, eliminación, ganador, empate y revancha | Verificada |
 | T-035 | F1 | Maniquí de pruebas (rival provisional hasta los bots de F4) | Verificada |
 | T-036 | F7 | Identificador definitivo com.elizsoft.finalfire | Verificada |
+| T-037 | F2 | Ancla: estabiliza temporalmente una plataforma inestable | Verificada |
+| T-038 | F2 | Gancho: desplazamiento a una superficie válida con alcance limitado | Verificada |
+| T-039 | F2 | Apuntado táctil (mantener, arrastrar, soltar) con vista previa del destino | Terminada sin verificar |
+| T-040 | F2 | Indicadores de posesión, uso y caducidad | Terminada sin verificar |
+| T-041 | F2 | Más herramientas (candidatas de la referencia: escudo, tablón) | Pendiente |
+| T-042 | F5 | Personaje base animado con 6 variantes (color + detalle) y 8 animaciones | Terminada sin verificar |
+| T-043 | F5 | Sección de arena: plataformas normales, frágiles e inclinables con estados visuales | Terminada sin verificar |
+| T-044 | F5 | Efectos breves: aterrizaje, empujón, recogida de herramienta y eliminación | Terminada sin verificar |
+| T-045 | F5 | HUD, menú y controles táctiles coherentes con el estilo | Terminada sin verificar |
+| T-046 | F5 | Arte definitivo pintado (recursos listados en ASSETS.md) | Pendiente |
+| T-047 | F5 | Rendimiento del estilo en equipo modesto | Verificada |
 
 ## Última compilación
 
-- Android · debug · 0.2.0 (2) · 2026-10-14T19:12:59-05:00
-- `builds/android/FinalFire-debug.apk` (57720626 bytes) · SHA-256 `FFB00622736E0437657CC31F1F6B6418163A769BEA54FC86A73A8E6B07C0D443`
-- Probada en dispositivo: **no**. Primera partida local (F1). Nuevo identificador: no actualiza a las versiones com.finalfire.game, que nunca se instalaron. Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md).
+- Android · debug · 0.3.0 (3) · 2026-10-14T22:08:17-05:00
+- `builds/android/FinalFire-debug.apk` (57815649 bytes) · SHA-256 `67705599BCAD7C83FA399D328350A5CA074D5B0CDE2A7FAA2AEF251525E98AAE`
+- Probada en dispositivo: **no**. F2 (Ancla y Gancho) + propuesta de estilo v1. Actualiza a la 0.2.0 si estuviera instalada (mismo paquete, código mayor). Pendiente: probarla en un teléfono (docs/PRUEBA_DISPOSITIVO.md).
 
 ## Pruebas
 
 | Id | Tipo | Prueba | Resultado | Última ejecución |
 |---|---|---|---|---|
-| TEST-01 | Automatizada (PC) | Entradas y controles táctiles (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
-| TEST-02 | Revisión manual | Renderizado Compatibility en este PC (capturas revisadas) | Aprobada | 2026-10-14T19:12:19-05:00 |
-| TEST-03 | Automatizada (PC) | Exportación del APK de depuración | Aprobada | 2026-10-14T19:12:59-05:00 |
-| TEST-04 | Automatizada (PC) | Firma y manifiesto del APK | Aprobada | 2026-10-14T19:13:00-05:00 |
-| TEST-05 | En dispositivo | Instalación y ejecución en un teléfono Android | Requiere tu intervención | 2026-10-14T19:13:11-05:00 |
+| TEST-01 | Automatizada (PC) | Entradas y controles táctiles (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-02 | Revisión manual | Renderizado Compatibility en este PC (capturas revisadas) | Aprobada | 2026-10-14T22:07:14-05:00 |
+| TEST-03 | Automatizada (PC) | Exportación del APK de depuración | Aprobada | 2026-10-14T22:08:17-05:00 |
+| TEST-04 | Automatizada (PC) | Firma y manifiesto del APK | Aprobada | 2026-10-14T22:08:17-05:00 |
+| TEST-05 | En dispositivo | Instalación y ejecución en un teléfono Android | Requiere tu intervención | 2026-10-14T22:08:25-05:00 |
 | TEST-06 | En dispositivo | Exportación y compilación para iOS | Sin ejecutar | — |
-| TEST-07 | Revisión manual | Panel de progreso: visualización y actualización en vivo | Aprobada | 2026-10-14T19:19:18-05:00 |
-| TEST-08 | Automatizada (PC) | Personaje (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
-| TEST-09 | Automatizada (PC) | Arena (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
-| TEST-10 | Automatizada (PC) | Partida (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
-| TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T19:16:18-05:00 |
+| TEST-07 | Revisión manual | Panel de progreso: visualización y actualización en vivo | Aprobada | 2026-10-14T22:14:45-05:00 |
+| TEST-08 | Automatizada (PC) | Personaje (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-09 | Automatizada (PC) | Arena (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-10 | Automatizada (PC) | Partida (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-11 | Automatizada (PC) | Partidas completas con maniquíes (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
 | TEST-12 | Automatizada (PC) | Validez del identificador com.elizsoft.finalfire | Aprobada | 2026-10-14 |
-| TEST-13 | Revisión manual | Revisión de exposición antes de publicar | Aprobada | 2026-10-14T19:14:04-05:00 |
+| TEST-13 | Revisión manual | Revisión de exposición antes de publicar | Aprobada | 2026-10-14T22:15:16-05:00 |
 | TEST-14 | Revisión manual | Publicación en GitHub verificada | Aprobada | 2026-10-14T20:01:25-05:00 |
+| TEST-15 | Automatizada (PC) | Herramientas (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-16 | Automatizada (PC) | Presentación (suite automatizada) | Aprobada | 2026-10-14T22:07:55-05:00 |
+| TEST-17 | Revisión manual | Rendimiento del estilo v1 en este PC | Aprobada | 2026-10-14 |
 
 ## Problemas abiertos
 
@@ -102,13 +116,62 @@ Datos del 2026-10-14T20:01:25-05:00.
 - **ISS-05** (Info) Godot firma con apksigner de build-tools 36.0.0
 - **ISS-08** (Bajo) Ajuste de jugabilidad sin probar con personas
 - **ISS-09** (Info) Sin sonido
+- **ISS-10** (Bajo) En pantallas 16:9 el joystick tapa parte del tramo izquierdo del suelo
+- **ISS-11** (Info) Bajadas puntuales a ≈ 31 FPS en la Intel HD 530
+- **ISS-12** (Bajo) Tipografía por defecto de Godot
+- **ISS-13** (Info) El arte actual es una propuesta procedural, no el definitivo
 
 ## Decisiones pendientes
 
 - **D4** ¿Tendrás acceso a un Mac para la versión de iOS? (no bloquea F1)
 - **D6** ¿Dónde se alojarán los servidores para jugar por internet? (no urgente, fase F6)
+- **D8** ¿Apruebas la propuesta de estilo v1 para extenderla?
+
+## Equilibrio provisional
+
+Valores de juego aún sin probar jugando; pueden cambiar.
+
+| Id | Área | Parámetro | Valor | Archivo |
+|---|---|---|---|---|
+| BAL-01 | Fases | Duración de cada fase | 20 s | `data/phases/standard_phase.tres` |
+| BAL-02 | Fases | Aviso antes de aparecer / aviso de caducidad | 1 s + 2,5 s / 3 s | `data/phases/standard_phase.tres` |
+| BAL-03 | Herramientas | Radio de recogida | 40 px | `data/rules/local_match.tres` |
+| BAL-04 | Herramientas | Portador eliminado | reaparece con 1,5 s de aviso si quedan ≥ 5 s de fase | `data/rules/local_match.tres` |
+| BAL-05 | Ancla | Duración / aviso / alcance | 6 s / 1,5 s / 260 px | `data/tools/anchor.tres` |
+| BAL-06 | Gancho | Alcance / cono / velocidad / impulso final | 380 px / ±24° / 1150 px/s / −520 | `data/tools/hook.tres` |
+| BAL-07 | Plataformas | Frágil: desgaste por persona; caída tras aviso | 0,1/s; 1 s; reaparece a los 7 s | `data/platforms/fragile_platform.tres` |
+| BAL-08 | Plataformas | Inclinable: inclinación máxima y por carga | 16° / 12° por persona en el borde | `data/platforms/tilting_platform.tres` |
+| BAL-09 | Personaje | Empujón / protección | 640 de fuerza, 0,55 s de espera / 0,7 s, reduce al 15 %, espera 2,4 s | `data/characters/default_stats.tres` |
+| BAL-10 | Lava | Oleadas de suelo / subidas / muerte súbita | cada 8 s con 2 s de aviso / 45 s y 75 s / 100 s | `data/hazards/lava_cave.tres` |
 
 ## Historial
+
+### 2026-10-14 · Identidad gráfica: propuesta de estilo v1
+
+Estilo 2D cartoon procedural para revisar en el juego: personaje base con 6 variantes y 8 animaciones, arena con estados visuales claros, lava animada y avisos, efectos breves, HUD, menú y controles coherentes. Optimizado para equipos modestos. No es arte definitivo: lo que falta está en ASSETS.md.
+
+- Personaje: rig vectorial con contorno grueso → hojas de sprites de 24 fotogramas por variante al arrancar
+- Arena: piedra segura, madera frágil, losa inclinable con pivote; estados segura / agrietada / crítica / a punto de caer / anclada
+- Lava con shader, suelo que avisa con señal y cuenta atrás en una capa que nada tapa, aviso de subida de la lava
+- Fondo de cueva horneado una vez; efectos de polvo, impacto, recogida y humo
+- HUD y menú con tema propio; VIVOS con cabezas; controles táctiles semitransparentes en reposo
+- Rendimiento en Intel HD 530: 31 → 55–59 FPS de media
+- ASSETS.md, galería de estilo y APK 0.3.0
+
+Pruebas: Automatizadas: Presentación 10/10 (el arte no altera simulación ni colisiones) (Aprobada) · Manual: capturas reales del estilo v1 (Aprobada) · Manual: rendimiento 55–59 FPS en este PC (Aprobada) · En dispositivo: legibilidad y rendimiento en un teléfono (Requiere tu intervención) · Tu aprobación del estilo (D8) (Requiere tu intervención) · Manual: panel con los datos nuevos (Aprobada)
+
+### 2026-10-14 · F2: herramienta única compartida (Ancla y Gancho)
+
+La partida se divide en fases con una sola herramienta compartida, anunciada antes de aparecer. Implementados el Ancla y el Gancho con reglas en la autoridad, separadas de gráficos y controles, y apuntado táctil con vista previa.
+
+- Calendario de lava separado de las fases (HazardSchedule / PhaseDefinition)
+- ToolSystem: aviso, una herramienta a la vez, recogida única (empates por semilla), caducidad, portador eliminado
+- Ancla (estabiliza una plataforma, avisa antes de soltarse) y Gancho (rayos en cono, no atraviesa, no sale del escenario, no se gasta si no hay destino)
+- Apuntado táctil: mantener, arrastrar, soltar; teclas E (J1) y , (J2); modo de 2 jugadores conservado
+- Corregido: ciclo de referencias que retenía el ToolSystem (ISS-15)
+- Maniquíes que disputan la herramienta
+
+Pruebas: Automatizadas: Herramientas 45/45 (Aprobada) · Automatizadas: Entradas 27/27 (incluye el botón de herramienta) (Aprobada) · Automatizadas: partidas completas con herramienta 16/16 (Aprobada) · En dispositivo: probar F1 y herramientas en un teléfono (Requiere tu intervención)
 
 ### 2026-10-14 · Publicación en GitHub
 

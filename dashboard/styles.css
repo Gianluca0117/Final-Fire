@@ -215,3 +215,11 @@ dialog button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 1p
 
 .tests .group { list-style: none; margin-top: 6px; }
 .tests .group h3 { margin: 6px 0 0; }
+
+/* ---------- Equilibrio ---------- */
+.table-wrap { overflow-x: auto; }
+.balance { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.balance th { text-align: left; color: var(--muted); font-weight: 600; font-size: .78rem; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.balance td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.balance td.num { font-variant-numeric: tabular-nums; }
+.balance code { white-space: nowrap; }

@@ -6,6 +6,10 @@ Revisión del 2026-10-14 sobre lo que quedaría expuesto al subir la rama `main`
 > **Publicado** el 14-10-2026 tras esta revisión: el propietario decidió subir ahora, en público y con
 > el correo institucional (D5 y D7). GitHub confirmó los 4 commits y 132 archivos, sin APK, claves ni `.godot/`.
 
+> **Repetida** el 14-10-2026 a las 22:15 antes de subir F2 y el estilo v1 (207 archivos): sin claves,
+> contraseñas, tokens, APK ni rutas absolutas; el mayor archivo es una captura de 208 KB. Lo visible
+> no cambia (el correo ya estaba publicado por decisión D7).
+
 Cómo repetirla: los comandos están al final.
 
 ## Resultado

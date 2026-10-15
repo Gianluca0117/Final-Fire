@@ -1,7 +1,9 @@
 # Dirección visual (referencia)
 
 Imagen de referencia compartida el 2026-10-14 («así debería quedar»). Es una **meta visual**, no un
-recurso del juego: el proyecto actual solo usa formas provisionales.
+recurso del juego. Desde la versión 0.3.0 el juego usa la **propuesta de estilo v1** inspirada en
+ella (procedural, pendiente de aprobación): guía de estilo, inventario y recursos que faltan en
+[ASSETS.md](../ASSETS.md).
 
 > Guarda la imagen como `docs/referencias/estilo-objetivo.png` para que el panel la muestre
 > (Inventario → Referencias).
@@ -32,14 +34,15 @@ balancearse con una cuerda.
 
 ## Diferencias con el proyecto actual
 
-| Referencia | Ahora | Tarea |
+| Referencia | Ahora (0.3.0, estilo v1) | Tarea |
 |---|---|---|
-| Joystick + 4 botones de acción | Botones `<` `>` `SALTO` | T-017 |
-| Agarrar / empujar | No existe | T-013 |
-| Plataformas que se rompen y lava | No existe | T-014, T-015 |
-| VIVOS n/6, cronómetro, pausa | Solo un texto de depuración | T-021 |
-| Escudo, tablón, gancho | No existe | T-020 |
-| 6 personajes y cueva de lava | Rectángulo naranja y fondo liso | T-028 |
+| Joystick + 4 botones de acción | Joystick, salto, mano, escudo y ranura de herramienta | T-017 |
+| Agarrar / empujar | Empujón con autoría | T-013 |
+| Plataformas que se rompen, puente de madera y lava | Madera frágil, losa inclinable, suelo que se vuelve lava, lava que sube | T-014, T-015 |
+| VIVOS n/6 con capuchas, cronómetro, pausa | VIVOS con cabezas de personaje, fase y tiempo, pausa | T-021 |
+| Escudo, tablón, gancho sobre pedestales | Ancla y Gancho sobre pedestal; escudo y tablón pendientes | T-020, T-041 |
+| 6 personajes encapuchados y cueva de lava | 6 variantes cartoon con detalle propio; cueva con ruinas, estandartes y cascadas (procedural) | T-042, T-043 |
+| Ilustración pintada | **No** (requiere artista; especificaciones en ASSETS.md) | T-046 |
 
-Los controles táctiles actuales ya tienen la base necesaria (multitáctil, anclaje a las esquinas
-y área segura); el joystick y los botones nuevos se construirán sobre `touch_button.gd`.
+Diferencias deliberadas con la referencia: el fondo es más oscuro y sin contorno (para que lo
+jugable destaque en un móvil) y los avisos de peligro tienen una capa propia que nada puede tapar.

@@ -240,6 +240,15 @@ function renderInventory(s) {
     [h("p", { class: "empty" }, `Aún no hay ${LABELS.inventory[invTab].toLowerCase()} registrados.`)]));
 }
 
+function renderBalance(s) {
+  const list = s.balance ?? [];
+  const head = h("tr", {}, ["Área", "Parámetro", "Valor", "Archivo", "Estado"].map((t) => h("th", { scope: "col" }, t)));
+  const rows = list.map((b) => h("tr", {},
+    h("td", {}, b.area), h("td", {}, b.parameter), h("td", { class: "num" }, b.value),
+    h("td", {}, h("code", {}, b.file)), h("td", {}, h("span", { class: "chip s-placeholder" }, b.status === "provisional" ? "Provisional" : b.status))));
+  $("balance").replaceChildren(h("thead", {}, head), h("tbody", {}, ...(rows.length ? rows : [h("tr", {}, h("td", { colspan: "5", class: "empty" }, "Sin valores registrados."))])));
+}
+
 function renderIssues(s) {
   const rank = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
   const list = [...(s.issues ?? [])].sort((a, b) => (a.status === "resolved") - (b.status === "resolved") || (rank[a.severity] ?? 9) - (rank[b.severity] ?? 9));
@@ -283,6 +292,7 @@ function render(data) {
   renderBuild(s, data.disk);
   renderTests(s);
   renderInventory(s);
+  renderBalance(s);
   renderIssues(s);
   renderDecisions(s);
   renderHistory(s);
